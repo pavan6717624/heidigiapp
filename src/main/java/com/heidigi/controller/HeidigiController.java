@@ -224,7 +224,7 @@ public class HeidigiController {
 	@RequestMapping(value = "image/{tag}")
 	public ResponseEntity<Object> image(@PathVariable String tag, HttpServletRequest request) throws Exception {
 		
-	
+	System.out.println(request.getRemoteAddr()+" "+request.getRemoteHost());
 		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(service.getImage(tag))).build();
 	}
 	
