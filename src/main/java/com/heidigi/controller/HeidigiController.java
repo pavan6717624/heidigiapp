@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -220,9 +222,17 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "image/{tag}")
-	public ResponseEntity<Object> image(@PathVariable String tag) throws Exception {
-
+	public ResponseEntity<Object> image(@PathVariable String tag, HttpServletRequest request) throws Exception {
+		
+	
 		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(service.getImage(tag))).build();
 	}
+	
+	@RequestMapping(value = "getSrc")
+	public String getSrc(@RequestParam("src") String src) throws Exception {
+
+		return service.getImage(src);
+	}
+
 
 }
