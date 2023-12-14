@@ -224,9 +224,11 @@ public class HeidigiController {
 	@RequestMapping(value = "image/{tag}")
 	public ResponseEntity<Object> image(@PathVariable String tag, HttpServletRequest request) throws Exception {
 		
-	System.out.println(request.getRemoteAddr()+" "+request.getRemoteHost());
+	System.out.println(request.getHeader("Referer"));
 		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(service.getImage(tag))).build();
 	}
+	
+
 	
 	@RequestMapping(value = "getSrc")
 	public String getSrc(@RequestParam("src") String src) throws Exception {
