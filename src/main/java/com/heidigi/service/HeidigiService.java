@@ -22,6 +22,8 @@ import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,8 +38,8 @@ import com.heidigi.domain.HeidigiProfile;
 import com.heidigi.domain.HeidigiUser;
 import com.heidigi.domain.HeidigiVideo;
 import com.heidigi.model.FacebookDTO;
-import com.heidigi.model.HeidigiLoginDTO;
 import com.heidigi.model.HeidigiSignupDTO;
+import com.heidigi.model.ImageDTO;
 import com.heidigi.model.ProfileDTO;
 import com.heidigi.repository.HeidigiImageRepository;
 import com.heidigi.repository.HeidigiProfileRepository;
@@ -53,10 +55,9 @@ public class HeidigiService {
 	@Autowired
 	private HeidigiService hService;
 
-
 	@Autowired
 	HeidigiImageRepository heidigiImageRepository;
-	
+
 	@Autowired
 	HeidigiVideoRepository heidigiVideoRepository;
 
@@ -85,48 +86,54 @@ public class HeidigiService {
 		user.setName(signup.getName());
 		user.setPassword(signup.getPassword());
 		user.setMessage("Customer Signup");
-		user.setRole(roleRepository.findByRoleName("Customer").get());
+		user.setRole(
+				roleRepository.findByRoleName(signup.getRole().equals("Business") ? "Customer" : "Designer").get());
 
 		userRepository.save(user);
 
 		return userRepository.findByMobileAndPassword(user.getMobile(), user.getPassword()).isPresent();
 	}
 
-	public String uploadImage(MultipartFile file) throws Exception {
-		HeidigiImage image = uploadImage(file, "", "", "Image");
-		return "";
+	public String uploadImage(MultipartFile file, String category,String subCategory) throws Exception {
+		HeidigiImage image = uploadImage(file, category, subCategory, "Image");
+		return "{\"result\":\"success\"}";
 	}
 
+	public Long getUserName() {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return Long.valueOf(userDetails.getUsername());
+	}
+	public String getRole() {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return (userDetails.getAuthorities().toArray()[0].toString());
+	}
 	public String uploadVideo(MultipartFile file) throws Exception {
-		
-		System.out.println("In video upload "+new Date());
+
+		System.out.println("In video upload " + new Date());
 		File convFile = new File(UUID.randomUUID() + "" + file.getOriginalFilename());
 		FileOutputStream fos = new FileOutputStream(convFile);
 		fos.write(file.getBytes());
 		fos.close();
-		System.out.println("In video done "+new Date());
+		System.out.println("In video done " + new Date());
 
 		Map uploadResult1 = cloudinary1.uploader().upload(convFile, ObjectUtils.asMap("resource_type", "video"));
-		
-		System.out.println("In video uploading "+new Date());
 
-		//System.out.println("Backup Ended "+downloadVideo(uploadResult1.get("public_id")+" ")+new Date());
-		
-		
+		System.out.println("In video uploading " + new Date());
+
+		// System.out.println("Backup Ended
+		// "+downloadVideo(uploadResult1.get("public_id")+" ")+new Date());
+
 		HeidigiVideo image = new HeidigiVideo();
-		
+
 		image.setPublicId(uploadResult1.get("public_id") + "");
 
 		image.setResponse(uploadResult1.toString());
 
-	
-		image.setUser(userRepository.findByMobile(9449840144L).get());
-		
+		image.setUser(userRepository.findByMobile(getUserName()).get());
 
-		
 		heidigiVideoRepository.save(image);
-		
-		System.out.println("In video saving "+new Date());
+
+		System.out.println("In video saving " + new Date());
 
 		return "";
 	}
@@ -169,7 +176,7 @@ public class HeidigiService {
 		image.setResponse(uploadResult1.toString());
 
 		image.setExtension(extension);
-		image.setUser(userRepository.findByMobile(9449840144L).get());
+		image.setUser(userRepository.findByMobile(getUserName()).get());
 		image.setImageText(imageText);
 
 		heidigiImageRepository.save(image);
@@ -200,11 +207,11 @@ public class HeidigiService {
 	public String uploadLogo(MultipartFile file) throws Exception {
 
 		HeidigiProfile profile = null;
-		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(9449840144L);
+		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
 		if (!profileOpt.isPresent()) {
 			profile = new HeidigiProfile();
 
-			profile.setUser(userRepository.findByMobile(9449840144L).get());
+			profile.setUser(userRepository.findByMobile(getUserName()).get());
 		} else
 			profile = profileOpt.get();
 
@@ -217,11 +224,11 @@ public class HeidigiService {
 	public String uploadPhoto(MultipartFile file) throws Exception {
 
 		HeidigiProfile profile = null;
-		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(9449840144L);
+		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
 		if (!profileOpt.isPresent()) {
 			profile = new HeidigiProfile();
 
-			profile.setUser(userRepository.findByMobile(9449840144L).get());
+			profile.setUser(userRepository.findByMobile(getUserName()).get());
 		} else
 			profile = profileOpt.get();
 
@@ -234,12 +241,12 @@ public class HeidigiService {
 
 	public ProfileDTO editAddress(String address) throws Exception {
 
-		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(9449840144L);
+		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
 		HeidigiProfile profile = null;
 
 		if (!profileOpt.isPresent()) {
 			profile = new HeidigiProfile();
-			profile.setUser(userRepository.findByMobile(9449840144L).get());
+			profile.setUser(userRepository.findByMobile(getUserName()).get());
 		} else
 			profile = profileOpt.get();
 		System.out.println(address);
@@ -249,28 +256,21 @@ public class HeidigiService {
 		return getProfile();
 	}
 
-	public Boolean login(HeidigiLoginDTO login) {
+	public List<ImageDTO> getImages() {
 
-		return userRepository.findByMobileAndPassword(Long.valueOf(login.getMobile()), login.getPassword()).isPresent();
-
-	}
-
-	public List<String> getImages() {
-
-		List<HeidigiImage> images = heidigiImageRepository.getImageIds();
-		return images.stream().map(
-				o -> o.getPublicId())
-				.collect(Collectors.toList());
+		List<HeidigiImage> images = heidigiImageRepository.getImageIds(getUserName(),getRole());
+		return images.stream().map(o -> new ImageDTO(o)).collect(Collectors.toList());
 	}
 
 	public List<String> getVideos() {
 
-		return heidigiVideoRepository.findAll().stream().map(o->o.getPublicId()).collect(Collectors.toList());
-		
+		return heidigiVideoRepository.findAll().stream().map(o -> o.getPublicId()).collect(Collectors.toList());
+
 	}
+
 	public ProfileDTO getProfile() throws Exception {
 
-		HeidigiProfile profile = profileRepository.findByMobile(9449840144L).get();
+		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
 
 		ProfileDTO profileDTO = new ProfileDTO();
 		profileDTO.setAddress(profile.getAddress());
@@ -312,18 +312,20 @@ public class HeidigiService {
 	}
 
 	public String getImageUrl(String image, Boolean template) throws Exception {
-		String logoId = profileRepository.findByMobile(9449840144L).get().getLogo().getPublicId();
+		
+		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
+		String logoId = profile.getLogo().getPublicId();
 
-		String photoId = profileRepository.findByMobile(9449840144L).get().getPhoto().getPublicId();
+		String photoId = profile.getPhoto().getPublicId();
 
-		String line1 = profileRepository.findByMobile(9449840144L).get().getLine1();
-		String line2 = profileRepository.findByMobile(9449840144L).get().getLine2();
-		String line3 = profileRepository.findByMobile(9449840144L).get().getLine3();
-		String line4 = profileRepository.findByMobile(9449840144L).get().getLine4();
+		String line1 = profile.getLine1();
+		String line2 = profile.getLine2();
+		String line3 = profile.getLine3();
+		String line4 = profile.getLine4();
 
-		String email = profileRepository.findByMobile(9449840144L).get().getEmail();
-		String address = profileRepository.findByMobile(9449840144L).get().getAddress();
-		String website = profileRepository.findByMobile(9449840144L).get().getWebsite();
+		String email = profile.getEmail();
+		String address = profile.getAddress();
+		String website = profile.getWebsite();
 
 		System.out.println(logoId);
 
@@ -395,24 +397,28 @@ public class HeidigiService {
 
 //		).signed(true).type("authenticated").imageTag(image + ".jpg");
 
-				).imageTag(image + ".jpg");
+		).imageTag(image + ".jpg");
 		imageUrl = imageUrl.substring(10, imageUrl.length() - 3);
-		
+
 		System.out.println(imageUrl);
 
 		return imageUrl;
 	}
 
-	public String getImage(String image)
-	{
-		return "https://res.cloudinary.com/hwlyozehf/image/upload/"+image+".jpg";
-			
-	}
-	public String getImageUrlTemplate2(String image, Boolean template) throws Exception {
-		String logoId = profileRepository.findByMobile(9449840144L).get().getLogo().getPublicId();
+	public String getImage(String image) {
+		return "https://res.cloudinary.com/hwlyozehf/image/upload/" + image + ".jpg";
 
-		String address = profileRepository.findByMobile(9449840144L).get().getAddress();
-		String website = profileRepository.findByMobile(9449840144L).get().getWebsite();
+	}
+
+	public String getImageUrlTemplate2(String image, Boolean template) throws Exception {
+		
+		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
+		
+		
+		String logoId = profile.getLogo().getPublicId();
+
+		String address = profile.getAddress();
+		String website = profile.getWebsite();
 
 		System.out.println(logoId);
 
@@ -502,12 +508,12 @@ public class HeidigiService {
 	public ProfileDTO editContent(String line1, String line2, String line3, String line4, String email, String website,
 			String address) throws Exception {
 
-		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(9449840144L);
+		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
 		HeidigiProfile profile = null;
 
 		if (!profileOpt.isPresent()) {
 			profile = new HeidigiProfile();
-			profile.setUser(userRepository.findByMobile(9449840144L).get());
+			profile.setUser(userRepository.findByMobile(getUserName()).get());
 		} else
 			profile = profileOpt.get();
 
@@ -527,28 +533,29 @@ public class HeidigiService {
 	public String downloadVideo() throws Exception {
 		return downloadVideo("ed8hxcfbswvlakkybuvd");
 	}
-	
+
 	public String downloadVideo(String publicId) throws Exception {
+		
+		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
 
-		String logoId = profileRepository.findByMobile(9449840144L).get().getLogo().getPublicId();
+		String logoId = profile.getLogo().getPublicId();
 
-		String photoId = profileRepository.findByMobile(9449840144L).get().getPhoto().getPublicId();
+		String photoId = profile.getPhoto().getPublicId();
 
-		String line1 = profileRepository.findByMobile(9449840144L).get().getLine1();
-		String line2 = profileRepository.findByMobile(9449840144L).get().getLine2();
-		String line3 = profileRepository.findByMobile(9449840144L).get().getLine3();
-		String line4 = profileRepository.findByMobile(9449840144L).get().getLine4();
+		String line1 = profile.getLine1();
+		String line2 = profile.getLine2();
+		String line3 = profile.getLine3();
+		String line4 = profile.getLine4();
 
-		String email = profileRepository.findByMobile(9449840144L).get().getEmail();
-		String address = profileRepository.findByMobile(9449840144L).get().getAddress();
-		String website = profileRepository.findByMobile(9449840144L).get().getWebsite();
+		String email = profile.getEmail();
+		String address = profile.getAddress();
+		String website = profile.getWebsite();
 
 		System.out.println(logoId);
 
 		Transformation transformation = new Transformation();
 
-
-		String imageUrl = cloudinary1.url().transformation(transformation.height(1080).width(1080).crop("scale").chain()
+		String videoUrl = cloudinary1.url().transformation(transformation.height(1080).width(1080).crop("scale").chain()
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_west")
@@ -609,19 +616,17 @@ public class HeidigiService {
 				.overlay(new TextLayer().fontFamily("montserrat").fontSize(16).textAlign("center").text(address))
 				.gravity("south_west").x(750).y(50).color("black").chain().height(500).width(500).chain()
 
-		).videoTag(publicId+".mp4");
+		).videoTag(publicId + ".mp4");
 
-		List<String> urls=Arrays.asList(imageUrl.split("<source src='"));
-		
-		return urls.stream().filter(o->o.indexOf(".mp4")!=-1).map(o->o.substring(0,o.indexOf(".mp4")+4)).collect(Collectors.toList()).get(0);
-		
-		
+		List<String> urls = Arrays.asList(videoUrl.split("<source src='"));
 
-		//return imageUrl;
+		return urls.stream().filter(o -> o.indexOf(".mp4") != -1).map(o -> o.substring(0, o.indexOf(".mp4") + 4))
+				.collect(Collectors.toList()).get(0);
+
+		// return imageUrl;
 
 	}
 
-	
 	public String postToFacebookVideo(String video) throws Exception {
 		FacebookDTO fdto = new FacebookDTO();
 		fdto.setAccess_token(
@@ -635,23 +640,22 @@ public class HeidigiService {
 //			imageUrl = getImageUrl(image, false);
 //		else
 //			imageUrl = getImageUrlTemplate2(image, false);
-		
-		fdto.setFile_url(videoUrl);
-
-		System.out.println("Facebook :: " + videoUrl+"\n"+fdto);
 
 		fdto.setFile_url(videoUrl);
-		
+
+		System.out.println("Facebook :: " + videoUrl + "\n" + fdto);
+
+		fdto.setFile_url(videoUrl);
 
 		String result = new RestTemplate()
-				.postForEntity("https://graph-video.facebook.com/v18.0/178235032042634/videos", fdto, String.class).getBody();
+				.postForEntity("https://graph-video.facebook.com/v18.0/178235032042634/videos", fdto, String.class)
+				.getBody();
 
 		System.out.println(result);
 
 		return "";
 	}
-	
-	
+
 	public String postToFacebookImage(String image) throws Exception {
 
 		FacebookDTO fdto = new FacebookDTO();
@@ -672,7 +676,6 @@ public class HeidigiService {
 
 		fdto.setUrl(imageUrl);
 
-		
 		String result = new RestTemplate()
 				.postForEntity("https://graph.facebook.com/v18.0/178235032042634/photos", fdto, String.class).getBody();
 
@@ -683,12 +686,12 @@ public class HeidigiService {
 
 	public ProfileDTO changeTemplate(String template) throws Exception {
 
-		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(9449840144L);
+		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
 		HeidigiProfile profile = null;
 
 		if (!profileOpt.isPresent()) {
 			profile = new HeidigiProfile();
-			profile.setUser(userRepository.findByMobile(9449840144L).get());
+			profile.setUser(userRepository.findByMobile(getUserName()).get());
 		} else
 			profile = profileOpt.get();
 

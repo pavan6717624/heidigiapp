@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import com.heidigi.domain.HeidigiUser;
 import com.heidigi.jwt.JwtTokenUtil;
 import com.heidigi.model.HeidigiLoginDTO;
 import com.heidigi.model.HeidigiSignupDTO;
+import com.heidigi.model.ImageDTO;
 import com.heidigi.model.LoginStatusDTO;
 import com.heidigi.model.ProfileDTO;
 import com.heidigi.repository.HeidigiUserRepository;
@@ -67,6 +69,37 @@ public class HeidigiController {
 		}
 		// System.out.println("exited in authenticate sub function...");
 	}
+	
+	@RequestMapping(value = "/getLoginDetails")
+	public LoginStatusDTO getLoginDetails() throws Exception {
+		
+		LoginStatusDTO loginStatus=new LoginStatusDTO();
+		
+		 if(SecurityContextHolder.getContext().getAuthentication() == null)
+		 {
+			 loginStatus.setUserId("");
+				
+				loginStatus.setLoginStatus(false);
+					
+				loginStatus.setUserType("");
+		 }
+		 else
+		 {
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		loginStatus.setUserId(userDetails.getUsername());
+		
+		loginStatus.setLoginStatus(true);
+		
+		System.out.println(Long.valueOf(userDetails.getUsername()));
+			
+		loginStatus.setUserType(userDetails.getAuthorities().toArray()[0].toString());
+		 };
+	
+		return loginStatus;
+	}
+	
 
 	@RequestMapping(value = "login")
 	public LoginStatusDTO login(@RequestBody HeidigiLoginDTO login) {
@@ -121,9 +154,10 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "getImages")
-	public List<String> getImages() {
+	public List<ImageDTO> getImages() {
 		return service.getImages();
 	}
+	
 
 	@RequestMapping(value = "getVideos")
 	public List<String> getVideos() {
@@ -154,7 +188,8 @@ public class HeidigiController {
 
 	@RequestMapping(value = "getProfile")
 	public ProfileDTO getProfile() throws Exception {
-
+		 UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		 System.out.println("username :: "+userDetails.getUsername());
 		return service.getProfile();
 	}
 
@@ -177,8 +212,8 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "uploadImage")
-	public String uploadImage(@RequestParam("file") MultipartFile file) throws Exception {
-		return service.uploadImage(file);
+	public String uploadImage(@RequestParam("file") MultipartFile file,@RequestParam("category") String category, @RequestParam("subCategory") String subCategory) throws Exception {
+		return service.uploadImage(file,category,subCategory);
 	}
 
 	@RequestMapping(value = "uploadVideo")
