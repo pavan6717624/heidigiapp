@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class ProfileDTO {
- String mobile, image, address, line1,line2,line3,line4, website, email, template;
+ String mobile, logo,photo, address, line1,line2,line3,line4, website, email, template;
 }

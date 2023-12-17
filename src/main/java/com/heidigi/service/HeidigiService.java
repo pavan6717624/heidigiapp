@@ -275,8 +275,8 @@ public class HeidigiService {
 		ProfileDTO profileDTO = new ProfileDTO();
 		profileDTO.setAddress(profile.getAddress());
 //		profileDTO.setImage(getImage(profile.getLogo().get, profile.getLogo().getExtension()));
-		profileDTO.setImage(
-				"data:image/" + profile.getLogo().getExtension() + ";base64," + profile.getLogo().getImageText());
+		profileDTO.setLogo(profile.getLogo().getPublicId());
+		profileDTO.setPhoto(profile.getPhoto().getPublicId());
 		profileDTO.setMobile(profile.getUser().getMobile() + "");
 		profileDTO.setEmail(profile.getEmail());
 		profileDTO.setWebsite(profile.getWebsite());
