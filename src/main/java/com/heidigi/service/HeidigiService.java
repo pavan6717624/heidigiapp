@@ -408,6 +408,11 @@ public class HeidigiService {
 	public String getImage(String image) {
 		return "https://res.cloudinary.com/hwlyozehf/image/upload/" + image + ".jpg";
 
+	}	
+	
+	public String getVideo(String video) {
+		return "https://res.cloudinary.com/hwlyozehf/video/upload/" + video + ".mp4";
+
 	}
 
 	public String getImageUrlTemplate2(String image, Boolean template) throws Exception {
@@ -500,6 +505,7 @@ public class HeidigiService {
 			return "{\"img\":\"" + "data:image/jpeg;base64," + image + "\"}";
 
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			return "";
 		}
 

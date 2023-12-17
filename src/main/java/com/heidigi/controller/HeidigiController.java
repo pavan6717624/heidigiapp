@@ -253,7 +253,7 @@ public class HeidigiController {
 	@RequestMapping(value = "video/{tag}")
 	public ResponseEntity<Object> video(@PathVariable String tag) throws Exception {
 
-		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(service.downloadVideo(tag))).build();
+		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(service.getVideo(tag))).build();
 	}
 
 	@RequestMapping(value = "image/{tag}")
