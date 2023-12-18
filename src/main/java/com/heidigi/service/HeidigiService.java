@@ -94,7 +94,7 @@ public class HeidigiService {
 		return userRepository.findByMobileAndPassword(user.getMobile(), user.getPassword()).isPresent();
 	}
 
-	public String uploadImage(MultipartFile file, String category,String subCategory) throws Exception {
+	public String uploadImage(MultipartFile file, String category, String subCategory) throws Exception {
 		HeidigiImage image = uploadImage(file, category, subCategory, "Image");
 		return "{\"result\":\"success\"}";
 	}
@@ -103,10 +103,12 @@ public class HeidigiService {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		return Long.valueOf(userDetails.getUsername());
 	}
+
 	public String getRole() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		return (userDetails.getAuthorities().toArray()[0].toString());
 	}
+
 	public String uploadVideo(MultipartFile file) throws Exception {
 
 		System.out.println("In video upload " + new Date());
@@ -258,7 +260,7 @@ public class HeidigiService {
 
 	public List<ImageDTO> getImages() {
 
-		List<HeidigiImage> images = heidigiImageRepository.getImageIds(getUserName(),getRole());
+		List<HeidigiImage> images = heidigiImageRepository.getImageIds(getUserName(), getRole());
 		return images.stream().map(o -> new ImageDTO(o)).collect(Collectors.toList());
 	}
 
@@ -268,24 +270,55 @@ public class HeidigiService {
 
 	}
 
+	public Boolean checkProfile() throws Exception {
+		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
+		if (profileOpt.isPresent() && profileOpt.get().getAddress().trim().length() != 0
+				&& profileOpt.get().getAddress().trim().length() != 0
+				&& profileOpt.get().getLine1().trim().length() != 0 && profileOpt.get().getLine2().trim().length() != 0
+				&& profileOpt.get().getLine3().trim().length() != 0 && profileOpt.get().getLine4().trim().length() != 0
+				&& profileOpt.get().getEmail().trim().length() != 0
+				&& profileOpt.get().getWebsite().trim().length() != 0 && profileOpt.get().getLogo() != null
+				&& profileOpt.get().getLogo().getPublicId() != null && profileOpt.get().getPhoto() != null
+				&& profileOpt.get().getPhoto().getPublicId() != null)
+			return true;
+
+		else
+
+			return false;
+	}
+
 	public ProfileDTO getProfile() throws Exception {
 
-		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
-
+		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
 		ProfileDTO profileDTO = new ProfileDTO();
-		profileDTO.setAddress(profile.getAddress());
-//		profileDTO.setImage(getImage(profile.getLogo().get, profile.getLogo().getExtension()));
-		profileDTO.setLogo(profile.getLogo().getPublicId());
-		profileDTO.setPhoto(profile.getPhoto().getPublicId());
-		profileDTO.setMobile(profile.getUser().getMobile() + "");
-		profileDTO.setEmail(profile.getEmail());
-		profileDTO.setWebsite(profile.getWebsite());
-		profileDTO.setLine1(profile.getLine1());
-		profileDTO.setLine2(profile.getLine2());
-		profileDTO.setLine3(profile.getLine3());
-		profileDTO.setLine4(profile.getLine4());
-		profileDTO.setTemplate(profile.getTemplate() == null ? "Template 1" : profile.getTemplate());
 
+		if (profileOpt.isPresent()) {
+			HeidigiProfile profile = profileOpt.get();
+
+			profileDTO.setAddress(profile.getAddress());
+//		profileDTO.setImage(getImage(profile.getLogo().get, profile.getLogo().getExtension()));
+			if (profile.getLogo() != null && profile.getLogo().getPublicId() != null)
+				profileDTO.setLogo(profile.getLogo().getPublicId());
+			else
+				profileDTO.setLogo("hu8doewfg7syktb1xo8l");
+			if (profile.getPhoto() != null && profile.getPhoto().getPublicId() != null)
+				profileDTO.setPhoto(profile.getPhoto().getPublicId());
+			else
+				profileDTO.setPhoto("hu8doewfg7syktb1xo8l");
+			profileDTO.setMobile(profile.getUser().getMobile() + "");
+			profileDTO.setEmail(profile.getEmail());
+			profileDTO.setWebsite(profile.getWebsite());
+			profileDTO.setLine1(profile.getLine1());
+			profileDTO.setLine2(profile.getLine2());
+			profileDTO.setLine3(profile.getLine3());
+			profileDTO.setLine4(profile.getLine4());
+			profileDTO.setTemplate(profile.getTemplate() == null ? "Template 1" : profile.getTemplate());
+		} else {
+
+			profileDTO.setLogo("hu8doewfg7syktb1xo8l");
+			profileDTO.setPhoto("hu8doewfg7syktb1xo8l");
+			profileDTO.setTemplate("Template 1");
+		}
 		return profileDTO;
 	}
 
@@ -312,7 +345,7 @@ public class HeidigiService {
 	}
 
 	public String getImageUrl(String image, Boolean template) throws Exception {
-		
+
 		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
 		String logoId = profile.getLogo().getPublicId();
 
@@ -408,18 +441,17 @@ public class HeidigiService {
 	public String getImage(String image) {
 		return "https://res.cloudinary.com/hwlyozehf/image/upload/" + image + ".jpg";
 
-	}	
-	
+	}
+
 	public String getVideo(String video) {
 		return "https://res.cloudinary.com/hwlyozehf/video/upload/" + video + ".mp4";
 
 	}
 
 	public String getImageUrlTemplate2(String image, Boolean template) throws Exception {
-		
+
 		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
-		
-		
+
 		String logoId = profile.getLogo().getPublicId();
 
 		String address = profile.getAddress();
@@ -541,7 +573,7 @@ public class HeidigiService {
 	}
 
 	public String downloadVideo(String publicId) throws Exception {
-		
+
 		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
 
 		String logoId = profile.getLogo().getPublicId();
@@ -636,7 +668,7 @@ public class HeidigiService {
 	public String postToFacebookVideo(String video) throws Exception {
 		FacebookDTO fdto = new FacebookDTO();
 		fdto.setAccess_token(
-				"EAAarYZB0lCY8BOZCw7T49kIiDsjZCgJ3nMZCmHJeHNqCMB8xuQgOB7B4elk4jE1fvHEHgjB7kVBBlS7TIfbUVFKn8V5SbI9zDLcTeKTWAgZCZCA1MsVrfAGZBajSeARCXtmXjGPsW3USKXTTHZBTIAm6pf9Gpimxhet9IDkR6sJvzuXp0mmgG2bccdkZB7ZC8tuuVNBoR8ZBtZCYlV3Lp2n07QQn8uR9GlZALMHKljdUvJzwZD");
+				"EAAEEWuiBKkIBOxEAEUteNAXbiXLMRzW3xMysaHp7mL9p6aPVWzQigO2VZBFa4miswz9HNmrdMENfJLpKb1Q0t2rwFTliJrgUq6vbKsEnXAWVS28h7AHWZCFHnFh5uTIfYzhsK7HAFpE9WOA9Pe5CXJObpjrlIcMO4FFd0uKNsosXQJYELgE9ZAmAHL0x1tQVL3Pj9aOYOZCozoJ3twzA");
 		fdto.setMessage("This is Testing");
 
 		String template = getProfile().getTemplate();
@@ -654,7 +686,7 @@ public class HeidigiService {
 		fdto.setFile_url(videoUrl);
 
 		String result = new RestTemplate()
-				.postForEntity("https://graph-video.facebook.com/v18.0/178235032042634/videos", fdto, String.class)
+				.postForEntity("https://graph-video.facebook.com/v18.0/145448711978153/videos", fdto, String.class)
 				.getBody();
 
 		System.out.println(result);
@@ -666,7 +698,7 @@ public class HeidigiService {
 
 		FacebookDTO fdto = new FacebookDTO();
 		fdto.setAccess_token(
-				"EAAarYZB0lCY8BOZCw7T49kIiDsjZCgJ3nMZCmHJeHNqCMB8xuQgOB7B4elk4jE1fvHEHgjB7kVBBlS7TIfbUVFKn8V5SbI9zDLcTeKTWAgZCZCA1MsVrfAGZBajSeARCXtmXjGPsW3USKXTTHZBTIAm6pf9Gpimxhet9IDkR6sJvzuXp0mmgG2bccdkZB7ZC8tuuVNBoR8ZBtZCYlV3Lp2n07QQn8uR9GlZALMHKljdUvJzwZD");
+				"EAAEEWuiBKkIBOxEAEUteNAXbiXLMRzW3xMysaHp7mL9p6aPVWzQigO2VZBFa4miswz9HNmrdMENfJLpKb1Q0t2rwFTliJrgUq6vbKsEnXAWVS28h7AHWZCFHnFh5uTIfYzhsK7HAFpE9WOA9Pe5CXJObpjrlIcMO4FFd0uKNsosXQJYELgE9ZAmAHL0x1tQVL3Pj9aOYOZCozoJ3twzA");
 		fdto.setMessage("This is Testing");
 
 		String template = getProfile().getTemplate();
@@ -683,7 +715,7 @@ public class HeidigiService {
 		fdto.setUrl(imageUrl);
 
 		String result = new RestTemplate()
-				.postForEntity("https://graph.facebook.com/v18.0/178235032042634/photos", fdto, String.class).getBody();
+				.postForEntity("https://graph.facebook.com/v18.0/145448711978153/photos", fdto, String.class).getBody();
 
 		System.out.println(result);
 

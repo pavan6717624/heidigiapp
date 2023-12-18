@@ -210,6 +210,12 @@ public class HeidigiController {
 	public String uploadLogo(@RequestParam("file") MultipartFile file) throws Exception {
 		return service.uploadLogo(file);
 	}
+	
+	@RequestMapping(value = "checkProfile")
+
+	public Boolean checkProfile() throws Exception {
+		return service.checkProfile();
+	}
 
 	@RequestMapping(value = "uploadImage")
 	public String uploadImage(@RequestParam("file") MultipartFile file,@RequestParam("category") String category, @RequestParam("subCategory") String subCategory) throws Exception {
