@@ -428,9 +428,11 @@ public class HeidigiService {
 				.overlay(new TextLayer().fontFamily("montserrat").fontSize(16).textAlign("center").text(address))
 				.gravity("south_west").x(750).y(50).color("black").chain()
 
-//		).signed(true).type("authenticated").imageTag(image + ".jpg");
+		).signed(true).type("authenticated").imageTag(image + ".jpg");
+				
+				
 
-		).imageTag(image + ".jpg");
+//		).imageTag(image + ".jpg");
 		imageUrl = imageUrl.substring(10, imageUrl.length() - 3);
 
 		System.out.println(imageUrl);
@@ -668,7 +670,7 @@ public class HeidigiService {
 	public String postToFacebookVideo(String video) throws Exception {
 		FacebookDTO fdto = new FacebookDTO();
 		fdto.setAccess_token(
-				"EAAEEWuiBKkIBOxEAEUteNAXbiXLMRzW3xMysaHp7mL9p6aPVWzQigO2VZBFa4miswz9HNmrdMENfJLpKb1Q0t2rwFTliJrgUq6vbKsEnXAWVS28h7AHWZCFHnFh5uTIfYzhsK7HAFpE9WOA9Pe5CXJObpjrlIcMO4FFd0uKNsosXQJYELgE9ZAmAHL0x1tQVL3Pj9aOYOZCozoJ3twzA");
+				"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
 		fdto.setMessage("This is Testing");
 
 		String template = getProfile().getTemplate();
@@ -698,7 +700,7 @@ public class HeidigiService {
 
 		FacebookDTO fdto = new FacebookDTO();
 		fdto.setAccess_token(
-				"EAAEEWuiBKkIBOxEAEUteNAXbiXLMRzW3xMysaHp7mL9p6aPVWzQigO2VZBFa4miswz9HNmrdMENfJLpKb1Q0t2rwFTliJrgUq6vbKsEnXAWVS28h7AHWZCFHnFh5uTIfYzhsK7HAFpE9WOA9Pe5CXJObpjrlIcMO4FFd0uKNsosXQJYELgE9ZAmAHL0x1tQVL3Pj9aOYOZCozoJ3twzA");
+				"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
 		fdto.setMessage("This is Testing");
 
 		String template = getProfile().getTemplate();
