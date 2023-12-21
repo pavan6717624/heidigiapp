@@ -272,14 +272,14 @@ public class HeidigiService {
 
 	public Boolean checkProfile() throws Exception {
 		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
-		if (profileOpt.isPresent() && profileOpt.get().getAddress().trim().length() != 0
+		if ((profileOpt.isPresent() && profileOpt.get().getAddress().trim().length() != 0
 				&& profileOpt.get().getAddress().trim().length() != 0
 				&& profileOpt.get().getLine1().trim().length() != 0 && profileOpt.get().getLine2().trim().length() != 0
 				&& profileOpt.get().getLine3().trim().length() != 0 && profileOpt.get().getLine4().trim().length() != 0
 				&& profileOpt.get().getEmail().trim().length() != 0
 				&& profileOpt.get().getWebsite().trim().length() != 0 && profileOpt.get().getLogo() != null
 				&& profileOpt.get().getLogo().getPublicId() != null && profileOpt.get().getPhoto() != null
-				&& profileOpt.get().getPhoto().getPublicId() != null)
+				&& profileOpt.get().getPhoto().getPublicId() != null) || getRole().equals("Designer"))
 			return true;
 
 		else
