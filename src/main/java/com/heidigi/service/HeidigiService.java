@@ -70,8 +70,8 @@ public class HeidigiService {
 	@Autowired
 	HeidigiProfileRepository profileRepository;
 
-	public static Cloudinary cloudinary1 = new Cloudinary(ObjectUtils.asMap("cloud_name", "hjfdpue35", "api_key",
-			"649851651271891", "api_secret", "Ks0OjaQ5Z6chKMfKS3d0bK16vZI"));
+	public static Cloudinary cloudinary1 = new Cloudinary(ObjectUtils.asMap("cloud_name", "hwlyozehf", "api_key",
+			"453395666963287", "api_secret", "Q-kgBVQlRlGtdccq-ATYRFSoR8s"));
 
 	public static Cloudinary cloudinary2 = new Cloudinary(ObjectUtils.asMap("cloud_name", "hu4jsyyt8", "api_key",
 			"491845868955893", "api_secret", "oYgotm7eQgCcLzffOoo7oHPJ874"));
@@ -428,11 +428,11 @@ public class HeidigiService {
 				.overlay(new TextLayer().fontFamily("montserrat").fontSize(16).textAlign("center").text(address))
 				.gravity("south_west").x(750).y(50).color("black").chain()
 
-		).signed(true).type("authenticated").imageTag(image + ".jpg");
-				
+//		).signed(true).type("authenticated").imageTag(image + ".jpg");
+//				
 				
 
-//		).imageTag(image + ".jpg");
+		).imageTag(image + ".jpg");
 		imageUrl = imageUrl.substring(10, imageUrl.length() - 3);
 
 		System.out.println(imageUrl);
@@ -441,12 +441,12 @@ public class HeidigiService {
 	}
 
 	public String getImage(String image) {
-		return "https://res.cloudinary.com/hjfdpue35/image/upload/" + image + ".jpg";
+		return "https://res.cloudinary.com/hwlyozehf/image/upload/" + image + ".jpg";
 
 	}
 
 	public String getVideo(String video) {
-		return "https://res.cloudinary.com/hjfdpue35/video/upload/" + video + ".mp4";
+		return "https://res.cloudinary.com/hwlyozehf/video/upload/" + video + ".mp4";
 
 	}
 
@@ -487,9 +487,9 @@ public class HeidigiService {
 		return imageUrl;
 	}
 
-	public String downloadImage(String image) throws Exception {
+	public String downloadImage(String image, String template) throws Exception {
 
-		String template = getProfile().getTemplate();
+		
 
 		String imageUrl = "";
 
@@ -508,7 +508,7 @@ public class HeidigiService {
 
 		try {
 
-			String url = "https://res.cloudinary.com/hjfdpue35/image/upload/" + id + ".jpg";
+			String url = "https://res.cloudinary.com/hwlyozehf/image/upload/" + id + ".jpg";
 			byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
 
 			String image = new String(Base64.encodeBase64(imageBytes), "UTF-8");
@@ -742,5 +742,7 @@ public class HeidigiService {
 		return getProfile();
 
 	}
+
+	
 
 }

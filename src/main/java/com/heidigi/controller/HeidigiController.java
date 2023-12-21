@@ -1,6 +1,7 @@
 package com.heidigi.controller;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -233,11 +234,12 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "downloadImage")
-	public String downloadImage(@RequestParam("image") String image) throws Exception {
+	public String downloadImage(@RequestParam("image") String image,@RequestParam("template") String template) throws Exception {
 
-		return service.downloadImage(image);
+		return service.downloadImage(image,template);
 	}
-
+	
+	
 	@RequestMapping(value = "downloadVideo")
 	public String downloadVideo() throws Exception {
 
@@ -269,6 +271,15 @@ public class HeidigiController {
 		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(service.getImage(tag))).build();
 	}
 	
+	@RequestMapping(value = "showTemplate")
+	public List<Object> showTemplate( @RequestParam("image") String image) throws Exception {
+
+		List<Object> templates=new ArrayList<>();
+		templates.add(service.downloadImage(image, "Template 1"));
+		templates.add(service.downloadImage(image, "Template 2"));
+		
+		return templates;
+	}
 
 	
 	@RequestMapping(value = "getSrc")
