@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
@@ -70,37 +73,35 @@ public class HeidigiController {
 		}
 		// System.out.println("exited in authenticate sub function...");
 	}
-	
+
 	@RequestMapping(value = "/getLoginDetails")
 	public LoginStatusDTO getLoginDetails() throws Exception {
-		
-		LoginStatusDTO loginStatus=new LoginStatusDTO();
-		
-		 if(SecurityContextHolder.getContext().getAuthentication() == null)
-		 {
-			 loginStatus.setUserId("");
-				
-				loginStatus.setLoginStatus(false);
-					
-				loginStatus.setUserType("");
-		 }
-		 else
-		 {
-		
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
-		loginStatus.setUserId(userDetails.getUsername());
-		
-		loginStatus.setLoginStatus(true);
-		
-		System.out.println(Long.valueOf(userDetails.getUsername()));
-			
-		loginStatus.setUserType(userDetails.getAuthorities().toArray()[0].toString());
-		 };
-	
+
+		LoginStatusDTO loginStatus = new LoginStatusDTO();
+
+		if (SecurityContextHolder.getContext().getAuthentication() == null) {
+			loginStatus.setUserId("");
+
+			loginStatus.setLoginStatus(false);
+
+			loginStatus.setUserType("");
+		} else {
+
+			UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+
+			loginStatus.setUserId(userDetails.getUsername());
+
+			loginStatus.setLoginStatus(true);
+
+			System.out.println(Long.valueOf(userDetails.getUsername()));
+
+			loginStatus.setUserType(userDetails.getAuthorities().toArray()[0].toString());
+		}
+		;
+
 		return loginStatus;
 	}
-	
 
 	@RequestMapping(value = "login")
 	public LoginStatusDTO login(@RequestBody HeidigiLoginDTO login) {
@@ -126,8 +127,6 @@ public class HeidigiController {
 				loginStatus.setLoginStatus(true);
 
 				loginStatus.setJwt(token);
-
-				
 
 				loginStatus.setUserType(userDetails.getAuthorities().toArray()[0].toString());
 			} else {
@@ -158,7 +157,6 @@ public class HeidigiController {
 	public List<ImageDTO> getImages() {
 		return service.getImages();
 	}
-	
 
 	@RequestMapping(value = "getVideos")
 	public List<String> getVideos() {
@@ -189,8 +187,8 @@ public class HeidigiController {
 
 	@RequestMapping(value = "getProfile")
 	public ProfileDTO getProfile() throws Exception {
-		 UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		 System.out.println("username :: "+userDetails.getUsername());
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		System.out.println("username :: " + userDetails.getUsername());
 		return service.getProfile();
 	}
 
@@ -211,7 +209,7 @@ public class HeidigiController {
 	public String uploadLogo(@RequestParam("file") MultipartFile file) throws Exception {
 		return service.uploadLogo(file);
 	}
-	
+
 	@RequestMapping(value = "checkProfile")
 
 	public Boolean checkProfile() throws Exception {
@@ -219,8 +217,9 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "uploadImage")
-	public String uploadImage(@RequestParam("file") MultipartFile file,@RequestParam("category") String category, @RequestParam("subCategory") String subCategory) throws Exception {
-		return service.uploadImage(file,category,subCategory);
+	public String uploadImage(@RequestParam("file") MultipartFile file, @RequestParam("category") String category,
+			@RequestParam("subCategory") String subCategory) throws Exception {
+		return service.uploadImage(file, category, subCategory);
 	}
 
 	@RequestMapping(value = "uploadVideo")
@@ -234,22 +233,37 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "downloadImage")
-	public String downloadImage(@RequestParam("image") String image,@RequestParam("template") String template) throws Exception {
+	public String downloadImage(@RequestParam("image") String image, @RequestParam("template") String template)
+			throws Exception {
 
-		return service.downloadImage(image,template);
+		return service.downloadImage(image, template);
 	}
-	
-	
-	@RequestMapping(value = "downloadVideo")
-	public String downloadVideo() throws Exception {
 
-		return service.downloadVideo();
+	@RequestMapping(value = "downloadVideo")
+	public byte[] downloadVideo(@RequestParam("video") String video, HttpServletResponse response) throws Exception {
+
+		response.setHeader("Content-Disposition", "attachment; filename=demo.mp4");
+
+//		URLConnection conn = new URL(service.downloadVideo(video)).openConnection();
+//        conn.setConnectTimeout(5000);
+//        conn.setReadTimeout(5000);
+//        conn.connect(); 
+//
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        IOUtils.copy(conn.getInputStream(), baos);
+		
+		byte[] responseSend = new RestTemplate().exchange(service.downloadVideo(video), HttpMethod.GET, null, byte[].class).getBody();
+
+
+        return responseSend;
+
+		
 	}
 
 	@RequestMapping(value = "postToFacebookImage")
-	public String postToFacebookImage(@RequestParam("image") String image) throws Exception {
+	public String postToFacebookImage(@RequestParam("image") String image, @RequestParam("template") String template) throws Exception {
 
-		return service.postToFacebookImage(image);
+		return service.postToFacebookImage(image, template);
 	}
 
 	@RequestMapping(value = "postToFacebookVideo")
@@ -266,27 +280,26 @@ public class HeidigiController {
 
 	@RequestMapping(value = "image/{tag}")
 	public ResponseEntity<Object> image(@PathVariable String tag, HttpServletRequest request) throws Exception {
-		
-	System.out.println(request.getHeader("Referer"));
+
+		System.out.println(request.getHeader("Referer"));
 		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(service.getImage(tag))).build();
 	}
-	
-	@RequestMapping(value = "showTemplate")
-	public List<Object> showTemplate( @RequestParam("image") String image) throws Exception {
 
-		List<Object> templates=new ArrayList<>();
+	@RequestMapping(value = "showTemplate")
+	public List<Object> showTemplate(@RequestParam("image") String image) throws Exception {
+
+		List<Object> templates = new ArrayList<>();
+		templates.add("{\"img\":\"" +image+"\"}");
 		templates.add(service.downloadImage(image, "Template 1"));
 		templates.add(service.downloadImage(image, "Template 2"));
-		
+
 		return templates;
 	}
 
-	
 	@RequestMapping(value = "getSrc")
 	public String getSrc(@RequestParam("src") String src) throws Exception {
 
 		return service.getImage(src);
 	}
-
 
 }

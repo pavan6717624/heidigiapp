@@ -654,7 +654,7 @@ public class HeidigiService {
 
 				// Text: Address
 				.overlay(new TextLayer().fontFamily("montserrat").fontSize(16).textAlign("center").text(address))
-				.gravity("south_west").x(750).y(50).color("black").chain().height(500).width(500).chain()
+				.gravity("south_west").x(750).y(50).color("black").chain()
 
 		).videoTag(publicId + ".mp4");
 
@@ -696,14 +696,14 @@ public class HeidigiService {
 		return "";
 	}
 
-	public String postToFacebookImage(String image) throws Exception {
+	public String postToFacebookImage(String image, String template) throws Exception {
 
 		FacebookDTO fdto = new FacebookDTO();
 		fdto.setAccess_token(
 				"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
 		fdto.setMessage("This is Testing");
 
-		String template = getProfile().getTemplate();
+		
 
 		String imageUrl = "";
 
@@ -712,7 +712,6 @@ public class HeidigiService {
 		else
 			imageUrl = getImageUrlTemplate2(image, false);
 
-		System.out.println("Facebook :: " + imageUrl);
 
 		fdto.setUrl(imageUrl);
 
