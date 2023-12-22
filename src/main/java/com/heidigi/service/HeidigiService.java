@@ -109,7 +109,7 @@ public class HeidigiService {
 		return (userDetails.getAuthorities().toArray()[0].toString());
 	}
 
-	public String uploadVideo(MultipartFile file,String category, String subCategory) throws Exception {
+	public String uploadVideo(MultipartFile file, String category, String subCategory) throws Exception {
 
 		System.out.println("In video upload " + new Date());
 		File convFile = new File(UUID.randomUUID() + "" + file.getOriginalFilename());
@@ -268,7 +268,8 @@ public class HeidigiService {
 
 	public List<ImageDTO> getVideos() {
 
-		return heidigiVideoRepository.getVideos(getUserName(), getRole()).stream().map(o -> new ImageDTO(o)).collect(Collectors.toList());
+		return heidigiVideoRepository.getVideos(getUserName(), getRole()).stream().map(o -> new ImageDTO(o))
+				.collect(Collectors.toList());
 
 	}
 
@@ -432,7 +433,6 @@ public class HeidigiService {
 
 //		).signed(true).type("authenticated").imageTag(image + ".jpg");
 //				
-				
 
 		).imageTag(image + ".jpg");
 		imageUrl = imageUrl.substring(10, imageUrl.length() - 3);
@@ -490,8 +490,6 @@ public class HeidigiService {
 	}
 
 	public String downloadImage(String image, String template) throws Exception {
-
-		
 
 		String imageUrl = "";
 
@@ -572,8 +570,12 @@ public class HeidigiService {
 		return getProfile();
 	}
 
-	public String downloadVideo() throws Exception {
-		return downloadVideo("ed8hxcfbswvlakkybuvd");
+	public String downloadVideo(String publicId, String template) throws Exception {
+		if (template.equals("Template 1"))
+			return downloadVideo(publicId);
+		else
+			return downloadVideoTemplate2(publicId);
+
 	}
 
 	public String downloadVideo(String publicId) throws Exception {
@@ -669,6 +671,42 @@ public class HeidigiService {
 
 	}
 
+	public String downloadVideoTemplate2(String image) throws Exception {
+
+		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
+
+		String logoId = profile.getLogo().getPublicId();
+
+		String address = profile.getAddress();
+		String website = profile.getWebsite();
+
+		System.out.println(logoId);
+
+		Transformation transformation = new Transformation();
+
+		String videoUrl = cloudinary1.url().transformation(transformation.height(1080).width(1080).crop("scale").chain()
+
+				// logo
+				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_east")
+				.opacity(100).radius(30).width(0.15).x(10).y(10).crop("scale").chain()
+
+				// 100% bottom background
+				.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain().flags("layer_apply", "relative")
+				.gravity("south").width(1).height(0.04).y(30).opacity(50).chain()
+
+				.overlay(new TextLayer().fontFamily("montserrat").fontSize(25).textAlign("center")
+						.text("☎ 9449 840 144 | ☸ " + website + " | ⚲ " + address))
+				.flags("layer_apply", "relative").gravity("south").y(35).color("white").chain()
+
+		).videoTag(image + ".jpg");
+
+		List<String> urls = Arrays.asList(videoUrl.split("<source src='"));
+
+		return urls.stream().filter(o -> o.indexOf(".mp4") != -1).map(o -> o.substring(0, o.indexOf(".mp4") + 4))
+				.collect(Collectors.toList()).get(0);
+
+	}
+
 	public String postToFacebookVideo(String video) throws Exception {
 		FacebookDTO fdto = new FacebookDTO();
 		fdto.setAccess_token(
@@ -705,15 +743,12 @@ public class HeidigiService {
 				"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
 		fdto.setMessage("This is Testing");
 
-		
-
 		String imageUrl = "";
 
 		if (template.equals("Template 1"))
 			imageUrl = getImageUrl(image, false);
 		else
 			imageUrl = getImageUrlTemplate2(image, false);
-
 
 		fdto.setUrl(imageUrl);
 
@@ -743,7 +778,5 @@ public class HeidigiService {
 		return getProfile();
 
 	}
-
-	
 
 }

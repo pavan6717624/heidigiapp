@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -241,9 +242,9 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "downloadVideo")
-	public byte[] downloadVideo(@RequestParam("video") String video, HttpServletResponse response) throws Exception {
+	public String downloadVideo(@RequestParam("video") String video) throws Exception {
 
-		response.setHeader("Content-Disposition", "attachment; filename=demo.mp4");
+		//response.setHeader("Content-Disposition", "attachment; filename=demo.mp4");
 
 //		URLConnection conn = new URL(service.downloadVideo(video)).openConnection();
 //        conn.setConnectTimeout(5000);
@@ -253,12 +254,13 @@ public class HeidigiController {
 //        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //        IOUtils.copy(conn.getInputStream(), baos);
 		
-		byte[] responseSend = new RestTemplate().exchange(service.downloadVideo(video), HttpMethod.GET, null, byte[].class).getBody();
+		byte[] responseSend = new RestTemplate().getForObject(service.downloadVideo(video), byte[].class);
 
 
-        return responseSend;
+        String videoSend= new String(Base64.encodeBase64(responseSend), "UTF-8");
+        
+        return "{\"video\":\"" + "data:video/mp4;base64,," + videoSend + "\"}";
 
-		
 	}
 
 	@RequestMapping(value = "postToFacebookImage")
@@ -293,6 +295,17 @@ public class HeidigiController {
 		templates.add("{\"img\":\"" +image+"\"}");
 		templates.add(service.downloadImage(image, "Template 1"));
 		templates.add(service.downloadImage(image, "Template 2"));
+
+		return templates;
+	}
+	
+	@RequestMapping(value = "showTemplateVideo")
+	public List<Object> showTemplateVideo(@RequestParam("video") String video) throws Exception {
+
+		List<Object> templates = new ArrayList<>();
+		templates.add("{\"video\":\"" +video+"\"}");
+		templates.add(service.downloadVideo(video, "Template 1"));
+		templates.add(service.downloadVideo(video, "Template 2"));
 
 		return templates;
 	}
