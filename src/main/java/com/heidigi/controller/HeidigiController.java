@@ -159,7 +159,7 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "getVideos")
-	public List<String> getVideos() {
+	public List<ImageDTO> getVideos() {
 		return service.getVideos();
 	}
 
@@ -223,8 +223,9 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "uploadVideo")
-	public String uploadVideo(@RequestParam("file") MultipartFile file) throws Exception {
-		return service.uploadVideo(file);
+	public String uploadVideo(@RequestParam("file") MultipartFile file, @RequestParam("category") String category,
+			@RequestParam("subCategory") String subCategory) throws Exception {
+		return service.uploadVideo(file, category, subCategory);
 	}
 
 	@RequestMapping(value = "uploadPhoto")

@@ -109,7 +109,7 @@ public class HeidigiService {
 		return (userDetails.getAuthorities().toArray()[0].toString());
 	}
 
-	public String uploadVideo(MultipartFile file) throws Exception {
+	public String uploadVideo(MultipartFile file,String category, String subCategory) throws Exception {
 
 		System.out.println("In video upload " + new Date());
 		File convFile = new File(UUID.randomUUID() + "" + file.getOriginalFilename());
@@ -130,6 +130,8 @@ public class HeidigiService {
 		image.setPublicId(uploadResult1.get("public_id") + "");
 
 		image.setResponse(uploadResult1.toString());
+		image.setCategory(category);
+		image.setSubcategory(subCategory);
 
 		image.setUser(userRepository.findByMobile(getUserName()).get());
 
@@ -137,7 +139,7 @@ public class HeidigiService {
 
 		System.out.println("In video saving " + new Date());
 
-		return "";
+		return "{\"result\":\"success\"}";
 	}
 
 	public HeidigiImage uploadImage(MultipartFile file, String category, String subCategory, String type)
@@ -264,9 +266,9 @@ public class HeidigiService {
 		return images.stream().map(o -> new ImageDTO(o)).collect(Collectors.toList());
 	}
 
-	public List<String> getVideos() {
+	public List<ImageDTO> getVideos() {
 
-		return heidigiVideoRepository.findAll().stream().map(o -> o.getPublicId()).collect(Collectors.toList());
+		return heidigiVideoRepository.getVideos(getUserName(), getRole()).stream().map(o -> new ImageDTO(o)).collect(Collectors.toList());
 
 	}
 
