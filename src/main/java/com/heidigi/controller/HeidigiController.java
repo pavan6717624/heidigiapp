@@ -8,7 +8,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -242,9 +241,9 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "downloadVideo")
-	public String downloadVideo(@RequestParam("video") String video) throws Exception {
+	public byte[] downloadVideo(@RequestParam("video") String video, HttpServletResponse response) throws Exception {
 
-		//response.setHeader("Content-Disposition", "attachment; filename=demo.mp4");
+		response.setHeader("Content-Disposition", "attachment; filename=demo.mp4");
 
 //		URLConnection conn = new URL(service.downloadVideo(video)).openConnection();
 //        conn.setConnectTimeout(5000);
@@ -257,10 +256,9 @@ public class HeidigiController {
 		byte[] responseSend = new RestTemplate().getForObject(service.downloadVideo(video), byte[].class);
 
 
-        String videoSend= new String(Base64.encodeBase64(responseSend), "UTF-8");
-        
-        return "{\"video\":\"" + "data:video/mp4;base64,," + videoSend + "\"}";
+        return responseSend;
 
+		
 	}
 
 	@RequestMapping(value = "postToFacebookImage")
