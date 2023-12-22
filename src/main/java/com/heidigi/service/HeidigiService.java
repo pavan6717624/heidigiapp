@@ -671,7 +671,7 @@ public class HeidigiService {
 
 	}
 
-	public String downloadVideoTemplate2(String image) throws Exception {
+	public String downloadVideoTemplate2(String video) throws Exception {
 
 		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
 
@@ -692,13 +692,13 @@ public class HeidigiService {
 
 				// 100% bottom background
 				.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain().flags("layer_apply", "relative")
-				.gravity("south").width(1).height(0.04).y(30).opacity(50).chain()
+				.gravity("south").width(1).height(0.04).y(30).opacity(100).chain()
 
 				.overlay(new TextLayer().fontFamily("montserrat").fontSize(25).textAlign("center")
 						.text("☎ 9449 840 144 | ☸ " + website + " | ⚲ " + address))
 				.flags("layer_apply", "relative").gravity("south").y(35).color("white").chain()
 
-		).videoTag(image + ".jpg");
+		).videoTag(video + ".mp4");
 
 		List<String> urls = Arrays.asList(videoUrl.split("<source src='"));
 
@@ -721,7 +721,7 @@ public class HeidigiService {
 //		else
 //			imageUrl = getImageUrlTemplate2(image, false);
 
-		fdto.setFile_url(videoUrl);
+//		fdto.setFile_url(video);
 
 		System.out.println("Facebook :: " + videoUrl + "\n" + fdto);
 

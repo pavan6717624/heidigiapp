@@ -241,19 +241,15 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "downloadVideo")
-	public byte[] downloadVideo(@RequestParam("video") String video, HttpServletResponse response) throws Exception {
+	public byte[] downloadVideo(@RequestParam("video") String video, @RequestParam("template") String template, HttpServletResponse response) throws Exception {
 
 		response.setHeader("Content-Disposition", "attachment; filename=demo.mp4");
-
-//		URLConnection conn = new URL(service.downloadVideo(video)).openConnection();
-//        conn.setConnectTimeout(5000);
-//        conn.setReadTimeout(5000);
-//        conn.connect(); 
-//
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        IOUtils.copy(conn.getInputStream(), baos);
+		String url=service.downloadVideo(video, template);
 		
-		byte[] responseSend = new RestTemplate().getForObject(service.downloadVideo(video), byte[].class);
+		System.out.println(url);
+
+		
+		byte[] responseSend = new RestTemplate().getForObject(url, byte[].class);
 
 
         return responseSend;
