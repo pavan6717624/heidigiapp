@@ -766,7 +766,7 @@ public class HeidigiService {
 		fos.write(video.getBytes());
 		fos.close();
 
-		String videoUrl = "https://heidigi-app-38b2318c83b0.herokuapp.com:8081/images/"+name;
+		String videoUrl = "https://heidigi-app-38b2318c83b0.herokuapp.com/images/"+name;
 //		if (template.equals("Template 1"))
 //			imageUrl = getImageUrl(image, false);
 //		else
