@@ -6,6 +6,7 @@ import lombok.Data;
 public class FacebookDTO {
 	
 	String access_token,url,message,file_url;
+	String source,src;
 	
 
 }

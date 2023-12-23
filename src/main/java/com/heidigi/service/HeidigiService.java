@@ -40,6 +40,7 @@ import com.heidigi.domain.HeidigiVideo;
 import com.heidigi.model.FacebookDTO;
 import com.heidigi.model.HeidigiSignupDTO;
 import com.heidigi.model.ImageDTO;
+import com.heidigi.model.LoginStatusDTO;
 import com.heidigi.model.ProfileDTO;
 import com.heidigi.repository.HeidigiImageRepository;
 import com.heidigi.repository.HeidigiProfileRepository;
@@ -78,20 +79,34 @@ public class HeidigiService {
 
 	public static Cloudinary cloudinary[] = { cloudinary1, cloudinary2 };
 
-	public Boolean signup(HeidigiSignupDTO signup) {
+	public LoginStatusDTO signup(HeidigiSignupDTO signup) {
 
-		HeidigiUser user = new HeidigiUser();
-		user.setEmail(signup.getEmail());
-		user.setMobile(Long.valueOf(signup.getMobile()));
-		user.setName(signup.getName());
-		user.setPassword(signup.getPassword());
-		user.setMessage("Customer Signup");
-		user.setRole(
-				roleRepository.findByRoleName(signup.getRole().equals("Business") ? "Customer" : "Designer").get());
+		LoginStatusDTO loginStatus = new LoginStatusDTO();
 
-		userRepository.save(user);
+		Optional<HeidigiUser> userOpt = userRepository.findByMobile(Long.valueOf(signup.getMobile()));
+		;
 
-		return userRepository.findByMobileAndPassword(user.getMobile(), user.getPassword()).isPresent();
+		if (!userOpt.isPresent()) {
+			HeidigiUser user = new HeidigiUser();
+			user.setEmail(signup.getEmail());
+			user.setMobile(Long.valueOf(signup.getMobile()));
+			user.setName(signup.getName());
+			user.setPassword(signup.getPassword());
+			user.setMessage("Customer Signup");
+			user.setRole(
+					roleRepository.findByRoleName(signup.getRole().equals("Business") ? "Customer" : "Designer").get());
+
+			userRepository.save(user);
+			loginStatus.setLoginStatus(
+					userRepository.findByMobileAndPassword(user.getMobile(), user.getPassword()).isPresent());
+			loginStatus.setMessage("Login Successful");
+		} else {
+			loginStatus.setLoginStatus(false);
+			loginStatus.setMessage("Mobile number already Exists...");
+		}
+
+		return loginStatus;
+
 	}
 
 	public String uploadImage(MultipartFile file, String category, String subCategory) throws Exception {

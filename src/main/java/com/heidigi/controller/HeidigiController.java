@@ -149,7 +149,7 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "signup")
-	public Boolean signup(@RequestBody HeidigiSignupDTO signup) {
+	public LoginStatusDTO signup(@RequestBody HeidigiSignupDTO signup) {
 		return service.signup(signup);
 	}
 
