@@ -269,12 +269,7 @@ public class HeidigiController {
 		return service.postToFacebookVideo(video);
 	}
 	
-	@RequestMapping(value = "postToFacebookVideoFile")
-	public String postToFacebookVideoFile(@RequestParam("video") MultipartFile video) throws Exception {
-
-		return service.postToFacebookVideoFile(video);
-	}
-
+	
 	@RequestMapping(value = "video/{tag}")
 	public ResponseEntity<Object> video(@PathVariable String tag) throws Exception {
 

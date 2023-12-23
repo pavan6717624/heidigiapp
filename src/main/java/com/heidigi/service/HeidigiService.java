@@ -751,41 +751,7 @@ public class HeidigiService {
 		return "";
 	}
 	
-	public String postToFacebookVideoFile(MultipartFile video) throws Exception {
-		FacebookDTO fdto = new FacebookDTO();
-		fdto.setAccess_token(
-				"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
-		fdto.setMessage("This is Testing");
 
-		String template = getProfile().getTemplate();
-		
-		String name=UUID.randomUUID() + "" + video.getOriginalFilename();
-		
-		File convFile = new File("src/main/resources/static/images/"+name);
-		FileOutputStream fos = new FileOutputStream(convFile);
-		fos.write(video.getBytes());
-		fos.close();
-
-		String videoUrl = "https://heidigi-app-38b2318c83b0.herokuapp.com/images/"+name;
-//		if (template.equals("Template 1"))
-//			imageUrl = getImageUrl(image, false);
-//		else
-//			imageUrl = getImageUrlTemplate2(image, false);
-
-//		fdto.setFile_url(video);
-
-		System.out.println("Facebook :: " + videoUrl + "\n" + fdto);
-
-		fdto.setFile_url(videoUrl);
-
-		String result = new RestTemplate()
-				.postForEntity("https://graph-video.facebook.com/v18.0/145448711978153/videos", fdto, String.class)
-				.getBody();
-
-		System.out.println(result);
-
-		return "";
-	}
 
 	public String postToFacebookImage(String image, String template) throws Exception {
 
