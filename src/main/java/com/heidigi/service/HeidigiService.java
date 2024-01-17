@@ -724,8 +724,12 @@ public class HeidigiService {
 
 	public String postToFacebookVideo(String video) throws Exception {
 		FacebookDTO fdto = new FacebookDTO();
+		// fdto.setAccess_token(
+		// 		"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
+		
 		fdto.setAccess_token(
-				"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
+				"EAAarYZB0lCY8BOyo99frbrObxAW9QJn4Hgh5T4x5IAnS5D9rmJ2DLn4o2wF4so9zYPgrpiFiA152o0ZC6rbb5V7dRnvGpJ2Fm10y8F3JJb8pmz9zuxFMpyWP1H9ZClnZBchvcqsNAMD341dTuyoyaFFBR9CV0HJIQTzcWG3UsDplBH1Dw2Ib9XAyyUhZBTawfqXxZCugjawOGN4l5cZAwhkWhSXhIbtPbILPF4ZD");
+		
 		fdto.setMessage("This is Testing");
 
 		String template = getProfile().getTemplate();
@@ -756,8 +760,13 @@ public class HeidigiService {
 	public String postToFacebookImage(String image, String template) throws Exception {
 
 		FacebookDTO fdto = new FacebookDTO();
+		// fdto.setAccess_token(
+		// 		"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
+		
 		fdto.setAccess_token(
-				"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
+				"EAAarYZB0lCY8BOyo99frbrObxAW9QJn4Hgh5T4x5IAnS5D9rmJ2DLn4o2wF4so9zYPgrpiFiA152o0ZC6rbb5V7dRnvGpJ2Fm10y8F3JJb8pmz9zuxFMpyWP1H9ZClnZBchvcqsNAMD341dTuyoyaFFBR9CV0HJIQTzcWG3UsDplBH1Dw2Ib9XAyyUhZBTawfqXxZCugjawOGN4l5cZAwhkWhSXhIbtPbILPF4ZD");
+		
+		
 		fdto.setMessage("This is Testing");
 
 		String imageUrl = "";
