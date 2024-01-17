@@ -728,7 +728,7 @@ public class HeidigiService {
 		// 		"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
 		
 		fdto.setAccess_token(
-				"EAAarYZB0lCY8BOyo99frbrObxAW9QJn4Hgh5T4x5IAnS5D9rmJ2DLn4o2wF4so9zYPgrpiFiA152o0ZC6rbb5V7dRnvGpJ2Fm10y8F3JJb8pmz9zuxFMpyWP1H9ZClnZBchvcqsNAMD341dTuyoyaFFBR9CV0HJIQTzcWG3UsDplBH1Dw2Ib9XAyyUhZBTawfqXxZCugjawOGN4l5cZAwhkWhSXhIbtPbILPF4ZD");
+				"EAAarYZB0lCY8BOxHzw0gFv5I0y8bZB2Updhw0k84ClC908OYCvgx1sNWlB2pLspchuPgOdUT7L6ZB0bY5gPeNkhO5IldWhIqdSp9M04GabS7itwcfhICm1xiGqYKZBGZA5aYCt8T43VvZBrmP70HRBDIAYoTWwSHYwCRhAvO2LlOOqTMRXy0V0HqiqZCGfqBkpMSBX4TZCA7lZCpKZB7Sc9gQMcQom0RFza46fSOhQTFYZD");
 		
 		fdto.setMessage("This is Testing");
 
@@ -747,7 +747,8 @@ public class HeidigiService {
 		fdto.setFile_url(videoUrl);
 
 		String result = new RestTemplate()
-				.postForEntity("https://graph-video.facebook.com/v18.0/145448711978153/videos", fdto, String.class)
+				// .postForEntity("https://graph-video.facebook.com/v18.0/145448711978153/videos", fdto, String.class) 178235032042634
+			.postForEntity("https://graph-video.facebook.com/v18.0/178235032042634/videos", fdto, String.class) 178235032042634
 				.getBody();
 
 		System.out.println(result);
@@ -764,7 +765,7 @@ public class HeidigiService {
 		// 		"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
 		
 		fdto.setAccess_token(
-				"EAAarYZB0lCY8BOyo99frbrObxAW9QJn4Hgh5T4x5IAnS5D9rmJ2DLn4o2wF4so9zYPgrpiFiA152o0ZC6rbb5V7dRnvGpJ2Fm10y8F3JJb8pmz9zuxFMpyWP1H9ZClnZBchvcqsNAMD341dTuyoyaFFBR9CV0HJIQTzcWG3UsDplBH1Dw2Ib9XAyyUhZBTawfqXxZCugjawOGN4l5cZAwhkWhSXhIbtPbILPF4ZD");
+				"EAAarYZB0lCY8BOxHzw0gFv5I0y8bZB2Updhw0k84ClC908OYCvgx1sNWlB2pLspchuPgOdUT7L6ZB0bY5gPeNkhO5IldWhIqdSp9M04GabS7itwcfhICm1xiGqYKZBGZA5aYCt8T43VvZBrmP70HRBDIAYoTWwSHYwCRhAvO2LlOOqTMRXy0V0HqiqZCGfqBkpMSBX4TZCA7lZCpKZB7Sc9gQMcQom0RFza46fSOhQTFYZD");
 		
 		
 		fdto.setMessage("This is Testing");
@@ -779,7 +780,8 @@ public class HeidigiService {
 		fdto.setUrl(imageUrl);
 
 		String result = new RestTemplate()
-				.postForEntity("https://graph.facebook.com/v18.0/145448711978153/photos", fdto, String.class).getBody();
+				// .postForEntity("https://graph.facebook.com/v18.0/145448711978153/photos", fdto, String.class).getBody(); 178235032042634
+			.postForEntity("https://graph.facebook.com/v18.0/178235032042634/photos", fdto, String.class).getBody(); 178235032042634
 
 		System.out.println(result);
 
