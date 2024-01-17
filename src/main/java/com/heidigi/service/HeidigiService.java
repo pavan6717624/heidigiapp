@@ -748,7 +748,7 @@ public class HeidigiService {
 
 		String result = new RestTemplate()
 				// .postForEntity("https://graph-video.facebook.com/v18.0/145448711978153/videos", fdto, String.class) 178235032042634
-			.postForEntity("https://graph-video.facebook.com/v18.0/178235032042634/videos", fdto, String.class) 178235032042634
+			.postForEntity("https://graph-video.facebook.com/v18.0/178235032042634/videos", fdto, String.class) 
 				.getBody();
 
 		System.out.println(result);
