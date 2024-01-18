@@ -198,6 +198,12 @@ public class HeidigiController {
 		return service.changeTemplate(template);
 	}
 
+	@RequestMapping(value = "checkUrl")
+	public void checkUrl() throws Exception {
+
+		return service.checkUrl();
+	}
+
 	@RequestMapping(value = "getTemplate")
 	public String getTemplate(String template) throws Exception {
 
