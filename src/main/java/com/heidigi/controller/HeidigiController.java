@@ -201,7 +201,7 @@ public class HeidigiController {
 	@RequestMapping(value = "checkUrl")
 	public void checkUrl() throws Exception {
 
-		return service.checkUrl();
+		 service.checkUrl();
 	}
 
 	@RequestMapping(value = "getTemplate")
