@@ -788,7 +788,7 @@ public class HeidigiService {
 		return "";
 	}
 public void checkUrl() throws Exception {
-	String url="https://graph.facebook.com/v18.0/me?access_token=EAAarYZB0lCY8BOx2uCPjvNaA7tZCswZC6OrapVyLloDogKI6YgjqmSXguKUE0XjRdxiRC2URt7iF99Qd2E1wMspteKLBJryxnzZCY8AB3KrkRLTO2HkIXffHIpO0cWsawn58dTZBJjThu1b5q4P3gm5FZAZBAlp10V6lkGR8iovNOZCIiOMDkfUwB2onWrSc86Fw2QGHYKdygaJAS2HhbOq3jR1vzo6IA1o880p9JfAv468ZD&debug=all&fields=id%2Cname%2Caccounts&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
+	String url="https://graph.facebook.com/v18.0/me?access_token=EAAarYZB0lCY8BOx2uCPjvNaA7tZCswZC6OrapVyLloDogKI6YgjqmSXguKUE0XjRdxiRC2URt7iF99Qd2E1wMspteKLBJryxnzZCY8AB3KrkRLTO2HkIXffHIpO0cWsawn58dTZBJjThu1b5q4P3gm5FZAZBAlp10V6lkGR8iovNOZCIiOMDkfUwB2onWrSc86Fw2QGHYKdygaJAS2HhbOq3jR1vzo6IA1o880p9JfAv468ZD&debug=all&fields=id,name,accounts&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
 	System.out.println(restTemplate.getForObject(url, String.class));
 }
 	public ProfileDTO changeTemplate(String template) throws Exception {
