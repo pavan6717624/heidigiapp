@@ -747,7 +747,7 @@ public class HeidigiService {
 		fdto.setFile_url(videoUrl);
 
 		String result = new RestTemplate()
-				 .postForEntity("https://graph-video.facebook.com/v18.0/145448711978153/videos", fdto, String.class) 
+				 .postForEntity("https://graph-video.facebook.com/v18.0/145448711978153/videos", fdto, String.class).getBody();
 //			.postForEntity("https://graph-video.facebook.com/v18.0/178235032042634/videos", fdto, String.class) 
 //				.getBody();
 
