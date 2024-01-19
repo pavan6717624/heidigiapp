@@ -262,7 +262,19 @@ public class HeidigiController {
 
 		return service.postToFacebookImage(image, template);
 	}
+	
+	@RequestMapping(value = "saveFacebookToken")
+	public Boolean saveFacebookToken(@RequestParam("accessToken") String accessToken ) throws Exception {
 
+		return service.saveFacebookToken(accessToken);				
+	}
+
+	@RequestMapping(value = "facebookToken")
+	public Boolean facebookToken() throws Exception {
+
+		return service.facebookToken();				
+	}
+	
 	@RequestMapping(value = "postToFacebookVideo")
 	public String postToFacebookVideo(@RequestParam("video") String video) throws Exception {
 
@@ -282,6 +294,7 @@ public class HeidigiController {
 		System.out.println(request.getHeader("Referer"));
 		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(service.getImage(tag))).build();
 	}
+	
 
 	@RequestMapping(value = "showTemplate")
 	public List<Object> showTemplate(@RequestParam("image") String image) throws Exception {

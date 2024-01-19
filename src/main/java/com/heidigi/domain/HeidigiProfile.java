@@ -42,5 +42,7 @@ public class HeidigiProfile implements Serializable {/**
 	
 	String template;
 	
+	String facebookToken;
+	
 
 }

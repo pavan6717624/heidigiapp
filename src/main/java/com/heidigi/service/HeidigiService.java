@@ -776,6 +776,24 @@ public class HeidigiService {
 
 		return "";
 	}
+	
+	public Boolean facebookToken() throws Exception {
+		
+		String token = profileRepository.findByMobile(getUserName()).get().getFacebookToken();
+	
+		 return token != null && !token.isBlank() && !token.isEmpty() ;
+		
+	}
+	
+	public Boolean saveFacebookToken(String accessToken) throws Exception {
+		
+		 HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
+		 profile.setFacebookToken(accessToken);
+		 profileRepository.save(profile);
+		 
+		 return facebookToken();
+		
+	}
 
 	public ProfileDTO changeTemplate(String template) throws Exception {
 
