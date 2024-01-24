@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.codec.binary.Base64;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,6 +56,11 @@ import com.heidigi.repository.HeidigiVideoRepository;
 @Service
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class HeidigiService {
+	
+	@Value("${spring.social.facebook.appId}")
+    String facebookAppId;
+    @Value("${spring.social.facebook.appSecret}")
+    String facebookSecret;
 
 	@Lazy
 	@Autowired
@@ -825,7 +831,7 @@ public class HeidigiService {
 
 	public Boolean saveFacebookToken(String accessToken) throws Exception {
 
-		String url = "https://graph.facebook.com/v18.0/oauth/access_token?grant_type=fb_exchange_token&client_id=1877295529003407&client_secret=5169aca69991cef78baca0d0a92688b2&fb_exchange_token="
+		String url = "https://graph.facebook.com/v18.0/oauth/access_token?grant_type=fb_exchange_token&client_id="+facebookAppId+"&client_secret="+facebookSecret+"&fb_exchange_token="
 				+ accessToken;
 		Datum data = restTemplate.getForObject(url, Datum.class);
 
