@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +35,7 @@ import com.heidigi.model.HeidigiSignupDTO;
 import com.heidigi.model.ImageDTO;
 import com.heidigi.model.LoginStatusDTO;
 import com.heidigi.model.ProfileDTO;
+import com.heidigi.model.SendToFacebook;
 import com.heidigi.repository.HeidigiUserRepository;
 import com.heidigi.service.HeidigiService;
 import com.heidigi.service.JwtUserDetailsService;
@@ -204,7 +204,12 @@ public class HeidigiController {
 
 		return "{\"img\":\"" + service.getTemplate(template) + "\"}";
 	}
-
+	@RequestMapping(value = "getFacebookPageNames")
+	public List<String> getFacebookPageNames() throws Exception
+	{
+		return service.getFacebookPageNames();
+	}
+	
 	@RequestMapping(value = "uploadLogo")
 
 	public String uploadLogo(@RequestParam("file") MultipartFile file) throws Exception {
@@ -259,9 +264,10 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "postToFacebookImage")
-	public String postToFacebookImage(@RequestParam("image") String image, @RequestParam("template") String template) throws Exception {
+	public String postToFacebookImage(@RequestBody SendToFacebook send) throws Exception {
 
-		return service.postToFacebookImage(image, template);
+		
+		return service.postToFacebookImage(send.getImage(), send.getTemplate(),send.getPages());
 	}
 	
 	@RequestMapping(value = "saveFacebookToken")

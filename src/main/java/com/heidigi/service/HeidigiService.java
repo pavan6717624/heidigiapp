@@ -783,14 +783,14 @@ public class HeidigiService {
 		return fpage.getAccounts().getData();
 
 	}
+	
+	public List<String> getFacebookPageNames() throws Exception {
+		return getFacebookPageDetails().stream().map(o->o.getName()).sorted().collect(Collectors.toList());
+	}
 
-	public String postToFacebookImage(String image, String template) throws Exception {
+	public String postToFacebookImage(String image, String template, List<String> pages) throws Exception {
 
 		FacebookDTO fdto = new FacebookDTO();
-		
-		String accessToken=getFacebookPageDetails().get(0).getAccess_token();
-		fdto.setAccess_token(accessToken);
-
 		fdto.setMessage("This is Testing");
 
 		String imageUrl = "";
@@ -802,8 +802,16 @@ public class HeidigiService {
 
 		fdto.setUrl(imageUrl);
 		
-		String pageId=getFacebookPageDetails().get(0).getId();
+		
+		for(int i=0;i<pages.size();i++)
+		{
+			String page=pages.get(i);
+		String accessToken=getFacebookPageDetails().stream().filter(o->o.getName().equals(page)).collect(Collectors.toList()).get(0).getAccess_token();
+		fdto.setAccess_token(accessToken);
 
+		
+		String pageId=getFacebookPageDetails().stream().filter(o->o.getName().equals(page)).collect(Collectors.toList()).get(0).getId();
+		
 		String result = new RestTemplate().postForEntity(
 				"https://graph.facebook.com/v18.0/" + pageId + "/photos", fdto,
 				String.class).getBody();
@@ -818,6 +826,7 @@ public class HeidigiService {
 		audit.setLine4(result);
 		
 		auditRepository.save(audit);
+		}
 		return "";
 	}
 
