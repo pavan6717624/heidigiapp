@@ -405,8 +405,8 @@ public class HeidigiService {
 				.opacity(100).radius(30).width(0.15).x(10).y(10).crop("scale").chain()
 
 								   // Heidigi Watermark
-				.overlay(new Layer().publicId("mvj11zgltg9mqjgy7z4d")).chain().flags("layer_apply", "relative").gravity("north")
-				.opacity(50).radius(30).width(0.20).x(200).y(200).crop("scale").chain()
+				// .overlay(new Layer().publicId("mvj11zgltg9mqjgy7z4d")).chain().flags("layer_apply", "relative").gravity("north")
+				// .opacity(50).radius(30).width(0.20).x(200).y(200).crop("scale").chain()
 
 				// 65% bottom background
 				.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain().flags("layer_apply", "relative")
