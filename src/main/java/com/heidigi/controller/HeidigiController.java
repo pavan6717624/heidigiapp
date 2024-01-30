@@ -199,11 +199,11 @@ public class HeidigiController {
 	}
 
 
-	@RequestMapping(value = "getTemplate")
-	public String getTemplate(String template) throws Exception {
-
-		return "{\"img\":\"" + service.getTemplate(template) + "\"}";
-	}
+//	@RequestMapping(value = "getTemplate")
+//	public String getTemplate(String template) throws Exception {
+//
+//		return "{\"img\":\"" + service.getTemplate(template) + "\"}";
+//	}
 	@RequestMapping(value = "getFacebookPageNames")
 	public List<String> getFacebookPageNames() throws Exception
 	{
@@ -308,8 +308,8 @@ public class HeidigiController {
 
 		List<Object> templates = new ArrayList<>();
 		templates.add("{\"img\":\"" +image+"\"}");
-		templates.add(service.downloadImage(image, "Template 1"));
-		templates.add(service.downloadImage(image, "Template 2"));
+		templates.add(service.showTemplate(image, "Template 1"));
+		templates.add(service.showTemplate(image, "Template 2"));
 
 		return templates;
 	}

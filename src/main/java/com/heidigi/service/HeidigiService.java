@@ -56,11 +56,11 @@ import com.heidigi.repository.HeidigiVideoRepository;
 @Service
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class HeidigiService {
-	
+
 	@Value("${spring.social.facebook.appId}")
-    String facebookAppId;
-    @Value("${spring.social.facebook.appSecret}")
-    String facebookSecret;
+	String facebookAppId;
+	@Value("${spring.social.facebook.appSecret}")
+	String facebookSecret;
 
 	@Lazy
 	@Autowired
@@ -68,7 +68,7 @@ public class HeidigiService {
 
 	@Autowired
 	HeidigiImageRepository heidigiImageRepository;
-	
+
 	@Autowired
 	AuditRepository auditRepository;
 
@@ -353,29 +353,29 @@ public class HeidigiService {
 		return profileDTO;
 	}
 
-	public String getTemplate(String template) {
+//	public String getTemplate(String template) {
+//
+//		return heidigiImageRepository.getTemplateImages().stream().limit(1).map(o -> {
+//			try {
+//
+//				return template(o, template);
+//
+//			} catch (Exception e) {
+//				return "";
+//			}
+//		}).collect(Collectors.toList()).get(0);
+//	}
 
-		return heidigiImageRepository.getTemplateImages().stream().limit(1).map(o -> {
-			try {
+//	public String template(String image, String template) throws Exception {
+//		if (template == null || template.trim().length() == 0)
+//			template = "Template 1";
+//		if (template.equals("Template 1"))
+//			return getImageUrl(image, true);
+//		else
+//			return getImageUrlTemplate2(image, true);
+//	}
 
-				return template(o, template);
-
-			} catch (Exception e) {
-				return "";
-			}
-		}).collect(Collectors.toList()).get(0);
-	}
-
-	public String template(String image, String template) throws Exception {
-		if (template == null || template.trim().length() == 0)
-			template = "Template 1";
-		if (template.equals("Template 1"))
-			return getImageUrl(image, true);
-		else
-			return getImageUrlTemplate2(image, true);
-	}
-
-	public String getImageUrl(String image, Boolean template) throws Exception {
+	public String getImageUrl(String image, Boolean template, Boolean watermark) throws Exception {
 
 		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
 		String logoId = profile.getLogo().getPublicId();
@@ -398,15 +398,19 @@ public class HeidigiService {
 		if (template)
 			transformation = transformation.effect("blur:700");
 
-		String imageUrl = cloudinary1.url().transformation(transformation.height(1080).width(1080).crop("scale").chain()
+		transformation = transformation.height(1080).width(1080).crop("scale").chain()
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_west")
-				.opacity(100).radius(30).width(0.15).x(10).y(10).crop("scale").chain()
+				.opacity(100).radius(30).width(0.15).x(10).y(10).crop("scale").chain();
 
-				// 65% bottom background
-				.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain().flags("layer_apply", "relative")
-				.gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
+		if (watermark)
+			transformation = transformation.overlay(new Layer().publicId("mvj11zgltg9mqjgy7z4d")).chain()
+					.flags("layer_apply", "relative").gravity("north_west").opacity(20).radius(30).width(1080)
+					.height(1080).x(0).y(0).crop("scale").chain();
+
+		transformation = transformation.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain()
+				.flags("layer_apply", "relative").gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
 
 				// 35% bottom background
 				.overlay(new Layer().publicId("tff8vf9ciycuste9iupb")).chain().flags("layer_apply", "relative")
@@ -457,12 +461,9 @@ public class HeidigiService {
 
 				// Text: Address
 				.overlay(new TextLayer().fontFamily("montserrat").fontSize(16).textAlign("center").text(address))
-				.gravity("south_west").x(750).y(50).color("black").chain()
+				.gravity("south_west").x(750).y(50).color("black").chain();
 
-//		).signed(true).type("authenticated").imageTag(image + ".jpg");
-//				
-
-		).imageTag(image + ".jpg");
+		String imageUrl = cloudinary1.url().transformation(transformation).imageTag(image + ".jpg");
 		imageUrl = imageUrl.substring(10, imageUrl.length() - 3);
 
 		System.out.println(imageUrl);
@@ -480,7 +481,7 @@ public class HeidigiService {
 
 	}
 
-	public String getImageUrlTemplate2(String image, Boolean template) throws Exception {
+	public String getImageUrlTemplate2(String image, Boolean template, Boolean watermark) throws Exception {
 
 		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
 
@@ -496,21 +497,26 @@ public class HeidigiService {
 		if (template)
 			transformation = transformation.effect("blur:700");
 
-		String imageUrl = cloudinary1.url().transformation(transformation.height(1080).width(1080).crop("scale").chain()
+		transformation = transformation.height(1080).width(1080).crop("scale").chain()
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_east")
-				.opacity(100).radius(30).width(0.15).x(10).y(10).crop("scale").chain()
+				.opacity(100).radius(30).width(0.15).x(10).y(10).crop("scale").chain();
 
-				// 100% bottom background
-				.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain().flags("layer_apply", "relative")
-				.gravity("south").width(1).height(0.04).y(30).opacity(50).chain()
+		if (watermark)
+
+			transformation = transformation.overlay(new Layer().publicId("mvj11zgltg9mqjgy7z4d")).chain()
+					.flags("layer_apply", "relative").gravity("north_west").opacity(20).radius(30).width(1080)
+					.height(1080).x(0).y(0).crop("scale").chain();
+
+		transformation = transformation.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain()
+				.flags("layer_apply", "relative").gravity("south").width(1).height(0.04).y(30).opacity(50).chain()
 
 				.overlay(new TextLayer().fontFamily("montserrat").fontSize(25).textAlign("center")
 						.text("☎ 9449 840 144 | ☸ " + website + " | ⚲ " + address))
-				.flags("layer_apply", "relative").gravity("south").y(35).color("white").chain()
+				.flags("layer_apply", "relative").gravity("south").y(35).color("white").chain();
 
-		).imageTag(image + ".jpg");
+		String imageUrl = cloudinary1.url().transformation(transformation).imageTag(image + ".jpg");
 
 		imageUrl = imageUrl.substring(10, imageUrl.length() - 3);
 
@@ -522,9 +528,24 @@ public class HeidigiService {
 		String imageUrl = "";
 
 		if (template.equals("Template 1"))
-			imageUrl = URLDecoder.decode(getImageUrl(image, false), "UTF-8");
+			imageUrl = URLDecoder.decode(getImageUrl(image, false,false), "UTF-8");
 		else
-			imageUrl = URLDecoder.decode(getImageUrlTemplate2(image, false), "UTF-8");
+			imageUrl = URLDecoder.decode(getImageUrlTemplate2(image, false, false), "UTF-8");
+
+		System.out.println("Download :: " + imageUrl);
+		String imageStr = getImage(imageUrl, false);
+		return imageStr;
+
+	}
+	
+	public String showTemplate(String image, String template) throws Exception {
+
+		String imageUrl = "";
+
+		if (template.equals("Template 1"))
+			imageUrl = URLDecoder.decode(getImageUrl(image, false,true), "UTF-8");
+		else
+			imageUrl = URLDecoder.decode(getImageUrlTemplate2(image, false, true), "UTF-8");
 
 		System.out.println("Download :: " + imageUrl);
 		String imageStr = getImage(imageUrl, false);
@@ -783,9 +804,9 @@ public class HeidigiService {
 		return fpage.getAccounts().getData();
 
 	}
-	
+
 	public List<String> getFacebookPageNames() throws Exception {
-		return getFacebookPageDetails().stream().map(o->o.getName()).sorted().collect(Collectors.toList());
+		return getFacebookPageDetails().stream().map(o -> o.getName()).sorted().collect(Collectors.toList());
 	}
 
 	public String postToFacebookImage(String image, String template, List<String> pages) throws Exception {
@@ -796,36 +817,35 @@ public class HeidigiService {
 		String imageUrl = "";
 
 		if (template.equals("Template 1"))
-			imageUrl = getImageUrl(image, false);
+			imageUrl = getImageUrl(image, false,false);
 		else
-			imageUrl = getImageUrlTemplate2(image, false);
+			imageUrl = getImageUrlTemplate2(image, false, false);
 
 		fdto.setUrl(imageUrl);
-		
-		
-		for(int i=0;i<pages.size();i++)
-		{
-			String page=pages.get(i);
-		String accessToken=getFacebookPageDetails().stream().filter(o->o.getName().equals(page)).collect(Collectors.toList()).get(0).getAccess_token();
-		fdto.setAccess_token(accessToken);
 
-		
-		String pageId=getFacebookPageDetails().stream().filter(o->o.getName().equals(page)).collect(Collectors.toList()).get(0).getId();
-		
-		String result = new RestTemplate().postForEntity(
-				"https://graph.facebook.com/v18.0/" + pageId + "/photos", fdto,
-				String.class).getBody();
+		for (int i = 0; i < pages.size(); i++) {
+			String page = pages.get(i);
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+					.collect(Collectors.toList()).get(0).getAccess_token();
+			fdto.setAccess_token(accessToken);
 
-		System.out.println(result);
-		
-		AuditTrail audit=new AuditTrail();
-		audit.setUser(userRepository.findByMobile(getUserName()).get());
-		audit.setLine1("Posted to Facebook");
-		audit.setLine2(accessToken);
-		audit.setLine3(pageId);
-		audit.setLine4(result);
-		
-		auditRepository.save(audit);
+			String pageId = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+					.collect(Collectors.toList()).get(0).getId();
+
+			String result = new RestTemplate()
+					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/photos", fdto, String.class)
+					.getBody();
+
+			System.out.println(result);
+
+			AuditTrail audit = new AuditTrail();
+			audit.setUser(userRepository.findByMobile(getUserName()).get());
+			audit.setLine1("Posted to Facebook");
+			audit.setLine2(accessToken);
+			audit.setLine3(pageId);
+			audit.setLine4(result);
+
+			auditRepository.save(audit);
 		}
 		return "";
 	}
@@ -840,8 +860,8 @@ public class HeidigiService {
 
 	public Boolean saveFacebookToken(String accessToken) throws Exception {
 
-		String url = "https://graph.facebook.com/v18.0/oauth/access_token?grant_type=fb_exchange_token&client_id="+facebookAppId+"&client_secret="+facebookSecret+"&fb_exchange_token="
-				+ accessToken;
+		String url = "https://graph.facebook.com/v18.0/oauth/access_token?grant_type=fb_exchange_token&client_id="
+				+ facebookAppId + "&client_secret=" + facebookSecret + "&fb_exchange_token=" + accessToken;
 		Datum data = restTemplate.getForObject(url, Datum.class);
 
 		System.out.println(data);
