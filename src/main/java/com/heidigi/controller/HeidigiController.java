@@ -308,8 +308,8 @@ public class HeidigiController {
 
 		List<Object> templates = new ArrayList<>();
 		templates.add("{\"img\":\"" +image+"\"}");
-		templates.add("{\"img\":\"" +service.showTemplate(image, "Template 1")+"\"}");
-		templates.add("{\"img\":\"" +service.showTemplate(image, "Template 2")+"\"}");
+		templates.add(service.showTemplate(image, "Template 1"));
+		templates.add(service.showTemplate(image, "Template 2"));
 
 		return templates;
 	}

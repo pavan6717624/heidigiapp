@@ -539,6 +539,13 @@ public class HeidigiService {
 		System.out.println("Download :: " + imageUrl);
 		String imageStr = getImage(imageUrl, false);
 		return imageStr;
+		
+//		if (template.equals("Template 1"))
+//			imageUrl = getImageUrl(image, false, true);
+//		else
+//			imageUrl = getImageUrlTemplate2(image, false, true);
+//
+//		return "{\"img\":\"" +imageUrl+"\"}";
 
 	}
 
@@ -560,26 +567,26 @@ public class HeidigiService {
 		else
 			imageUrl = getImageUrlTemplate2(image, false, true);
 
-		return imageUrl;
+		return "{\"img\":\"" +imageUrl+"\"}";
 
 	}
 
-	public String getImage(String id, String ext) {
-
-		try {
-
-			String url = "https://res.cloudinary.com/hwlyozehf/image/upload/" + id + ".jpg";
-			byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
-
-			String image = new String(Base64.encodeBase64(imageBytes), "UTF-8");
-
-			return "data:image/" + ext + ";base64," + image;
-		} catch (Exception ex) {
-			return "";
-		}
-
-	}
-
+//	public String getImage(String id, String ext) {
+//
+//		try {
+//
+//			String url = "https://res.cloudinary.com/hwlyozehf/image/upload/" + id + ".jpg";
+//			byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
+//
+//			String image = new String(Base64.encodeBase64(imageBytes), "UTF-8");
+//
+//			return "data:image/" + ext + ";base64," + image;
+//		} catch (Exception ex) {
+//			return "";
+//		}
+//
+//	}
+//
 	public String getImage(String url, Boolean template) {
 
 		try {
