@@ -404,7 +404,6 @@ public class HeidigiService {
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_west")
 				.opacity(100).radius(30).width(0.15).x(10).y(10).crop("scale").chain();
 
-
 		if (watermark)
 			transformation = transformation.overlay(new Layer().publicId("mvj11zgltg9mqjgy7z4d")).chain()
 					.flags("layer_apply", "relative").gravity("north_west").opacity(20).radius(30).width(1080)
@@ -413,11 +412,9 @@ public class HeidigiService {
 		transformation = transformation.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain()
 				.flags("layer_apply", "relative").gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
 
-								 
 				// 65% bottom background
 				.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain().flags("layer_apply", "relative")
 				.gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
-
 
 				// 35% bottom background
 				.overlay(new Layer().publicId("tff8vf9ciycuste9iupb")).chain().flags("layer_apply", "relative")
@@ -535,7 +532,7 @@ public class HeidigiService {
 		String imageUrl = "";
 
 		if (template.equals("Template 1"))
-			imageUrl = URLDecoder.decode(getImageUrl(image, false,false), "UTF-8");
+			imageUrl = URLDecoder.decode(getImageUrl(image, false, false), "UTF-8");
 		else
 			imageUrl = URLDecoder.decode(getImageUrlTemplate2(image, false, false), "UTF-8");
 
@@ -544,19 +541,26 @@ public class HeidigiService {
 		return imageStr;
 
 	}
-	
+
 	public String showTemplate(String image, String template) throws Exception {
 
 		String imageUrl = "";
 
-		if (template.equals("Template 1"))
-			imageUrl = URLDecoder.decode(getImageUrl(image, false,true), "UTF-8");
-		else
-			imageUrl = URLDecoder.decode(getImageUrlTemplate2(image, false, true), "UTF-8");
+//		if (template.equals("Template 1"))
+//			imageUrl = URLDecoder.decode(getImageUrl(image, false,true), "UTF-8");
+//		else
+//			imageUrl = URLDecoder.decode(getImageUrlTemplate2(image, false, true), "UTF-8");
+//
+//		System.out.println("Download :: " + imageUrl);
+//		String imageStr = getImage(imageUrl, false);
+//		return imageStr;
 
-		System.out.println("Download :: " + imageUrl);
-		String imageStr = getImage(imageUrl, false);
-		return imageStr;
+		if (template.equals("Template 1"))
+			imageUrl = getImageUrl(image, false, true);
+		else
+			imageUrl = getImageUrlTemplate2(image, false, true);
+
+		return imageUrl;
 
 	}
 
@@ -824,7 +828,7 @@ public class HeidigiService {
 		String imageUrl = "";
 
 		if (template.equals("Template 1"))
-			imageUrl = getImageUrl(image, false,false);
+			imageUrl = getImageUrl(image, false, false);
 		else
 			imageUrl = getImageUrlTemplate2(image, false, false);
 
