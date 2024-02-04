@@ -532,9 +532,9 @@ public class HeidigiService {
 		String imageUrl = "";
 
 		if (template.equals("Template 1"))
-			imageUrl = URLDecoder.decode(getImageUrl(image, false, true), "UTF-8");
+			imageUrl = URLDecoder.decode(getImageUrl(image, false, false), "UTF-8");
 		else
-			imageUrl = URLDecoder.decode(getImageUrlTemplate2(image, false, true), "UTF-8");
+			imageUrl = URLDecoder.decode(getImageUrlTemplate2(image, false, false), "UTF-8");
 
 		System.out.println("Download :: " + imageUrl);
 		String imageStr = getImage(imageUrl, false);
