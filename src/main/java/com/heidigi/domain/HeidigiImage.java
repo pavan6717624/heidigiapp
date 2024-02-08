@@ -24,16 +24,20 @@ public class HeidigiImage implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long imageId;
 
-	String category, subcategory, type, publicId, backupPublicId;
+	String category, subcategory, type, publicId, backupPublicId,tags;
 	
 	@Column(length = 100000)
 	String response, backupResponse, imageText;
 	
 	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "sid")
+	SubCategory subCat;	
 	
 	String extension;
 	
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "userId")
 	HeidigiUser user;
+
 }

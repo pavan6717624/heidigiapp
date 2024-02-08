@@ -30,6 +30,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.heidigi.domain.HeidigiUser;
 import com.heidigi.jwt.JwtTokenUtil;
+import com.heidigi.model.DropDown;
 import com.heidigi.model.HeidigiLoginDTO;
 import com.heidigi.model.HeidigiSignupDTO;
 import com.heidigi.model.ImageDTO;
@@ -71,7 +72,7 @@ public class HeidigiController {
 		} catch (BadCredentialsException e) {
 			throw new Exception("INVALID_CREDENTIALS", e);
 		}
-		// System.out.println("exited in authenticate sub function...");
+
 	}
 
 	@RequestMapping(value = "/getLoginDetails")
@@ -105,7 +106,6 @@ public class HeidigiController {
 
 	@RequestMapping(value = "login")
 	public LoginStatusDTO login(@RequestBody HeidigiLoginDTO login) {
-//		return service.login(login);
 
 		LoginStatusDTO loginStatus = new LoginStatusDTO();
 		String username = login.getMobile();
@@ -163,13 +163,6 @@ public class HeidigiController {
 		return service.getVideos();
 	}
 
-//	@RequestMapping(value = "uploadLogo1")
-//	public String uploadLogo1(@RequestParam("file") MultipartFile file) throws IOException {
-//
-//		System.out.println("came here");
-//		return service.uploadLogo1(file);
-//	}
-
 	@RequestMapping(value = "editContent")
 	public ProfileDTO editContent(@RequestParam("line1") String line1, @RequestParam("line2") String line2,
 			@RequestParam("line3") String line3, @RequestParam("line4") String line4,
@@ -179,12 +172,6 @@ public class HeidigiController {
 		return service.editContent(line1, line2, line3, line4, email, website, address);
 	}
 
-//	@RequestMapping(value = "downloadImage")
-//	public String downloadImage(@RequestParam("image") String image) throws IOException {
-//
-//		return service.downloadImage(image);
-//	}
-
 	@RequestMapping(value = "getProfile")
 	public ProfileDTO getProfile() throws Exception {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -192,24 +179,11 @@ public class HeidigiController {
 		return service.getProfile();
 	}
 
-	@RequestMapping(value = "changeTemplate")
-	public ProfileDTO changeTemplate(String template) throws Exception {
-
-		return service.changeTemplate(template);
-	}
-
-
-//	@RequestMapping(value = "getTemplate")
-//	public String getTemplate(String template) throws Exception {
-//
-//		return "{\"img\":\"" + service.getTemplate(template) + "\"}";
-//	}
 	@RequestMapping(value = "getFacebookPageNames")
-	public List<String> getFacebookPageNames() throws Exception
-	{
+	public List<String> getFacebookPageNames() throws Exception {
 		return service.getFacebookPageNames();
 	}
-	
+
 	@RequestMapping(value = "uploadLogo")
 
 	public String uploadLogo(@RequestParam("file") MultipartFile file) throws Exception {
@@ -224,8 +198,8 @@ public class HeidigiController {
 
 	@RequestMapping(value = "uploadImage")
 	public String uploadImage(@RequestParam("file") MultipartFile file, @RequestParam("category") String category,
-			@RequestParam("subCategory") String subCategory) throws Exception {
-		return service.uploadImage(file, category, subCategory);
+			@RequestParam("subCategory") String subCategory, String tags) throws Exception {
+		return service.uploadImage(file, category, subCategory, tags);
 	}
 
 	@RequestMapping(value = "uploadVideo")
@@ -247,48 +221,62 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "downloadVideo")
-	public byte[] downloadVideo(@RequestParam("video") String video, @RequestParam("template") String template, HttpServletResponse response) throws Exception {
+	public byte[] downloadVideo(@RequestParam("video") String video, @RequestParam("template") String template,
+			HttpServletResponse response) throws Exception {
 
 		response.setHeader("Content-Disposition", "attachment; filename=demo.mp4");
-		String url=service.downloadVideo(video, template);
-		
+		String url = service.downloadVideo(video, template);
+
 		System.out.println(url);
 
-		
 		byte[] responseSend = new RestTemplate().getForObject(url, byte[].class);
 
+		return responseSend;
 
-        return responseSend;
-
-		
 	}
 
 	@RequestMapping(value = "postToFacebookImage")
 	public String postToFacebookImage(@RequestBody SendToFacebook send) throws Exception {
 
-		
-		return service.postToFacebookImage(send.getImage(), send.getTemplate(),send.getPages());
+		return service.postToFacebookImage(send.getImage(), send.getTemplate(), send.getPages());
+	}
+
+	@RequestMapping(value = "saveFacebookToken")
+	public Boolean saveFacebookToken(@RequestParam("accessToken") String accessToken) throws Exception {
+
+		return service.saveFacebookToken(accessToken);
+	}
+
+	@RequestMapping(value = "getCategories")
+	public List<DropDown> getCategories() {
+
+		return service.getCategories();
 	}
 	
-	@RequestMapping(value = "saveFacebookToken")
-	public Boolean saveFacebookToken(@RequestParam("accessToken") String accessToken ) throws Exception {
+	@RequestMapping(value = "getCategory")
+	public String getCategory() throws Exception{
 
-		return service.saveFacebookToken(accessToken);				
+		return "{\"name\":\""+service.getCategory()+"\"}";
+	}
+
+	@RequestMapping(value = "getSubCategories")
+	public List<DropDown> getSubCategories(@RequestParam("category") String category) {
+
+		return service.getSubCategories(category);
 	}
 
 	@RequestMapping(value = "facebookToken")
 	public Boolean facebookToken() throws Exception {
 
-		return service.facebookToken();				
+		return service.facebookToken();
 	}
-	
+
 	@RequestMapping(value = "postToFacebookVideo")
 	public String postToFacebookVideo(@RequestParam("video") String video) throws Exception {
 
 		return service.postToFacebookVideo(video);
 	}
-	
-	
+
 	@RequestMapping(value = "video/{tag}")
 	public ResponseEntity<Object> video(@PathVariable String tag) throws Exception {
 
@@ -301,24 +289,23 @@ public class HeidigiController {
 		System.out.println(request.getHeader("Referer"));
 		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(service.getImage(tag))).build();
 	}
-	
 
 	@RequestMapping(value = "showTemplate")
 	public List<Object> showTemplate(@RequestParam("image") String image) throws Exception {
 
 		List<Object> templates = new ArrayList<>();
-		templates.add("{\"img\":\"" +image+"\"}");
+		templates.add("{\"img\":\"" + image + "\"}");
 		templates.add(service.showTemplate(image, "Template 1"));
 		templates.add(service.showTemplate(image, "Template 2"));
 
 		return templates;
 	}
-	
+
 	@RequestMapping(value = "showTemplateVideo")
 	public List<Object> showTemplateVideo(@RequestParam("video") String video) throws Exception {
 
 		List<Object> templates = new ArrayList<>();
-		templates.add("{\"video\":\"" +video+"\"}");
+		templates.add("{\"video\":\"" + video + "\"}");
 		templates.add(service.downloadVideo(video, "Template 1"));
 		templates.add(service.downloadVideo(video, "Template 2"));
 

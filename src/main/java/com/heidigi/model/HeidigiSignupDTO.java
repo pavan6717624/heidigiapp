@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class HeidigiSignupDTO{
 
-	String name, email, mobile, password, role;
+	String name, email, mobile, password, role, category;
 }

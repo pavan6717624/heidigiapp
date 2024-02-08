@@ -29,10 +29,7 @@ public class HeidigiUser implements Serializable {
 	String name = "";
 	Long mobile = 0l;
 	String email = "";
-	String city = "";
 	String message = "";
-
-	Long loginId;
 
 	String type = "";
 
@@ -45,5 +42,9 @@ public class HeidigiUser implements Serializable {
 
 	Boolean isDisabled;
 	Boolean isDeleted;
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "cid")
+	Category category;
 
 }
