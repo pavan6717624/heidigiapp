@@ -10,13 +10,11 @@ import org.springframework.stereotype.Repository;
 import com.heidigi.domain.HeidigiImage;
 
 @Repository
-public interface HeidigiImageRepository  extends JpaRepository<HeidigiImage,Long> {
-	
-	
-	@Query("select h from HeidigiImage h where h.type='Image' and (((:role)='Customer' and (h.user.mobile=:userName or h.user.role.roleName='Designer')) or  ((:role)='Designer' and h.user.mobile=:userName)) order by h.imageId desc")
-	List<HeidigiImage> getImageIds(@Param("userName") Long userName,@Param("role") String role);
-	
-	@Query("select h.publicId from HeidigiImage h where h.type='Image' order by rand()")
-	List<String> getTemplateImages();
-	
+public interface HeidigiImageRepository extends JpaRepository<HeidigiImage, Long> {
+
+	@Query("select h from HeidigiImage h where h.type='Image' and (((:role)='Customer' and h.subCat.category.cname=(:category) and "
+			+ "(h.user.mobile=:userName or h.user.role.roleName='Designer')) or  ((:role)='Designer' "
+			+ "and h.user.mobile=:userName)) order by h.imageId desc")
+	List<HeidigiImage> getImageIds(@Param("userName") Long userName, @Param("role") String role, @Param("category") String category);
+
 }

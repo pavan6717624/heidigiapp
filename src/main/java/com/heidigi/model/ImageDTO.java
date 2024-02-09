@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class ImageDTO {
 	
-String src, publicId, category, subCategory;
+String src, publicId, category, subCategory, tags;
 
 public ImageDTO(HeidigiImage image)
 {
@@ -16,6 +16,7 @@ public ImageDTO(HeidigiImage image)
 	this.publicId=image.getPublicId();
 	this.category=image.getCategory();
 	this.subCategory=image.getSubcategory();
+	this.tags=image.getTags();
 	
 }
 public ImageDTO(HeidigiVideo image)

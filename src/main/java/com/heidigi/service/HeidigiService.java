@@ -297,7 +297,15 @@ public class HeidigiService {
 
 	public List<ImageDTO> getImages() {
 
-		List<HeidigiImage> images = heidigiImageRepository.getImageIds(getUserName(), getRole());
+		
+		String category="";
+		
+		if(getRole().equals("Customer"))
+				 category=userRepository.findByMobile(getUserName()).get().getCategory().getCname();
+		
+		System.out.println("Category is "+category);
+		
+		List<HeidigiImage> images = heidigiImageRepository.getImageIds(getUserName(), getRole(),category);
 		return images.stream().map(o -> new ImageDTO(o)).collect(Collectors.toList());
 	}
 
