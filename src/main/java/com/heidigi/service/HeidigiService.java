@@ -207,7 +207,7 @@ public class HeidigiService {
 		HeidigiImage image = new HeidigiImage();
 		image.setCategory(category);
 		image.setSubcategory(subCategory);
-		image.setSubCat(subCategoryRepository.findByName(subCategory).get());
+		//image.setSubCat(subCategoryRepository.findByName(subCategory).get());
 
 		image.setType(type);
 		image.setPublicId(uploadResult1.get("public_id") + "");
