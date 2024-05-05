@@ -882,12 +882,11 @@ public class HeidigiService {
 		String fileName=UUID.randomUUID()+".jpg";
 		
 //		File file=new File("/static/images/"+fileName);
-//		FileOutputStream fos = new FileOutputStream(file);
-//		fos.write(getImageString(imageUrl));
-//		fos.close();
+		FileOutputStream fos = new FileOutputStream("/static/images/"+fileName);
+		fos.write(getImageString(imageUrl));
+		fos.close();
 		
-		Path path = Paths.get("/static/images/"+fileName);
-		Files.write(path, getImageString(imageUrl));
+
 		
 		
 		fdto.setImage_url("https://heidigi-app-38b2318c83b0.herokuapp.com/images/"+fileName);
