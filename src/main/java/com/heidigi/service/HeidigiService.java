@@ -1,11 +1,9 @@
 package com.heidigi.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -24,6 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -867,6 +866,11 @@ public class HeidigiService {
 		return getFacebookPageDetails().stream().map(o -> o.getName()).sorted().collect(Collectors.toList());
 	}
 
+	
+	public static File getResourceAsFile(String relativeFilePath) throws FileNotFoundException {
+	    return ResourceUtils.getFile(String.format("classpath:%s",relativeFilePath));
+
+	}
 	public String postToInstagramImage(String image, String template, List<String> pages) throws Exception {
 
 		InstagramDTO fdto = new InstagramDTO();
@@ -879,9 +883,11 @@ public class HeidigiService {
 		else
 			imageUrl = getImageUrlTemplate2(image, false, false);
 		
+		File dir=getResourceAsFile("/static/images/");
+		
 		String fileName=UUID.randomUUID()+".jpg";
 		
-		String fileLocation = "/app/target/classes/static/images/"+fileName;
+		String fileLocation = dir+"/"+fileName;
 		
 		System.out.println(fileLocation);
 		FileOutputStream fos = new FileOutputStream(fileLocation);
