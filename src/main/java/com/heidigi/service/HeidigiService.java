@@ -882,6 +882,8 @@ public class HeidigiService {
 		String fileName=UUID.randomUUID()+".jpg";
 		
 		String fileLocation = new File("static\\images").getAbsolutePath() + "\\" + fileName;
+		
+		System.out.println(fileLocation);
 		FileOutputStream fos = new FileOutputStream(fileLocation);
 		fos.write(getImageString(imageUrl));
 		fos.close();
@@ -891,7 +893,7 @@ public class HeidigiService {
 		
 		fdto.setImage_url("https://heidigi-app-38b2318c83b0.herokuapp.com/images/"+fileName);
 		
-		System.out.println(imageUrl);
+		System.out.println(getImage("https://heidigi-app-38b2318c83b0.herokuapp.com/images/"+fileName, false));
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
