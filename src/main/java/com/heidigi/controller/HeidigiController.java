@@ -183,6 +183,11 @@ public class HeidigiController {
 	public List<String> getFacebookPageNames() throws Exception {
 		return service.getFacebookPageNames();
 	}
+	
+	@RequestMapping(value = "getInstagramPageNames")
+	public List<String> getInstagramPageNames() throws Exception {
+		return service.getInstagramPageNames();
+	}
 
 	@RequestMapping(value = "uploadLogo")
 
@@ -241,6 +246,12 @@ public class HeidigiController {
 		return service.postToFacebookImage(send.getImage(), send.getTemplate(), send.getPages());
 	}
 
+	@RequestMapping(value = "postToInstagramImage")
+	public String postToInstagramImage(@RequestBody SendToFacebook send) throws Exception {
+
+		return service.postToInstagramImage(send.getImage(), send.getTemplate(), send.getPages());
+	}
+	
 	@RequestMapping(value = "saveFacebookToken")
 	public Boolean saveFacebookToken(@RequestParam("accessToken") String accessToken) throws Exception {
 

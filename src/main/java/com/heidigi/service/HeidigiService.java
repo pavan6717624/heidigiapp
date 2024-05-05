@@ -40,6 +40,10 @@ import com.heidigi.model.FacebookDTO;
 import com.heidigi.model.FacebookPage;
 import com.heidigi.model.HeidigiSignupDTO;
 import com.heidigi.model.ImageDTO;
+import com.heidigi.model.InstaCIDDTO;
+import com.heidigi.model.InstaDTO;
+import com.heidigi.model.InstagramDTO;
+import com.heidigi.model.InstagramPage;
 import com.heidigi.model.LoginStatusDTO;
 import com.heidigi.model.ProfileDTO;
 import com.heidigi.repository.AuditRepository;
@@ -207,8 +211,8 @@ public class HeidigiService {
 		HeidigiImage image = new HeidigiImage();
 		image.setCategory(category);
 		image.setSubcategory(subCategory);
-				if(subCategoryRepository.findByName(subCategory).isPresent())
-		image.setSubCat(subCategoryRepository.findByName(subCategory).get());
+		if (subCategoryRepository.findByName(subCategory).isPresent())
+			image.setSubCat(subCategoryRepository.findByName(subCategory).get());
 
 		image.setType(type);
 		image.setPublicId(uploadResult1.get("public_id") + "");
@@ -298,15 +302,14 @@ public class HeidigiService {
 
 	public List<ImageDTO> getImages() {
 
-		
-		String category="";
-		
-		if(getRole().equals("Customer"))
-				 category=userRepository.findByMobile(getUserName()).get().getCategory().getCname();
-		
-		System.out.println("Category is "+category);
-		
-		List<HeidigiImage> images = heidigiImageRepository.getImageIds(getUserName(), getRole(),category);
+		String category = "";
+
+		if (getRole().equals("Customer"))
+			category = userRepository.findByMobile(getUserName()).get().getCategory().getCname();
+
+		System.out.println("Category is " + category);
+
+		List<HeidigiImage> images = heidigiImageRepository.getImageIds(getUserName(), getRole(), category);
 		return images.stream().map(o -> new ImageDTO(o)).collect(Collectors.toList());
 	}
 
@@ -597,6 +600,24 @@ public class HeidigiService {
 		}
 
 	}
+	
+	public byte[] getImageString(String url) {
+
+		try {
+
+			byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
+
+			
+			return imageBytes;
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
+
+	}
+	
+	
 
 	public ProfileDTO editContent(String line1, String line2, String line3, String line4, String email, String website,
 			String address) throws Exception {
@@ -796,10 +817,119 @@ public class HeidigiService {
 
 	}
 
+	public List<InstagramPage> getInstagramAccountDetails() throws Exception {
+
+		List<InstagramPage> instagramPages = getFacebookPageDetails().stream().map(o -> {
+			try {
+				return getInstagramBusinessAccountDetails(o.getId());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new InstagramPage();
+
+			}
+		}).collect(Collectors.toList());
+
+		System.out.println(instagramPages);
+
+		return instagramPages;
+	}
+
+	public InstagramPage getInstagramBusinessAccountDetails(String facebookId) throws Exception {
+
+		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
+
+		String accessToken = profile.getFacebookToken();
+
+		String url = "https://graph.facebook.com/v18.0/" + facebookId + "?access_token=" + accessToken
+				+ "&debug=all&fields=instagram_business_account,name&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
+		InstagramPage ipage = restTemplate.getForObject(url, InstagramPage.class);
+		
+		 url = "https://graph.facebook.com/v18.0/" + ipage.getId()+ "?access_token=" + accessToken
+				+ "&debug=all&fields=name&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
+
+		 InstagramPage bpage = restTemplate.getForObject(url, InstagramPage.class);
+		 
+		 ipage.setName(bpage.getName());
+		 
+		return ipage;
+
+	}
+
+	public List<String> getInstagramPageNames() throws Exception {
+
+		return getInstagramAccountDetails().stream().map(o -> o.getName()).collect(Collectors.toList());
+	}
+
 	public List<String> getFacebookPageNames() throws Exception {
 		return getFacebookPageDetails().stream().map(o -> o.getName()).sorted().collect(Collectors.toList());
 	}
 
+	public String postToInstagramImage(String image, String template, List<String> pages) throws Exception {
+
+		InstagramDTO fdto = new InstagramDTO();
+		fdto.setCaption("This is Testing");
+
+		String imageUrl = "";
+
+		if (template.equals("Template 1"))
+			imageUrl = getImageUrl(image, false, false);
+		else
+			imageUrl = getImageUrlTemplate2(image, false, false);
+		
+		String fileName=UUID.randomUUID()+".jpg";
+		
+		File file=new File("src/main/resources/static/images/"+fileName);
+		FileOutputStream fos = new FileOutputStream(file);
+		fos.write(getImageString(imageUrl));
+		fos.close();
+		
+		
+		
+		fdto.setImage_url("https://heidigi-app-38b2318c83b0.herokuapp.com/images/"+fileName);
+		
+		System.out.println(imageUrl);
+
+		for (int i = 0; i < pages.size(); i++) {
+			String page = pages.get(i);
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+					.collect(Collectors.toList()).get(0).getAccess_token();
+			fdto.setAccess_token(accessToken);
+
+			String pageId = getInstagramAccountDetails().stream().filter(o -> o.getName().equals(page))
+					.collect(Collectors.toList()).get(0).getInstagram_business_account().getId();
+			
+			System.out.println(pageId);
+
+			InstaDTO result = new RestTemplate()
+					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/media", fdto, InstaDTO.class)
+					.getBody();
+
+			System.out.println(result.getId());
+			
+			InstaCIDDTO cidDTO=new InstaCIDDTO();
+			cidDTO.setCreation_id(result.getId());
+			cidDTO.setAccess_token(accessToken);
+			
+			
+			
+			InstaDTO result1 = new RestTemplate()
+					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class)
+					.getBody();
+			
+			System.out.println(result1.getId());
+
+			AuditTrail audit = new AuditTrail();
+			audit.setUser(userRepository.findByMobile(getUserName()).get());
+			audit.setLine1("Posted to Instagram");
+			audit.setLine2(accessToken);
+			audit.setLine3(pageId);
+			audit.setLine4(result+"");
+
+			auditRepository.save(audit);
+		}
+		return "";
+	}
+	
 	public String postToFacebookImage(String image, String template, List<String> pages) throws Exception {
 
 		FacebookDTO fdto = new FacebookDTO();

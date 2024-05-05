@@ -1,7 +1,5 @@
 package com.heidigi.model;
 
-import java.util.ArrayList;
-
 import lombok.Data;
 
 @Data
