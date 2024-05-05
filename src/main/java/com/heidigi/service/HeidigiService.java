@@ -3,6 +3,9 @@ package com.heidigi.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -878,11 +881,13 @@ public class HeidigiService {
 		
 		String fileName=UUID.randomUUID()+".jpg";
 		
-		File file=new File("/static/images/"+fileName);
-		FileOutputStream fos = new FileOutputStream(file);
-		fos.write(getImageString(imageUrl));
-		fos.close();
+//		File file=new File("/static/images/"+fileName);
+//		FileOutputStream fos = new FileOutputStream(file);
+//		fos.write(getImageString(imageUrl));
+//		fos.close();
 		
+		Path path = Paths.get("/static/images/"+fileName);
+		Files.write(path, getImageString(imageUrl));
 		
 		
 		fdto.setImage_url("https://heidigi-app-38b2318c83b0.herokuapp.com/images/"+fileName);
