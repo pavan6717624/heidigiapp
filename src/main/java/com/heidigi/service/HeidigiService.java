@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
@@ -883,23 +884,9 @@ public class HeidigiService {
 		else
 			imageUrl = getImageUrlTemplate2(image, false, false);
 		
-		File dir=getResourceAsFile("/static/images/");
+		fdto.setImage_url(imageUrl.replaceAll(Pattern.quote("%"),"%25"));
 		
-		String fileName=UUID.randomUUID()+".jpg";
-		
-		String fileLocation = dir+"/"+fileName;
-		
-		System.out.println(fileLocation);
-		FileOutputStream fos = new FileOutputStream(fileLocation);
-		fos.write(getImageString(imageUrl));
-		fos.close();
-		
-
-		
-		
-		fdto.setImage_url("https://heidigi-app-38b2318c83b0.herokuapp.com/images/"+fileName);
-		
-		System.out.println(getImage("https://heidigi-app-38b2318c83b0.herokuapp.com/images/"+fileName, false));
+		System.out.println(imageUrl.replaceAll(Pattern.quote("%"),"%25"));
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
