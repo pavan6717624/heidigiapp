@@ -881,8 +881,8 @@ public class HeidigiService {
 		
 		String fileName=UUID.randomUUID()+".jpg";
 		
-//		File file=new File("/static/images/"+fileName);
-		FileOutputStream fos = new FileOutputStream("/static/images/"+fileName);
+		String fileLocation = new File("static\\images").getAbsolutePath() + "\\" + fileName;
+		FileOutputStream fos = new FileOutputStream(fileLocation);
 		fos.write(getImageString(imageUrl));
 		fos.close();
 		
