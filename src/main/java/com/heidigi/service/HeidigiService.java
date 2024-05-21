@@ -784,26 +784,43 @@ public class HeidigiService {
 
 	}
 
-	public String postToFacebookVideo(String video) throws Exception {
-		FacebookDTO fdto = new FacebookDTO();
-		fdto.setAccess_token(
-				"EAAEEWuiBKkIBOZB25ips1OnzE8dk52A5iQIZA3TdfZCw4f8gdu0po7fjeX25mq8OtcBwh3Qm55ZBquDGqzA9zJqvPMJY8aQaxO9dudQ4hVJLHPnJY1LjVt58uZBoXiUf0rZATnWteJtLwgIW2zklpfEY3eoYp4FSZCblC1ZB6Lolumktm96rrEAKBzaY7ZAMu");
+	public String postToFacebookVideo(String video, String template, List<String> pages) throws Exception {
 
+		System.out.println(video+" "+template );
+		
+		FacebookDTO fdto = new FacebookDTO();
 		fdto.setMessage("This is Testing");
 
-		String videoUrl = downloadVideo(video);
-
-		System.out.println("Facebook :: " + videoUrl + "\n" + fdto);
+		String videoUrl =  downloadVideo(video, template);
 
 		fdto.setFile_url(videoUrl);
 
-		String result = new RestTemplate()
-				.postForEntity("https://graph-video.facebook.com/v18.0/145448711978153/videos", fdto, String.class)
-				.getBody();
+		for (int i = 0; i < pages.size(); i++) {
+			String page = pages.get(i);
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+					.collect(Collectors.toList()).get(0).getAccess_token();
+			fdto.setAccess_token(accessToken);
 
-		System.out.println(result);
+			String pageId = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+					.collect(Collectors.toList()).get(0).getId();
 
+			String result = new RestTemplate()
+					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/videos", fdto, String.class)
+					.getBody();
+
+			System.out.println(result);
+
+			AuditTrail audit = new AuditTrail();
+			audit.setUser(userRepository.findByMobile(getUserName()).get());
+			audit.setLine1("Posted to Facebook");
+			audit.setLine2(accessToken);
+			audit.setLine3(pageId);
+			audit.setLine4(result);
+
+			auditRepository.save(audit);
+		}
 		return "";
+		
 	}
 
 	public List<Datum> getFacebookPageDetails() throws Exception {
@@ -904,6 +921,63 @@ public class HeidigiService {
 					.getBody();
 
 			System.out.println(result.getId());
+			
+			InstaCIDDTO cidDTO=new InstaCIDDTO();
+			cidDTO.setCreation_id(result.getId());
+			cidDTO.setAccess_token(accessToken);
+			
+			
+			
+			InstaDTO result1 = new RestTemplate()
+					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class)
+					.getBody();
+			
+			System.out.println(result1.getId());
+
+			AuditTrail audit = new AuditTrail();
+			audit.setUser(userRepository.findByMobile(getUserName()).get());
+			audit.setLine1("Posted to Instagram");
+			audit.setLine2(accessToken);
+			audit.setLine3(pageId);
+			audit.setLine4(result+"");
+
+			auditRepository.save(audit);
+		}
+		return "";
+	}
+	
+	public String postToInstagramVideo(String image, String template, List<String> pages) throws Exception {
+		
+		System.out.println(image+" "+template);
+
+		InstagramDTO fdto = new InstagramDTO();
+		fdto.setCaption("This is Testing");
+
+		String videoUrl = downloadVideo(image, template);
+		
+		fdto.setVideo_url(videoUrl.replaceAll(Pattern.quote("%"),"%25"));
+		fdto.setMedia_type("REELS");
+		
+		System.out.println(videoUrl.replaceAll(Pattern.quote("%"),"%25"));
+
+		for (int i = 0; i < pages.size(); i++) {
+			String page = pages.get(i);
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+					.collect(Collectors.toList()).get(0).getAccess_token();
+			fdto.setAccess_token(accessToken);
+
+			String pageId = getInstagramAccountDetails().stream().filter(o -> o.getName().equals(page))
+					.collect(Collectors.toList()).get(0).getInstagram_business_account().getId();
+			
+			System.out.println(pageId);
+
+			InstaDTO result = new RestTemplate()
+					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/media", fdto, InstaDTO.class)
+					.getBody();
+
+			System.out.println(result.getId());
+			
+			Thread.sleep(20000);
 			
 			InstaCIDDTO cidDTO=new InstaCIDDTO();
 			cidDTO.setCreation_id(result.getId());

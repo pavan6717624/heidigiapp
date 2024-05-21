@@ -252,6 +252,12 @@ public class HeidigiController {
 		return service.postToInstagramImage(send.getImage(), send.getTemplate(), send.getPages());
 	}
 	
+	@RequestMapping(value = "postToInstagramVideo")
+	public String postToInstagramVideo(@RequestBody SendToFacebook send) throws Exception {
+
+		return service.postToInstagramVideo(send.getImage(), send.getTemplate(), send.getPages());
+	}
+	
 	@RequestMapping(value = "saveFacebookToken")
 	public Boolean saveFacebookToken(@RequestParam("accessToken") String accessToken) throws Exception {
 
@@ -283,9 +289,9 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "postToFacebookVideo")
-	public String postToFacebookVideo(@RequestParam("video") String video) throws Exception {
+	public String postToFacebookVideo(@RequestBody SendToFacebook send) throws Exception {
 
-		return service.postToFacebookVideo(video);
+		return service.postToFacebookVideo(send.getImage(), send.getTemplate(), send.getPages());
 	}
 
 	@RequestMapping(value = "video/{tag}")
