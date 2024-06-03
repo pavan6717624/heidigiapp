@@ -330,7 +330,7 @@ public class HeidigiService {
 	}
 
 	public List<ImageDTO> getVideos() {
-
+koon
 		return heidigiVideoRepository.getVideos(getUserName(), getRole()).stream().map(o -> new ImageDTO(o))
 				.collect(Collectors.toList());
 
@@ -358,7 +358,8 @@ public class HeidigiService {
 		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
 
 		
-		String category = getRole().equals("Business")?userRepository.findByMobile(getUserName()).get().getCategory().getCname():"";
+		String category = getCategory() ;
+			//getRole().equals("Business")?userRepository.findByMobile(getUserName()).get().getCategory().getCname():"";
 
 		ProfileDTO profileDTO = new ProfileDTO();
 		profileDTO.setCategory(category);
@@ -1048,7 +1049,7 @@ public class HeidigiService {
 
 	public String getCategory() throws Exception {
 		
-		return getRole().equals("Business")?userRepository.findByMobile(getUserName()).get().getCategory().getCname():"";
+		return getRole().equals("Customer")?userRepository.findByMobile(getUserName()).get().getCategory().getCname():"";
 		
 //		return userRepository.findByMobile(getUserName()).get().getCategory().getCname();
 	}
