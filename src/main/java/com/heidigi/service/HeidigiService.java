@@ -122,6 +122,7 @@ public class HeidigiService {
 			user.setJoinDate(Timestamp.valueOf(LocalDateTime.now()));
 			user.setIsDeleted(false);
 			user.setIsDisabled(false);
+			if(categoryRepository.findByCname(signup.getCategory()).isPresent())
 			user.setCategory(categoryRepository.findByCname(signup.getCategory()).get());
 			userRepository.save(user);
 			loginStatus.setLoginStatus(
@@ -356,7 +357,8 @@ public class HeidigiService {
 
 		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
 
-		String category = userRepository.findByMobile(getUserName()).get().getCategory().getCname();
+		
+		String category = getRole().equals("Business")?userRepository.findByMobile(getUserName()).get().getCategory().getCname():"";
 
 		ProfileDTO profileDTO = new ProfileDTO();
 		profileDTO.setCategory(category);
@@ -1045,7 +1047,10 @@ public class HeidigiService {
 	}
 
 	public String getCategory() throws Exception {
-		return userRepository.findByMobile(getUserName()).get().getCategory().getCname();
+		
+		return getRole().equals("Business")?userRepository.findByMobile(getUserName()).get().getCategory().getCname():"";
+		
+//		return userRepository.findByMobile(getUserName()).get().getCategory().getCname();
 	}
 
 	public Boolean facebookToken() throws Exception {
