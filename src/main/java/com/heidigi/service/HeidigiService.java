@@ -330,7 +330,7 @@ public class HeidigiService {
 	}
 
 	public List<ImageDTO> getVideos() {
-koon
+
 		return heidigiVideoRepository.getVideos(getUserName(), getRole()).stream().map(o -> new ImageDTO(o))
 				.collect(Collectors.toList());
 
