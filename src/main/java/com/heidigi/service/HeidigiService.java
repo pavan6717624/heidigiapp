@@ -764,7 +764,7 @@ public class HeidigiService {
 
 		Transformation transformation = new Transformation();
 
-		String videoUrl = cloudinary1.url().transformation(transformation.height(1080).width(1080).crop("scale").chain()
+		String videoUrl = cloudinary1.url().transformation(transformation.aspectRatio("1.0").height(1080).crop("fill").chain()
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_east")
