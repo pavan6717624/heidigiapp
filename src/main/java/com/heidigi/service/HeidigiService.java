@@ -865,22 +865,36 @@ public class HeidigiService {
 
 		String url = "https://graph.facebook.com/v18.0/" + facebookId + "?access_token=" + accessToken
 				+ "&debug=all&fields=instagram_business_account,name&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
+		
+		System.out.println("Take this :: "+url);
+		
+		
 		InstagramPage ipage = restTemplate.getForObject(url, InstagramPage.class);
+		
+		if(ipage.getInstagram_business_account()!=null)
+		{
 		
 		 url = "https://graph.facebook.com/v18.0/" + ipage.getId()+ "?access_token=" + accessToken
 				+ "&debug=all&fields=name&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
+		 
+		 System.out.println("Take this1 :: "+url);
 
 		 InstagramPage bpage = restTemplate.getForObject(url, InstagramPage.class);
 		 
 		 ipage.setName(bpage.getName());
-		 
+		}
+		else
+		{
+			ipage=null;
+		}
+		 System.out.println("use this :: "+ipage);
 		return ipage;
 
 	}
 
 	public List<String> getInstagramPageNames() throws Exception {
 
-		return getInstagramAccountDetails().stream().map(o -> o.getName()).collect(Collectors.toList());
+		return getInstagramAccountDetails().stream().filter(o->o!=null).map(o -> o.getName()).collect(Collectors.toList());
 	}
 
 	public List<String> getFacebookPageNames() throws Exception {
