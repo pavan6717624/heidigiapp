@@ -840,11 +840,11 @@ public class HeidigiService {
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
-			String accessToken = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+			String accessToken = getFacebookPageDetails().stream().filter(o ->o!=null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getAccess_token();
 			fdto.setAccess_token(accessToken);
 
-			String pageId = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+			String pageId = getFacebookPageDetails().stream().filter(o -> o!=null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getId();
 
 			String result = new RestTemplate()
@@ -961,11 +961,11 @@ public class HeidigiService {
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
-			String accessToken = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o!=null &&  o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getAccess_token();
 			fdto.setAccess_token(accessToken);
 
-			String pageId = getInstagramAccountDetails().stream().filter(o -> o.getName().equals(page))
+			String pageId = getInstagramAccountDetails().stream().filter(o -> o!=null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getInstagram_business_account().getId();
 
 			System.out.println(pageId);
@@ -1013,11 +1013,11 @@ public class HeidigiService {
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
-			String accessToken = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o!=null &&  o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getAccess_token();
 			fdto.setAccess_token(accessToken);
 
-			String pageId = getInstagramAccountDetails().stream().filter(o -> o.getName().equals(page))
+			String pageId = getInstagramAccountDetails().stream().filter(o ->o!=null &&   o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getInstagram_business_account().getId();
 
 			System.out.println(pageId);
@@ -1028,14 +1028,27 @@ public class HeidigiService {
 
 			System.out.println(result.getId());
 
-			Thread.sleep(20000);
-
+			while(true)
+			{
+			
+			String result2 = new RestTemplate().getForObject(
+					"https://graph.facebook.com/v18.0/" + result.getId() + "?fields=status_code&access_token="+accessToken, String.class);
+			System.out.println(result2);
+			
+			if(result2.indexOf("FINISHED")!=-1)
+				break;
+			else
+				Thread.sleep(5000);
+			
+			}
 			InstaCIDDTO cidDTO = new InstaCIDDTO();
 			cidDTO.setCreation_id(result.getId());
 			cidDTO.setAccess_token(accessToken);
 
 			InstaDTO result1 = new RestTemplate().postForEntity(
 					"https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class).getBody();
+			
+			
 
 			System.out.println(result1.getId());
 
@@ -1067,11 +1080,11 @@ public class HeidigiService {
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
-			String accessToken = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o!=null &&  o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getAccess_token();
 			fdto.setAccess_token(accessToken);
 
-			String pageId = getFacebookPageDetails().stream().filter(o -> o.getName().equals(page))
+			String pageId = getFacebookPageDetails().stream().filter(o -> o!=null &&  o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getId();
 
 			String result = new RestTemplate()
