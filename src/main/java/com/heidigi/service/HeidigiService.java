@@ -19,6 +19,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -122,8 +123,8 @@ public class HeidigiService {
 			user.setJoinDate(Timestamp.valueOf(LocalDateTime.now()));
 			user.setIsDeleted(false);
 			user.setIsDisabled(false);
-			if(categoryRepository.findByCname(signup.getCategory()).isPresent())
-			user.setCategory(categoryRepository.findByCname(signup.getCategory()).get());
+			if (categoryRepository.findByCname(signup.getCategory()).isPresent())
+				user.setCategory(categoryRepository.findByCname(signup.getCategory()).get());
 			userRepository.save(user);
 			loginStatus.setLoginStatus(
 					userRepository.findByMobileAndPassword(user.getMobile(), user.getPassword()).isPresent());
@@ -357,9 +358,8 @@ public class HeidigiService {
 
 		Optional<HeidigiProfile> profileOpt = profileRepository.findByMobile(getUserName());
 
-		
-		String category = getCategory() ;
-			//getRole().equals("Business")?userRepository.findByMobile(getUserName()).get().getCategory().getCname():"";
+		String category = getCategory();
+		// getRole().equals("Business")?userRepository.findByMobile(getUserName()).get().getCategory().getCname():"";
 
 		ProfileDTO profileDTO = new ProfileDTO();
 		profileDTO.setCategory(category);
@@ -421,7 +421,7 @@ public class HeidigiService {
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_west")
-				.opacity(100).width(200).x(10).y(10).crop("scale").chain();
+				.opacity(100).height(0.15).x(10).y(10).crop("scale").chain();
 
 		if (watermark)
 			transformation = transformation.overlay(new Layer().publicId("mvj11zgltg9mqjgy7z4d")).chain()
@@ -524,7 +524,7 @@ public class HeidigiService {
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_east")
-				.opacity(100).width(200).x(10).y(10).crop("scale").chain();
+				.opacity(100).height(0.15).x(10).y(10).crop("scale").chain();
 
 		if (watermark)
 
@@ -606,14 +606,13 @@ public class HeidigiService {
 		}
 
 	}
-	
+
 	public byte[] getImageString(String url) {
 
 		try {
 
 			byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
 
-			
 			return imageBytes;
 
 		} catch (Exception ex) {
@@ -622,8 +621,6 @@ public class HeidigiService {
 		}
 
 	}
-	
-	
 
 	public ProfileDTO editContent(String line1, String line2, String line3, String line4, String email, String website,
 			String address) throws Exception {
@@ -650,15 +647,15 @@ public class HeidigiService {
 		return getProfile();
 	}
 
-	public String downloadVideo(String publicId, String template) throws Exception {
+	public String downloadVideo(String publicId, String template, Boolean instagram) throws Exception {
 		if (template.equals("Template 1"))
-			return downloadVideo(publicId);
+			return downloadVideo(publicId, instagram);
 		else
-			return downloadVideoTemplate2(publicId);
+			return downloadVideoTemplate2(publicId, instagram);
 
 	}
 
-	public String downloadVideo(String publicId) throws Exception {
+	public String downloadVideo(String publicId, Boolean instagram) throws Exception {
 
 		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
 
@@ -679,19 +676,28 @@ public class HeidigiService {
 
 		Transformation transformation = new Transformation();
 
-		String videoUrl = cloudinary1.url().transformation(transformation.height(1080).width(1080).crop("scale").chain()
+		int height = 1080, width = 1080;
+		double logoHeight = 0.15d, layerHeight = 0.18d;
+		if (instagram) {
+			height = 1920;
+			logoHeight = 0.08d;
+			layerHeight = 0.105d;
+		}
+
+		String videoUrl = cloudinary1.url().transformation(transformation.height(height).width(width).crop("scale")
+				.chain()
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_west")
-				.opacity(100).width(200).x(10).y(10).crop("scale").chain()
+				.opacity(100).height(logoHeight).x(10).y(10).crop("scale").chain()
 
 				// 65% bottom background
 				.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain().flags("layer_apply", "relative")
-				.gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
+				.gravity("south_west").width(0.65).height(layerHeight).opacity(100).chain()
 
 				// 35% bottom background
 				.overlay(new Layer().publicId("tff8vf9ciycuste9iupb")).chain().flags("layer_apply", "relative")
-				.gravity("south_east").width(0.35).height(0.18).opacity(100).chain()
+				.gravity("south_east").width(0.35).height(layerHeight).opacity(100).chain()
 
 				// icon1: Envelope
 				.overlay(new Layer().publicId("dt7fah8qrkeleor3gpq3")).width(20).height(20).chain()
@@ -751,7 +757,7 @@ public class HeidigiService {
 
 	}
 
-	public String downloadVideoTemplate2(String video) throws Exception {
+	public String downloadVideoTemplate2(String video, Boolean instagram) throws Exception {
 
 		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
 
@@ -762,23 +768,32 @@ public class HeidigiService {
 
 		System.out.println(logoId);
 
+		int height = 1080, width = 1080;
+		double logoHeight = 0.15d, layerHeight = 0.04d;
+		if (instagram) {
+			height = 1920;
+			logoHeight = 0.08d;
+			layerHeight = 0.03d;
+		}
+
 		Transformation transformation = new Transformation();
 
-		String videoUrl = cloudinary1.url().transformation(transformation.aspectRatio("1.0").height(1080).crop("fill").chain()
+		String videoUrl = cloudinary1.url()
+				.transformation(transformation.height(height).width(width).crop("scale").chain()
 
-				// logo
-				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_east")
-				.opacity(100).width(200).x(10).y(10).crop("scale").chain()
+						// logo
+						.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative")
+						.gravity("north_east").opacity(100).height(logoHeight).x(10).y(10).crop("scale").chain()
 
-				// 100% bottom background
-				.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain().flags("layer_apply", "relative")
-				.gravity("south").width(1).height(0.04).y(30).opacity(100).chain()
+						// 100% bottom background
+						.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain().flags("layer_apply", "relative")
+						.gravity("south").width(1).height(layerHeight).y(40).opacity(100).chain()
 
-				.overlay(new TextLayer().fontFamily("montserrat").fontSize(25).textAlign("center")
-						.text("☎ 9449 840 144 | ☸ " + website + " | ⚲ " + address))
-				.flags("layer_apply", "relative").gravity("south").y(35).color("white").chain()
+						.overlay(new TextLayer().fontFamily("montserrat").fontSize(25).textAlign("center")
+								.text("☎ 9449 840 144 | ☸ " + website + " | ⚲ " + address))
+						.flags("layer_apply", "relative").gravity("south").y(50).color("white").chain()
 
-		).videoTag(video + ".mp4");
+				).videoTag(video + ".mp4");
 
 		List<String> urls = Arrays.asList(videoUrl.split("<source src='"));
 
@@ -787,14 +802,39 @@ public class HeidigiService {
 
 	}
 
+	public Boolean reIntegrateFacebook() {
+		HeidigiProfile profile = profileRepository.findByMobile(getUserName()).get();
+
+		String accessToken = profile.getFacebookToken();
+
+		if (accessToken != null) {
+
+			String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
+					+ "&debug=all&fields=id,name,accounts&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
+			FacebookPage fpage = restTemplate.getForObject(url, FacebookPage.class);
+
+			String test = new RestTemplate().exchange(
+					"https://graph.facebook.com/" + fpage.getId() + "/permissions?access_token=" + accessToken,
+					HttpMethod.DELETE, null, String.class).getBody();
+			if (test.toLowerCase().indexOf("true") != -1) {
+				profile = profileRepository.findByMobile(getUserName()).get();
+				profile.setFacebookToken(null);
+
+				profileRepository.save(profile);
+
+			}
+		}
+		return true;
+	}
+
 	public String postToFacebookVideo(String video, String template, List<String> pages) throws Exception {
 
-		System.out.println(video+" "+template );
-		
+		System.out.println(video + " " + template);
+
 		FacebookDTO fdto = new FacebookDTO();
 		fdto.setMessage("This is Testing");
 
-		String videoUrl =  downloadVideo(video, template);
+		String videoUrl = downloadVideo(video, template, false);
 
 		fdto.setFile_url(videoUrl);
 
@@ -823,7 +863,7 @@ public class HeidigiService {
 			auditRepository.save(audit);
 		}
 		return "";
-		
+
 	}
 
 	public List<Datum> getFacebookPageDetails() throws Exception {
@@ -865,47 +905,44 @@ public class HeidigiService {
 
 		String url = "https://graph.facebook.com/v18.0/" + facebookId + "?access_token=" + accessToken
 				+ "&debug=all&fields=instagram_business_account,name&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
-		
-		System.out.println("Take this :: "+url);
-		
-		
-		InstagramPage ipage = restTemplate.getForObject(url, InstagramPage.class);
-		
-		if(ipage.getInstagram_business_account()!=null)
-		{
-		
-		 url = "https://graph.facebook.com/v18.0/" + ipage.getId()+ "?access_token=" + accessToken
-				+ "&debug=all&fields=name&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
-		 
-		 System.out.println("Take this1 :: "+url);
 
-		 InstagramPage bpage = restTemplate.getForObject(url, InstagramPage.class);
-		 
-		 ipage.setName(bpage.getName());
+		System.out.println("Take this :: " + url);
+
+		InstagramPage ipage = restTemplate.getForObject(url, InstagramPage.class);
+
+		if (ipage.getInstagram_business_account() != null) {
+
+			url = "https://graph.facebook.com/v18.0/" + ipage.getId() + "?access_token=" + accessToken
+					+ "&debug=all&fields=name&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
+
+			System.out.println("Take this1 :: " + url);
+
+			InstagramPage bpage = restTemplate.getForObject(url, InstagramPage.class);
+
+			ipage.setName(bpage.getName());
+		} else {
+			ipage = null;
 		}
-		else
-		{
-			ipage=null;
-		}
-		 System.out.println("use this :: "+ipage);
+		System.out.println("use this :: " + ipage);
 		return ipage;
 
 	}
 
 	public List<String> getInstagramPageNames() throws Exception {
 
-		return getInstagramAccountDetails().stream().filter(o->o!=null).map(o -> o.getName()).collect(Collectors.toList());
+		return getInstagramAccountDetails().stream().filter(o -> o != null).map(o -> o.getName())
+				.collect(Collectors.toList());
 	}
 
 	public List<String> getFacebookPageNames() throws Exception {
 		return getFacebookPageDetails().stream().map(o -> o.getName()).sorted().collect(Collectors.toList());
 	}
 
-	
 	public static File getResourceAsFile(String relativeFilePath) throws FileNotFoundException {
-	    return ResourceUtils.getFile(String.format("classpath:%s",relativeFilePath));
+		return ResourceUtils.getFile(String.format("classpath:%s", relativeFilePath));
 
 	}
+
 	public String postToInstagramImage(String image, String template, List<String> pages) throws Exception {
 
 		InstagramDTO fdto = new InstagramDTO();
@@ -917,10 +954,10 @@ public class HeidigiService {
 			imageUrl = getImageUrl(image, false, false);
 		else
 			imageUrl = getImageUrlTemplate2(image, false, false);
-		
-		fdto.setImage_url(imageUrl.replaceAll(Pattern.quote("%"),"%25"));
-		
-		System.out.println(imageUrl.replaceAll(Pattern.quote("%"),"%25"));
+
+		fdto.setImage_url(imageUrl.replaceAll(Pattern.quote("%"), "%25"));
+
+		System.out.println(imageUrl.replaceAll(Pattern.quote("%"), "%25"));
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
@@ -930,7 +967,7 @@ public class HeidigiService {
 
 			String pageId = getInstagramAccountDetails().stream().filter(o -> o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getInstagram_business_account().getId();
-			
+
 			System.out.println(pageId);
 
 			InstaDTO result = new RestTemplate()
@@ -938,17 +975,14 @@ public class HeidigiService {
 					.getBody();
 
 			System.out.println(result.getId());
-			
-			InstaCIDDTO cidDTO=new InstaCIDDTO();
+
+			InstaCIDDTO cidDTO = new InstaCIDDTO();
 			cidDTO.setCreation_id(result.getId());
 			cidDTO.setAccess_token(accessToken);
-			
-			
-			
-			InstaDTO result1 = new RestTemplate()
-					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class)
-					.getBody();
-			
+
+			InstaDTO result1 = new RestTemplate().postForEntity(
+					"https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class).getBody();
+
 			System.out.println(result1.getId());
 
 			AuditTrail audit = new AuditTrail();
@@ -956,26 +990,26 @@ public class HeidigiService {
 			audit.setLine1("Posted to Instagram");
 			audit.setLine2(accessToken);
 			audit.setLine3(pageId);
-			audit.setLine4(result+"");
+			audit.setLine4(result + "");
 
 			auditRepository.save(audit);
 		}
 		return "";
 	}
-	
+
 	public String postToInstagramVideo(String image, String template, List<String> pages) throws Exception {
-		
-		System.out.println(image+" "+template);
+
+		System.out.println(image + " " + template);
 
 		InstagramDTO fdto = new InstagramDTO();
 		fdto.setCaption("This is Testing");
 
-		String videoUrl = downloadVideo(image, template);
-		
-		fdto.setVideo_url(videoUrl.replaceAll(Pattern.quote("%"),"%25"));
+		String videoUrl = downloadVideo(image, template, true);
+
+		fdto.setVideo_url(videoUrl.replaceAll(Pattern.quote("%"), "%25"));
 		fdto.setMedia_type("REELS");
-		
-		System.out.println(videoUrl.replaceAll(Pattern.quote("%"),"%25"));
+
+		System.out.println(videoUrl.replaceAll(Pattern.quote("%"), "%25"));
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
@@ -985,7 +1019,7 @@ public class HeidigiService {
 
 			String pageId = getInstagramAccountDetails().stream().filter(o -> o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getInstagram_business_account().getId();
-			
+
 			System.out.println(pageId);
 
 			InstaDTO result = new RestTemplate()
@@ -993,19 +1027,16 @@ public class HeidigiService {
 					.getBody();
 
 			System.out.println(result.getId());
-			
+
 			Thread.sleep(20000);
-			
-			InstaCIDDTO cidDTO=new InstaCIDDTO();
+
+			InstaCIDDTO cidDTO = new InstaCIDDTO();
 			cidDTO.setCreation_id(result.getId());
 			cidDTO.setAccess_token(accessToken);
-			
-			
-			
-			InstaDTO result1 = new RestTemplate()
-					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class)
-					.getBody();
-			
+
+			InstaDTO result1 = new RestTemplate().postForEntity(
+					"https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class).getBody();
+
 			System.out.println(result1.getId());
 
 			AuditTrail audit = new AuditTrail();
@@ -1013,13 +1044,13 @@ public class HeidigiService {
 			audit.setLine1("Posted to Instagram");
 			audit.setLine2(accessToken);
 			audit.setLine3(pageId);
-			audit.setLine4(result+"");
+			audit.setLine4(result + "");
 
 			auditRepository.save(audit);
 		}
 		return "";
 	}
-	
+
 	public String postToFacebookImage(String image, String template, List<String> pages) throws Exception {
 
 		FacebookDTO fdto = new FacebookDTO();
@@ -1062,9 +1093,10 @@ public class HeidigiService {
 	}
 
 	public String getCategory() throws Exception {
-		
-		return getRole().equals("Customer")?userRepository.findByMobile(getUserName()).get().getCategory().getCname():"";
-		
+
+		return getRole().equals("Customer") ? userRepository.findByMobile(getUserName()).get().getCategory().getCname()
+				: "";
+
 //		return userRepository.findByMobile(getUserName()).get().getCategory().getCname();
 	}
 

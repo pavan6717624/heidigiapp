@@ -230,7 +230,7 @@ public class HeidigiController {
 			HttpServletResponse response) throws Exception {
 
 		response.setHeader("Content-Disposition", "attachment; filename=demo.mp4");
-		String url = service.downloadVideo(video, template);
+		String url = service.downloadVideo(video, template,false);
 
 		System.out.println(url);
 
@@ -323,8 +323,8 @@ public class HeidigiController {
 
 		List<Object> templates = new ArrayList<>();
 		templates.add("{\"video\":\"" + video + "\"}");
-		templates.add(service.downloadVideo(video, "Template 1"));
-		templates.add(service.downloadVideo(video, "Template 2"));
+		templates.add(service.downloadVideo(video, "Template 1",false));
+		templates.add(service.downloadVideo(video, "Template 2",false));
 
 		return templates;
 	}
@@ -333,6 +333,12 @@ public class HeidigiController {
 	public String getSrc(@RequestParam("src") String src) throws Exception {
 
 		return service.getImage(src);
+	}
+	
+	@RequestMapping(value = "reIntegrateFacebook")
+	public Boolean reIntegrateFacebook() throws Exception {
+
+		return service.reIntegrateFacebook();
 	}
 
 }
