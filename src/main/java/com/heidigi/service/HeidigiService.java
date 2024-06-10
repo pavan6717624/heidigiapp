@@ -421,7 +421,7 @@ public class HeidigiService {
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_west")
-				.opacity(100).height(0.15).x(10).y(10).crop("scale").chain();
+				.opacity(100).height(0.15).width(0.25).x(10).y(10).crop("scale").chain();
 
 		if (watermark)
 			transformation = transformation.overlay(new Layer().publicId("mvj11zgltg9mqjgy7z4d")).chain()
@@ -524,7 +524,7 @@ public class HeidigiService {
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_east")
-				.opacity(100).height(0.15).x(10).y(10).crop("scale").chain();
+				.opacity(100).height(0.15).width(0.25).x(10).y(10).crop("scale").chain();
 
 		if (watermark)
 
@@ -689,7 +689,7 @@ public class HeidigiService {
 
 				// logo
 				.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative").gravity("north_west")
-				.opacity(100).height(logoHeight).x(10).y(10).crop("scale").chain()
+				.opacity(100).height(logoHeight).width(0.25).x(10).y(10).crop("scale").chain()
 
 				// 65% bottom background
 				.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain().flags("layer_apply", "relative")
@@ -783,7 +783,7 @@ public class HeidigiService {
 
 						// logo
 						.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative")
-						.gravity("north_east").opacity(100).height(logoHeight).x(10).y(10).crop("scale").chain()
+						.gravity("north_east").opacity(100).height(logoHeight).width(0.25).x(10).y(10).crop("scale").chain()
 
 						// 100% bottom background
 						.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain().flags("layer_apply", "relative")
