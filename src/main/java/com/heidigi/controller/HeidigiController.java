@@ -335,6 +335,12 @@ public class HeidigiController {
 		return service.getImage(src);
 	}
 	
+	@RequestMapping(value = "generateOTP")
+	public Boolean generateOTP(@RequestParam("mobile") String mobile) throws Exception {
+
+		return service.generateOTP(mobile);
+	}
+	
 	@RequestMapping(value = "reIntegrateFacebook")
 	public Boolean reIntegrateFacebook() throws Exception {
 

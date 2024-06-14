@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URLDecoder;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -20,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,6 +75,9 @@ public class HeidigiService {
 	@Lazy
 	@Autowired
 	private HeidigiService hService;
+
+	@Autowired
+	private JavaMailSender javaMailSender;
 
 	@Autowired
 	HeidigiImageRepository heidigiImageRepository;
@@ -840,11 +847,11 @@ public class HeidigiService {
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
-			String accessToken = getFacebookPageDetails().stream().filter(o ->o!=null && o.getName().equals(page))
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o != null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getAccess_token();
 			fdto.setAccess_token(accessToken);
 
-			String pageId = getFacebookPageDetails().stream().filter(o -> o!=null && o.getName().equals(page))
+			String pageId = getFacebookPageDetails().stream().filter(o -> o != null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getId();
 
 			String result = new RestTemplate()
@@ -961,11 +968,11 @@ public class HeidigiService {
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
-			String accessToken = getFacebookPageDetails().stream().filter(o -> o!=null &&  o.getName().equals(page))
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o != null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getAccess_token();
 			fdto.setAccess_token(accessToken);
 
-			String pageId = getInstagramAccountDetails().stream().filter(o -> o!=null && o.getName().equals(page))
+			String pageId = getInstagramAccountDetails().stream().filter(o -> o != null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getInstagram_business_account().getId();
 
 			System.out.println(pageId);
@@ -1013,11 +1020,11 @@ public class HeidigiService {
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
-			String accessToken = getFacebookPageDetails().stream().filter(o -> o!=null &&  o.getName().equals(page))
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o != null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getAccess_token();
 			fdto.setAccess_token(accessToken);
 
-			String pageId = getInstagramAccountDetails().stream().filter(o ->o!=null &&   o.getName().equals(page))
+			String pageId = getInstagramAccountDetails().stream().filter(o -> o != null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getInstagram_business_account().getId();
 
 			System.out.println(pageId);
@@ -1028,18 +1035,17 @@ public class HeidigiService {
 
 			System.out.println(result.getId());
 
-			while(true)
-			{
-			
-			String result2 = new RestTemplate().getForObject(
-					"https://graph.facebook.com/v18.0/" + result.getId() + "?fields=status_code&access_token="+accessToken, String.class);
-			System.out.println(result2);
-			
-			if(result2.indexOf("FINISHED")!=-1)
-				break;
-			else
-				Thread.sleep(5000);
-			
+			while (true) {
+
+				String result2 = new RestTemplate().getForObject("https://graph.facebook.com/v18.0/" + result.getId()
+						+ "?fields=status_code&access_token=" + accessToken, String.class);
+				System.out.println(result2);
+
+				if (result2.indexOf("FINISHED") != -1)
+					break;
+				else
+					Thread.sleep(5000);
+
 			}
 			InstaCIDDTO cidDTO = new InstaCIDDTO();
 			cidDTO.setCreation_id(result.getId());
@@ -1047,8 +1053,6 @@ public class HeidigiService {
 
 			InstaDTO result1 = new RestTemplate().postForEntity(
 					"https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class).getBody();
-			
-			
 
 			System.out.println(result1.getId());
 
@@ -1080,11 +1084,11 @@ public class HeidigiService {
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
-			String accessToken = getFacebookPageDetails().stream().filter(o -> o!=null &&  o.getName().equals(page))
+			String accessToken = getFacebookPageDetails().stream().filter(o -> o != null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getAccess_token();
 			fdto.setAccess_token(accessToken);
 
-			String pageId = getFacebookPageDetails().stream().filter(o -> o!=null &&  o.getName().equals(page))
+			String pageId = getFacebookPageDetails().stream().filter(o -> o != null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getId();
 
 			String result = new RestTemplate()
@@ -1103,6 +1107,56 @@ public class HeidigiService {
 			auditRepository.save(audit);
 		}
 		return "";
+	}
+
+	public Boolean generateOTP(String mobile) throws Exception
+	{
+		
+		HeidigiUser user=userRepository.findByMobile(Long.valueOf(mobile)).get();
+		String emailId = user.getEmail();
+		
+		String password=generateOTP(4);
+		
+		user.setPassword(password);
+		
+		
+		userRepository.save(user);		
+	
+		return sendMessage(emailId,"Heidigi - OTP", "Your OTP is "+password);
+		
+	}
+
+	public String generateOTP(int length) throws NoSuchAlgorithmException {
+
+		String numbers = "123456789123456789123456789123456789";
+		SecureRandom random = new SecureRandom();
+		char[] password = new char[length];
+
+		for (int i = 0; i < length; i++) {
+			password[i] = numbers.charAt(random.nextInt(numbers.length()));
+		}
+		return new String(password);
+	}
+
+	public Boolean sendMessage(String mailTo, String subject, String text) {
+		SimpleMailMessage msg = new SimpleMailMessage();
+		msg.setTo(mailTo);
+		msg.setFrom("support@thetakeoff.in");
+		msg.setSubject(subject);
+		msg.setText(text);
+		try {
+
+			javaMailSender.send(msg);
+		} catch (Exception ex) {
+			try {
+				javaMailSender.send(msg);
+			} catch (Exception ex1) {
+				System.out.println("Error in Sending Mail for " + mailTo + "\n" + ex);
+			}
+
+		}
+		
+		return true;
 	}
 
 	public String getCategory() throws Exception {
