@@ -66,6 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/video/*").permitAll()
 			.antMatchers("/checkUrl").permitAll()
 			.antMatchers("/generateOTP").permitAll()
+			.antMatchers("/facebookLogin").permitAll()
 			.antMatchers("/getCategories").permitAll()
 			
 				

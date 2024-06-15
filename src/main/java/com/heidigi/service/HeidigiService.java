@@ -25,6 +25,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -42,10 +46,12 @@ import com.heidigi.domain.HeidigiImage;
 import com.heidigi.domain.HeidigiProfile;
 import com.heidigi.domain.HeidigiUser;
 import com.heidigi.domain.HeidigiVideo;
+import com.heidigi.jwt.JwtTokenUtil;
 import com.heidigi.model.Datum;
 import com.heidigi.model.DropDown;
 import com.heidigi.model.FacebookDTO;
 import com.heidigi.model.FacebookPage;
+import com.heidigi.model.HeidigiLoginDTO;
 import com.heidigi.model.HeidigiSignupDTO;
 import com.heidigi.model.ImageDTO;
 import com.heidigi.model.InstaCIDDTO;
@@ -93,6 +99,15 @@ public class HeidigiService {
 
 	@Autowired
 	SubCategoryRepository subCategoryRepository;
+
+	@Autowired
+	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
+
+	@Autowired
+	private JwtUserDetailsService userDetailsService;
 
 	static RestTemplate restTemplate = new RestTemplate();
 
@@ -790,7 +805,8 @@ public class HeidigiService {
 
 						// logo
 						.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative")
-						.gravity("north_east").opacity(100).height(logoHeight).width(0.25).x(10).y(10).crop("scale").chain()
+						.gravity("north_east").opacity(100).height(logoHeight).width(0.25).x(10).y(10).crop("scale")
+						.chain()
 
 						// 100% bottom background
 						.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain().flags("layer_apply", "relative")
@@ -1109,21 +1125,94 @@ public class HeidigiService {
 		return "";
 	}
 
-	public Boolean generateOTP(String mobile) throws Exception
-	{
-		
-		HeidigiUser user=userRepository.findByMobile(Long.valueOf(mobile)).get();
+	public Boolean generateOTP(String mobile) throws Exception {
+
+		HeidigiUser user = userRepository.findByMobile(Long.valueOf(mobile)).get();
 		String emailId = user.getEmail();
-		
-		String password=generateOTP(4);
-		
+
+		String password = generateOTP(4);
+
 		user.setPassword(password);
+
+		userRepository.save(user);
+
+		return sendMessage(emailId, "Heidigi - OTP", "Your OTP is " + password);
+
+	}
+
+	private void authenticate(String username, String password) throws Exception {
+		// System.out.println("entered in authenticate sub function...");
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+		} catch (DisabledException e) {
+			throw new Exception("USER_DISABLED", e);
+		} catch (BadCredentialsException e) {
+			throw new Exception("INVALID_CREDENTIALS", e);
+		}
+
+	}
+
+	public LoginStatusDTO login(HeidigiLoginDTO login) {
+		LoginStatusDTO loginStatus = new LoginStatusDTO();
+		String username = login.getMobile();
+		String password = login.getPassword();
+		try {
+
+			Optional<HeidigiUser> userOpt = userRepository.findByMobile(Long.valueOf(username));
+
+			if (userOpt.isPresent()) {
+
+				authenticate(username, password);
+
+				final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+				final String token = jwtTokenUtil.generateToken(userDetails);
+
+				loginStatus.setUserId(userDetails.getUsername());
+
+				loginStatus.setLoginStatus(true);
+
+				loginStatus.setJwt(token);
+
+				loginStatus.setUserType(userDetails.getAuthorities().toArray()[0].toString());
+			} else {
+				System.out.println("He is not user");
+
+				loginStatus.setLoginStatus(false);
+				loginStatus.setMessage("Invalid Credientails..");
+
+				return loginStatus;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.out.println("Error Occured while logging in " + ex);
+			loginStatus.setLoginStatus(false);
+			loginStatus.setMessage("Invalid Credientails..");
+		}
+
+		return loginStatus;
+
+	}
+
+	public LoginStatusDTO facebookLogin(String accessToken) throws Exception {
+
+		String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
+				+ "&debug=all&fields=id,name,email&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
 		
+		FacebookPage page = restTemplate.getForObject(url, FacebookPage.class);
+
+		String emailId = page.getEmail();
 		
-		userRepository.save(user);		
-	
-		return sendMessage(emailId,"Heidigi - OTP", "Your OTP is "+password);
-		
+		System.out.println(page);
+
+		HeidigiUser user = userRepository.findByEmail(emailId).get();
+
+		HeidigiLoginDTO loginDTO = new HeidigiLoginDTO();
+		loginDTO.setMobile(user.getMobile() + "");
+		loginDTO.setPassword(user.getPassword());
+
+		return login(loginDTO);
+
 	}
 
 	public String generateOTP(int length) throws NoSuchAlgorithmException {
@@ -1155,7 +1244,7 @@ public class HeidigiService {
 			}
 
 		}
-		
+
 		return true;
 	}
 

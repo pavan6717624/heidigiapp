@@ -17,5 +17,7 @@ public interface HeidigiUserRepository extends JpaRepository<HeidigiUser, Long> 
 	List<String> getRandomImages();
 
 	Optional<HeidigiUser> findByMobile(@Param("mobile") Long mobile);
+	
+	Optional<HeidigiUser> findByEmail(@Param("email") String email);
 
 }

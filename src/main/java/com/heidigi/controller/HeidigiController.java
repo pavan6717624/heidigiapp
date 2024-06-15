@@ -51,29 +51,8 @@ public class HeidigiController {
 	@Autowired
 	HeidigiUserRepository userRepository;
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
-
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
-
-	@Autowired
-	private JwtUserDetailsService userDetailsService;
-
 	public static Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap("cloud_name", "hwlyozehf", "api_key",
 			"453395666963287", "api_secret", "Q-kgBVQlRlGtdccq-ATYRFSoR8s"));
-
-	private void authenticate(String username, String password) throws Exception {
-		// System.out.println("entered in authenticate sub function...");
-		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-		} catch (DisabledException e) {
-			throw new Exception("USER_DISABLED", e);
-		} catch (BadCredentialsException e) {
-			throw new Exception("INVALID_CREDENTIALS", e);
-		}
-
-	}
 
 	@RequestMapping(value = "/getLoginDetails")
 	public LoginStatusDTO getLoginDetails() throws Exception {
@@ -107,44 +86,7 @@ public class HeidigiController {
 	@RequestMapping(value = "login")
 	public LoginStatusDTO login(@RequestBody HeidigiLoginDTO login) {
 
-		LoginStatusDTO loginStatus = new LoginStatusDTO();
-		String username = login.getMobile();
-		String password = login.getPassword();
-		try {
-
-			Optional<HeidigiUser> userOpt = userRepository.findByMobile(Long.valueOf(username));
-
-			if (userOpt.isPresent()) {
-
-				authenticate(username, password);
-
-				final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-				final String token = jwtTokenUtil.generateToken(userDetails);
-
-				loginStatus.setUserId(userDetails.getUsername());
-
-				loginStatus.setLoginStatus(true);
-
-				loginStatus.setJwt(token);
-
-				loginStatus.setUserType(userDetails.getAuthorities().toArray()[0].toString());
-			} else {
-				System.out.println("He is not user");
-
-				loginStatus.setLoginStatus(false);
-				loginStatus.setMessage("Invalid Credientails..");
-
-				return loginStatus;
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.out.println("Error Occured while logging in " + ex);
-			loginStatus.setLoginStatus(false);
-			loginStatus.setMessage("Invalid Credientails..");
-		}
-
-		return loginStatus;
+		return service.login(login);
 
 	}
 
@@ -183,7 +125,7 @@ public class HeidigiController {
 	public List<String> getFacebookPageNames() throws Exception {
 		return service.getFacebookPageNames();
 	}
-	
+
 	@RequestMapping(value = "getInstagramPageNames")
 	public List<String> getInstagramPageNames() throws Exception {
 		return service.getInstagramPageNames();
@@ -230,7 +172,7 @@ public class HeidigiController {
 			HttpServletResponse response) throws Exception {
 
 		response.setHeader("Content-Disposition", "attachment; filename=demo.mp4");
-		String url = service.downloadVideo(video, template,false);
+		String url = service.downloadVideo(video, template, false);
 
 		System.out.println(url);
 
@@ -251,13 +193,13 @@ public class HeidigiController {
 
 		return service.postToInstagramImage(send.getImage(), send.getTemplate(), send.getPages());
 	}
-	
+
 	@RequestMapping(value = "postToInstagramVideo")
 	public String postToInstagramVideo(@RequestBody SendToFacebook send) throws Exception {
 
 		return service.postToInstagramVideo(send.getImage(), send.getTemplate(), send.getPages());
 	}
-	
+
 	@RequestMapping(value = "saveFacebookToken")
 	public Boolean saveFacebookToken(@RequestParam("accessToken") String accessToken) throws Exception {
 
@@ -269,11 +211,11 @@ public class HeidigiController {
 
 		return service.getCategories();
 	}
-	
-	@RequestMapping(value = "getCategory")
-	public String getCategory() throws Exception{
 
-		return "{\"name\":\""+service.getCategory()+"\"}";
+	@RequestMapping(value = "getCategory")
+	public String getCategory() throws Exception {
+
+		return "{\"name\":\"" + service.getCategory() + "\"}";
 	}
 
 	@RequestMapping(value = "getSubCategories")
@@ -323,8 +265,8 @@ public class HeidigiController {
 
 		List<Object> templates = new ArrayList<>();
 		templates.add("{\"video\":\"" + video + "\"}");
-		templates.add(service.downloadVideo(video, "Template 1",false));
-		templates.add(service.downloadVideo(video, "Template 2",false));
+		templates.add(service.downloadVideo(video, "Template 1", false));
+		templates.add(service.downloadVideo(video, "Template 2", false));
 
 		return templates;
 	}
@@ -334,13 +276,19 @@ public class HeidigiController {
 
 		return service.getImage(src);
 	}
-	
+
 	@RequestMapping(value = "generateOTP")
 	public Boolean generateOTP(@RequestParam("mobile") String mobile) throws Exception {
 
 		return service.generateOTP(mobile);
 	}
-	
+
+	@RequestMapping(value = "facebookLogin")
+	public LoginStatusDTO facebookLogin(@RequestParam("accessToken") String accessToken) throws Exception {
+
+		return service.facebookLogin(accessToken);
+	}
+
 	@RequestMapping(value = "reIntegrateFacebook")
 	public Boolean reIntegrateFacebook() throws Exception {
 
