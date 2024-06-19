@@ -174,7 +174,7 @@ public class HeidigiService {
 			loginStatus.setMessage("Login Successful");
 
 		} else {
-			System.out.println("in singup3 "+userOpt.isPresent()+" "+userOpt1.isPresent());
+			System.out.println("in singup3 " + userOpt.isPresent() + " " + userOpt1.isPresent());
 			loginStatus.setLoginStatus(false);
 			if (userOpt.isPresent())
 				loginStatus.setMessage(" Mobile number already Exists...");
@@ -183,7 +183,6 @@ public class HeidigiService {
 				loginStatus.setMessage(loginStatus.getMessage() + " Email already Exists...");
 		}
 
-	
 		return loginStatus;
 
 	}
@@ -1223,22 +1222,33 @@ public class HeidigiService {
 
 	public LoginStatusDTO facebookLogin(String accessToken) throws Exception {
 
-		String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
-				+ "&debug=all&fields=id,name,email&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
+		try {
 
-		FacebookPage page = restTemplate.getForObject(url, FacebookPage.class);
+			String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
+					+ "&debug=all&fields=id,name,email&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
 
-		String emailId = page.getEmail();
+			FacebookPage page = restTemplate.getForObject(url, FacebookPage.class);
 
-		System.out.println(page);
+			String emailId = page.getEmail();
 
-		HeidigiUser user = userRepository.findByEmail(emailId).get();
+			System.out.println(page);
 
-		HeidigiLoginDTO loginDTO = new HeidigiLoginDTO();
-		loginDTO.setMobile(user.getMobile() + "");
-		loginDTO.setPassword(user.getPassword());
+			HeidigiUser user = userRepository.findByEmail(emailId).get();
 
-		return login(loginDTO);
+			HeidigiLoginDTO loginDTO = new HeidigiLoginDTO();
+			loginDTO.setMobile(user.getMobile() + "");
+			loginDTO.setPassword(user.getPassword());
+
+			return login(loginDTO);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.out.println("Error Occured while logging in " + ex);
+			LoginStatusDTO loginStatus = new LoginStatusDTO();
+			loginStatus.setLoginStatus(false);
+			loginStatus.setMessage("Invalid Login....");
+			return loginStatus;
+
+		}
 
 	}
 
@@ -1257,7 +1267,6 @@ public class HeidigiService {
 	public Boolean sendMessage(String mailTo, String subject, String text) {
 		SimpleMailMessage msg = new SimpleMailMessage();
 		msg.setTo(mailTo);
-		msg.setFrom("support@thetakeoff.in");
 		msg.setSubject(subject);
 		msg.setText(text);
 		try {
