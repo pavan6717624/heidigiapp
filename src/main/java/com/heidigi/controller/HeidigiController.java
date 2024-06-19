@@ -91,7 +91,7 @@ public class HeidigiController {
 	}
 
 	@RequestMapping(value = "signup")
-	public LoginStatusDTO signup(@RequestBody HeidigiSignupDTO signup) {
+	public LoginStatusDTO signup(@RequestBody HeidigiSignupDTO signup) throws Exception {
 		return service.signup(signup);
 	}
 
@@ -287,6 +287,12 @@ public class HeidigiController {
 	public LoginStatusDTO facebookLogin(@RequestParam("accessToken") String accessToken) throws Exception {
 
 		return service.facebookLogin(accessToken);
+	}
+	
+	@RequestMapping(value = "facebookSignup")
+	public LoginStatusDTO facebookSignup(@RequestParam("accessToken") String accessToken, @RequestParam("role") String role, @RequestParam("category") String category) throws Exception {
+
+		return service.facebookSignup(accessToken, role, category);
 	}
 
 	@RequestMapping(value = "reIntegrateFacebook")

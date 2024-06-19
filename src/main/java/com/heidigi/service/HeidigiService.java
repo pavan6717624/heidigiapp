@@ -126,19 +126,40 @@ public class HeidigiService {
 
 	public static Cloudinary cloudinary[] = { cloudinary1, cloudinary2 };
 
-	public LoginStatusDTO signup(HeidigiSignupDTO signup) {
+	public LoginStatusDTO facebookSignup(String accessToken, String role, String category) throws Exception {
+
+		String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
+				+ "&debug=all&fields=id,name,email&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
+
+		FacebookPage page = restTemplate.getForObject(url, FacebookPage.class);
+
+		HeidigiSignupDTO signup = new HeidigiSignupDTO();
+
+		signup.setCategory(category);
+		signup.setEmail(page.getEmail());
+		signup.setMobile(page.getId());
+		signup.setName(page.getName());
+		signup.setRole(role);
+		return signup(signup);
+	}
+
+	public LoginStatusDTO signup(HeidigiSignupDTO signup) throws Exception {
 
 		LoginStatusDTO loginStatus = new LoginStatusDTO();
 
 		Optional<HeidigiUser> userOpt = userRepository.findByMobile(Long.valueOf(signup.getMobile()));
-		;
 
-		if (!userOpt.isPresent()) {
+		Optional<HeidigiUser> userOpt1 = userRepository.findByEmail(signup.getEmail());
+
+		System.out.println("in singup");
+
+		if (!userOpt.isPresent() && !userOpt1.isPresent()) {
+			System.out.println("in singup2");
 			HeidigiUser user = new HeidigiUser();
 			user.setEmail(signup.getEmail());
 			user.setMobile(Long.valueOf(signup.getMobile()));
 			user.setName(signup.getName());
-			user.setPassword(signup.getPassword());
+			user.setPassword(generateOTP(4));
 			user.setMessage("Customer Signup");
 			user.setRole(
 					roleRepository.findByRoleName(signup.getRole().equals("Business") ? "Customer" : "Designer").get());
@@ -153,10 +174,16 @@ public class HeidigiService {
 			loginStatus.setMessage("Login Successful");
 
 		} else {
+			System.out.println("in singup3 "+userOpt.isPresent()+" "+userOpt1.isPresent());
 			loginStatus.setLoginStatus(false);
-			loginStatus.setMessage("Mobile number already Exists...");
+			if (userOpt.isPresent())
+				loginStatus.setMessage(" Mobile number already Exists...");
+
+			if (userOpt1.isPresent())
+				loginStatus.setMessage(loginStatus.getMessage() + " Email already Exists...");
 		}
 
+	
 		return loginStatus;
 
 	}
@@ -1198,11 +1225,11 @@ public class HeidigiService {
 
 		String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
 				+ "&debug=all&fields=id,name,email&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
-		
+
 		FacebookPage page = restTemplate.getForObject(url, FacebookPage.class);
 
 		String emailId = page.getEmail();
-		
+
 		System.out.println(page);
 
 		HeidigiUser user = userRepository.findByEmail(emailId).get();
