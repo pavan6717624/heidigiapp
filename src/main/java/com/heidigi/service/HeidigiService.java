@@ -9,9 +9,7 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +24,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -57,6 +54,7 @@ import com.heidigi.model.DropDown;
 import com.heidigi.model.FacebookDTO;
 import com.heidigi.model.FacebookPage;
 import com.heidigi.model.FacebookVideoDTO;
+import com.heidigi.model.FacebookVideoPublishDTO;
 import com.heidigi.model.HeidigiLoginDTO;
 import com.heidigi.model.HeidigiSignupDTO;
 import com.heidigi.model.ImageDTO;
@@ -926,13 +924,27 @@ public class HeidigiService {
 					.getBody();
 
 			System.out.println(result1);
+			
+			
+			FacebookVideoPublishDTO publish=new  FacebookVideoPublishDTO();
+			publish.setAccess_token(accessToken);
+			publish.setDescription("This is Testing");
+			publish.setUpload_phase("finish");
+			publish.setVideo_id(result.getVideo_id());
+			publish.setVideo_state("PUBLISHED");
+			
+			String result2 = new RestTemplate()
+					.postForEntity( "https://graph.facebook.com/v20.0/" + pageId + "/video_reels", publish, String.class)
+					.getBody();
 
+			System.out.println(result2);
+			
 			AuditTrail audit = new AuditTrail();
 			audit.setUser(userRepository.findByMobile(getUserName()).get());
 			audit.setLine1("Posted to Facebook");
 			audit.setLine2(accessToken);
 			audit.setLine3(pageId);
-			audit.setLine4(result1);
+			audit.setLine4(result.getVideo_id());
 
 			auditRepository.save(audit);
 		}
