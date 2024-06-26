@@ -9,7 +9,9 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +23,10 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -51,6 +56,7 @@ import com.heidigi.model.Datum;
 import com.heidigi.model.DropDown;
 import com.heidigi.model.FacebookDTO;
 import com.heidigi.model.FacebookPage;
+import com.heidigi.model.FacebookVideoDTO;
 import com.heidigi.model.HeidigiLoginDTO;
 import com.heidigi.model.HeidigiSignupDTO;
 import com.heidigi.model.ImageDTO;
@@ -128,7 +134,7 @@ public class HeidigiService {
 
 	public LoginStatusDTO facebookSignup(String accessToken, String role, String category) throws Exception {
 
-		String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
+		String url = "https://graph.facebook.com/v20.0/me?access_token=" + accessToken
 				+ "&debug=all&fields=id,name,email&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
 
 		FacebookPage page = restTemplate.getForObject(url, FacebookPage.class);
@@ -858,7 +864,7 @@ public class HeidigiService {
 
 		if (accessToken != null) {
 
-			String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
+			String url = "https://graph.facebook.com/v20.0/me?access_token=" + accessToken
 					+ "&debug=all&fields=id,name,accounts&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
 			FacebookPage fpage = restTemplate.getForObject(url, FacebookPage.class);
 
@@ -880,12 +886,12 @@ public class HeidigiService {
 
 		System.out.println(video + " " + template);
 
-		FacebookDTO fdto = new FacebookDTO();
-		fdto.setMessage("This is Testing");
+		FacebookVideoDTO fdto = new FacebookVideoDTO();
+//		fdto.setMessage("This is Testing");
 
-		String videoUrl = downloadVideo(video, template, false);
+		String videoUrl = downloadVideo(video, template, true);
 
-		fdto.setFile_url(videoUrl);
+		fdto.setUpload_phase("start");
 
 		for (int i = 0; i < pages.size(); i++) {
 			String page = pages.get(i);
@@ -896,18 +902,37 @@ public class HeidigiService {
 			String pageId = getFacebookPageDetails().stream().filter(o -> o != null && o.getName().equals(page))
 					.collect(Collectors.toList()).get(0).getId();
 
-			String result = new RestTemplate()
-					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/videos", fdto, String.class)
+			FacebookVideoDTO result = new RestTemplate()
+					.postForEntity("https://graph.facebook.com/v20.0/" + pageId + "/video_reels", fdto, FacebookVideoDTO.class)
+					.getBody();
+			
+//			FacebookDTO param=new FacebookDTO();
+//			param.setAccess_token(accessToken);
+//			param.setFile_url(videoUrl);
+			HttpHeaders headers = new HttpHeaders();
+			
+//	        headers.add("Authorization", "Basic " + getBase64Credentials());
+			headers. set("Accept", "application/json"); 
+	        headers.set("Authorization", "OAuth "+accessToken);
+	        headers.set("file_url", videoUrl.replaceAll(Pattern.quote("%"), "%25"));
+			
+			
+	        HttpEntity<String> entity = new HttpEntity<>( headers);
+			
+			System.out.println(result+"\n"+entity);
+			
+			String result1 = new RestTemplate()
+					.postForEntity( result.getUpload_url(), entity, String.class)
 					.getBody();
 
-			System.out.println(result);
+			System.out.println(result1);
 
 			AuditTrail audit = new AuditTrail();
 			audit.setUser(userRepository.findByMobile(getUserName()).get());
 			audit.setLine1("Posted to Facebook");
 			audit.setLine2(accessToken);
 			audit.setLine3(pageId);
-			audit.setLine4(result);
+			audit.setLine4(result1);
 
 			auditRepository.save(audit);
 		}
@@ -921,7 +946,7 @@ public class HeidigiService {
 
 		String accessToken = profile.getFacebookToken();
 
-		String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
+		String url = "https://graph.facebook.com/v20.0/me?access_token=" + accessToken
 				+ "&debug=all&fields=id,name,accounts&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
 		FacebookPage fpage = restTemplate.getForObject(url, FacebookPage.class);
 
@@ -952,7 +977,7 @@ public class HeidigiService {
 
 		String accessToken = profile.getFacebookToken();
 
-		String url = "https://graph.facebook.com/v18.0/" + facebookId + "?access_token=" + accessToken
+		String url = "https://graph.facebook.com/v20.0/" + facebookId + "?access_token=" + accessToken
 				+ "&debug=all&fields=instagram_business_account,name&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
 
 		System.out.println("Take this :: " + url);
@@ -961,7 +986,7 @@ public class HeidigiService {
 
 		if (ipage.getInstagram_business_account() != null) {
 
-			url = "https://graph.facebook.com/v18.0/" + ipage.getId() + "?access_token=" + accessToken
+			url = "https://graph.facebook.com/v20.0/" + ipage.getId() + "?access_token=" + accessToken
 					+ "&debug=all&fields=name&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
 
 			System.out.println("Take this1 :: " + url);
@@ -1020,7 +1045,7 @@ public class HeidigiService {
 			System.out.println(pageId);
 
 			InstaDTO result = new RestTemplate()
-					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/media", fdto, InstaDTO.class)
+					.postForEntity("https://graph.facebook.com/v20.0/" + pageId + "/media", fdto, InstaDTO.class)
 					.getBody();
 
 			System.out.println(result.getId());
@@ -1030,7 +1055,7 @@ public class HeidigiService {
 			cidDTO.setAccess_token(accessToken);
 
 			InstaDTO result1 = new RestTemplate().postForEntity(
-					"https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class).getBody();
+					"https://graph.facebook.com/v20.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class).getBody();
 
 			System.out.println(result1.getId());
 
@@ -1072,14 +1097,14 @@ public class HeidigiService {
 			System.out.println(pageId);
 
 			InstaDTO result = new RestTemplate()
-					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/media", fdto, InstaDTO.class)
+					.postForEntity("https://graph.facebook.com/v20.0/" + pageId + "/media", fdto, InstaDTO.class)
 					.getBody();
 
 			System.out.println(result.getId());
 
 			while (true) {
 
-				String result2 = new RestTemplate().getForObject("https://graph.facebook.com/v18.0/" + result.getId()
+				String result2 = new RestTemplate().getForObject("https://graph.facebook.com/v20.0/" + result.getId()
 						+ "?fields=status_code&access_token=" + accessToken, String.class);
 				System.out.println(result2);
 
@@ -1094,7 +1119,7 @@ public class HeidigiService {
 			cidDTO.setAccess_token(accessToken);
 
 			InstaDTO result1 = new RestTemplate().postForEntity(
-					"https://graph.facebook.com/v18.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class).getBody();
+					"https://graph.facebook.com/v20.0/" + pageId + "/media_publish", cidDTO, InstaDTO.class).getBody();
 
 			System.out.println(result1.getId());
 
@@ -1134,7 +1159,7 @@ public class HeidigiService {
 					.collect(Collectors.toList()).get(0).getId();
 
 			String result = new RestTemplate()
-					.postForEntity("https://graph.facebook.com/v18.0/" + pageId + "/photos", fdto, String.class)
+					.postForEntity("https://graph.facebook.com/v20.0/" + pageId + "/photos", fdto, String.class)
 					.getBody();
 
 			System.out.println(result);
@@ -1224,7 +1249,7 @@ public class HeidigiService {
 
 		try {
 
-			String url = "https://graph.facebook.com/v18.0/me?access_token=" + accessToken
+			String url = "https://graph.facebook.com/v20.0/me?access_token=" + accessToken
 					+ "&debug=all&fields=id,name,email&format=json&method=get&pretty=0&suppress_http_code=1&transport=cors";
 
 			FacebookPage page = restTemplate.getForObject(url, FacebookPage.class);
@@ -1302,7 +1327,7 @@ public class HeidigiService {
 
 	public Boolean saveFacebookToken(String accessToken) throws Exception {
 
-		String url = "https://graph.facebook.com/v18.0/oauth/access_token?grant_type=fb_exchange_token&client_id="
+		String url = "https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id="
 				+ facebookAppId + "&client_secret=" + facebookSecret + "&fb_exchange_token=" + accessToken;
 		Datum data = restTemplate.getForObject(url, Datum.class);
 
