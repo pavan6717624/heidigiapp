@@ -51,9 +51,6 @@ public class HeidigiController {
 	@Autowired
 	HeidigiUserRepository userRepository;
 
-	public static Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap("cloud_name", "hwlyozehf", "api_key",
-			"453395666963287", "api_secret", "Q-kgBVQlRlGtdccq-ATYRFSoR8s"));
-
 	@RequestMapping(value = "/getLoginDetails")
 	public LoginStatusDTO getLoginDetails() throws Exception {
 

@@ -121,14 +121,26 @@ public class HeidigiService {
 	HeidigiRoleRepository roleRepository;
 	@Autowired
 	HeidigiProfileRepository profileRepository;
+	
+	public static String cloudinaryName1="hjfdpue35";
+	
+	public static String cloudinaryName2="hbhtxojtp";
 
-	public static Cloudinary cloudinary1 = new Cloudinary(ObjectUtils.asMap("cloud_name", "hwlyozehf", "api_key",
-			"453395666963287", "api_secret", "Q-kgBVQlRlGtdccq-ATYRFSoR8s"));
+	public static Cloudinary cloudinary1 = new Cloudinary(ObjectUtils.asMap("cloud_name", "hjfdpue35", "api_key",
+			"649851651271891", "api_secret", "Ks0OjaQ5Z6chKMfKS3d0bK16vZI"));
 
-	public static Cloudinary cloudinary2 = new Cloudinary(ObjectUtils.asMap("cloud_name", "hu4jsyyt8", "api_key",
-			"491845868955893", "api_secret", "oYgotm7eQgCcLzffOoo7oHPJ874"));
+	public static Cloudinary cloudinary2 = new Cloudinary(ObjectUtils.asMap("cloud_name", "hbhtxojtp", "api_key",
+			"288939264288635", "api_secret", "1zp6QapNo8zuDmLowaYLMK8rYpw"));
 
 	public static Cloudinary cloudinary[] = { cloudinary1, cloudinary2 };
+	
+	public static String heidigiBackgroundImage="qdzjs93qmtbcj5atdbxb";
+	
+	public static String background1="ftk2zaftg6smoli5vjjy", background2="u4dkfok8qhtxsdyi1yiw", background3="lgmfyqyfkomxx8ecsonx";
+	
+	public static String marker="kuwgzsdibnco7dxm0mwk", globe="ewcomlyqjurlfiiquv33", envolpe="cmbowkcndlk2h2akpcei";
+	
+	public static String userLogo="kj5npe2hxrgeyaombotr";
 
 	public LoginStatusDTO facebookSignup(String accessToken, String role, String category) throws Exception {
 
@@ -424,11 +436,11 @@ public class HeidigiService {
 			if (profile.getLogo() != null && profile.getLogo().getPublicId() != null)
 				profileDTO.setLogo(profile.getLogo().getPublicId());
 			else
-				profileDTO.setLogo("hu8doewfg7syktb1xo8l");
+				profileDTO.setLogo(userLogo);
 			if (profile.getPhoto() != null && profile.getPhoto().getPublicId() != null)
 				profileDTO.setPhoto(profile.getPhoto().getPublicId());
 			else
-				profileDTO.setPhoto("hu8doewfg7syktb1xo8l");
+				profileDTO.setPhoto(userLogo);
 			profileDTO.setMobile(profile.getUser().getMobile() + "");
 			profileDTO.setEmail(profile.getEmail());
 			profileDTO.setWebsite(profile.getWebsite());
@@ -439,8 +451,8 @@ public class HeidigiService {
 
 		} else {
 
-			profileDTO.setLogo("hu8doewfg7syktb1xo8l");
-			profileDTO.setPhoto("hu8doewfg7syktb1xo8l");
+			profileDTO.setLogo(userLogo);
+			profileDTO.setPhoto(userLogo);
 
 		}
 		return profileDTO;
@@ -476,31 +488,32 @@ public class HeidigiService {
 				.opacity(100).height(0.15).x(10).y(10).crop("scale").chain();
 
 		if (watermark)
-			transformation = transformation.overlay(new Layer().publicId("mvj11zgltg9mqjgy7z4d")).chain()
+			transformation = transformation.overlay(new Layer().publicId(heidigiBackgroundImage)).chain()
 					.flags("layer_apply", "relative").gravity("north_west").opacity(20).radius(30).width(1080)
 					.height(1080).x(0).y(0).crop("scale").chain();
-
-		transformation = transformation.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain()
+		
+		// 65% bottom background
+		transformation = transformation.overlay(new Layer().publicId(background1)).chain()
 				.flags("layer_apply", "relative").gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
 
-				// 65% bottom background
-				.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain().flags("layer_apply", "relative")
-				.gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
+
+//				.overlay(new Layer().publicId(background1)).chain().flags("layer_apply", "relative")
+//				.gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
 
 				// 35% bottom background
-				.overlay(new Layer().publicId("tff8vf9ciycuste9iupb")).chain().flags("layer_apply", "relative")
+				.overlay(new Layer().publicId(background3)).chain().flags("layer_apply", "relative")
 				.gravity("south_east").width(0.35).height(0.18).opacity(100).chain()
 
 				// icon1: Envelope
-				.overlay(new Layer().publicId("dt7fah8qrkeleor3gpq3")).width(20).height(20).chain()
+				.overlay(new Layer().publicId(envolpe)).width(20).height(20).chain()
 				.flags("layer_apply", "relative").gravity("south_east").x(340).y(110).chain()
 
 				// icon2: Internet Globe
-				.overlay(new Layer().publicId("rnxve3ik0plwyrvh3whh")).width(20).height(20).chain()
-				.flags("layer_apply", "relative").gravity("south_east").x(340).y(80).chain()
+				.overlay(new Layer().publicId(globe)).width(20).height(20).chain()
+				.flags("layer_apply", "relative").gravity("south_east").x(340).y(75).chain()
 
 				// icon3: Red Map Marker
-				.overlay(new Layer().publicId("b5dnqxn9rd21wpekin6w")).width(20).height(20).chain()
+				.overlay(new Layer().publicId(marker)).width(20).height(20).chain()
 				.flags("layer_apply", "relative").gravity("south_east").x(340).y(50).chain()
 
 				// Person Photo
@@ -547,12 +560,12 @@ public class HeidigiService {
 	}
 
 	public String getImage(String image) {
-		return "https://res.cloudinary.com/hwlyozehf/image/upload/" + image + ".jpg";
+		return "https://res.cloudinary.com/"+cloudinaryName1+"/image/upload/" + image + ".jpg";
 
 	}
 
 	public String getVideo(String video) {
-		return "https://res.cloudinary.com/hwlyozehf/video/upload/" + video + ".mp4";
+		return "https://res.cloudinary.com/"+cloudinaryName1+"/video/upload/" + video + ".mp4";
 
 	}
 
@@ -580,11 +593,11 @@ public class HeidigiService {
 
 		if (watermark)
 
-			transformation = transformation.overlay(new Layer().publicId("mvj11zgltg9mqjgy7z4d")).chain()
+			transformation = transformation.overlay(new Layer().publicId(heidigiBackgroundImage)).chain()
 					.flags("layer_apply", "relative").gravity("north_west").opacity(20).radius(30).width(1080)
 					.height(1080).x(0).y(0).crop("scale").chain();
 
-		transformation = transformation.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain()
+		transformation = transformation.overlay(new Layer().publicId(background2)).chain()
 				.flags("layer_apply", "relative").gravity("south").width(1).height(0.04).y(30).opacity(50).chain()
 
 				.overlay(new TextLayer().fontFamily("montserrat").fontSize(25).textAlign("center")
@@ -744,23 +757,23 @@ public class HeidigiService {
 				.opacity(100).height(logoHeight).x(10).y(10).crop("scale").chain()
 
 				// 65% bottom background
-				.overlay(new Layer().publicId("akdvbdniqfbncjrapghb")).chain().flags("layer_apply", "relative")
+				.overlay(new Layer().publicId(background1)).chain().flags("layer_apply", "relative")
 				.gravity("south_west").width(0.65).height(layerHeight).opacity(100).chain()
 
 				// 35% bottom background
-				.overlay(new Layer().publicId("tff8vf9ciycuste9iupb")).chain().flags("layer_apply", "relative")
+				.overlay(new Layer().publicId(background3)).chain().flags("layer_apply", "relative")
 				.gravity("south_east").width(0.35).height(layerHeight).opacity(100).chain()
 
 				// icon1: Envelope
-				.overlay(new Layer().publicId("dt7fah8qrkeleor3gpq3")).width(20).height(20).chain()
+				.overlay(new Layer().publicId(envolpe)).width(20).height(20).chain()
 				.flags("layer_apply", "relative").gravity("south_east").x(340).y(110).chain()
 
 				// icon2: Internet Globe
-				.overlay(new Layer().publicId("rnxve3ik0plwyrvh3whh")).width(20).height(20).chain()
+				.overlay(new Layer().publicId(globe)).width(20).height(20).chain()
 				.flags("layer_apply", "relative").gravity("south_east").x(340).y(80).chain()
 
 				// icon3: Red Map Marker
-				.overlay(new Layer().publicId("b5dnqxn9rd21wpekin6w")).width(20).height(20).chain()
+				.overlay(new Layer().publicId(marker)).width(20).height(20).chain()
 				.flags("layer_apply", "relative").gravity("south_east").x(340).y(50).chain()
 
 				// Person Photo
@@ -839,7 +852,7 @@ public class HeidigiService {
 						.chain()
 
 						// 100% bottom background
-						.overlay(new Layer().publicId("v6s3p850kn4aozfltfjd")).chain().flags("layer_apply", "relative")
+						.overlay(new Layer().publicId(background2)).chain().flags("layer_apply", "relative")
 						.gravity("south").width(1).height(layerHeight).y(40).opacity(100).chain()
 
 						.overlay(new TextLayer().fontFamily("montserrat").fontSize(25).textAlign("center")
