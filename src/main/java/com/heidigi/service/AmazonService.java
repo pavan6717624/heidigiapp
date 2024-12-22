@@ -15,6 +15,8 @@ import com.heidigi.model.AmazonProduct;
 @Service
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class AmazonService {
+	
+	String chatgptkey=System.getenv("chatgptkey");
 
 	public AmazonProduct createPageContent(String url) throws Exception {
 
@@ -72,7 +74,7 @@ public class AmazonService {
 
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
-			con.setRequestProperty("Authorization", "Bearer sk-proj-u06bqpEQ1wRbckztQiUdT3BlbkFJ6TbWif2FDRNYbxq3hG0V");
+			con.setRequestProperty("Authorization", "Bearer "+chatgptkey);
 
 			String model = "gpt-4-turbo";
 			String prompt = "[{\"role\": \"user\", \"content\": \"Create an article on " + siteUrl
