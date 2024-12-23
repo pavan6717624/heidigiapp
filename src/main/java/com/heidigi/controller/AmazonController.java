@@ -1,5 +1,7 @@
 package com.heidigi.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +31,13 @@ public class AmazonController {
 	public String getPageContent(@RequestParam String product) {
 		
 		return service.getPageContent(product);
+
+	}
+	
+	@RequestMapping(value = "/getPageContents")
+	public List<ProductAmazon> getPageContents(@RequestParam String category) throws Exception {
+		
+		return service.getPageContents(category);
 
 	}
 	

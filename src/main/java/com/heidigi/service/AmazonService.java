@@ -6,10 +6,14 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heidigi.domain.AmazonProduct;
 import com.heidigi.model.ImageAndCategory;
@@ -30,17 +34,16 @@ public class AmazonService {
 	public ProductAmazon createPageContent(String url) throws Exception {
 
 		ProductAmazon chatGPTData = getChatGPTContent(url);
-		
-		ImageAndCategory imagecat=getImageAndCategory(url);
+
+		ImageAndCategory imagecat = getImageAndCategory(url);
 
 		chatGPTData.setImageUrl(imagecat.getImage());
-		
+
 		chatGPTData.setCategory(imagecat.getCategory());
 
 		System.out.println(chatGPTData);
 
 		return chatGPTData;
-		
 
 	}
 
@@ -50,16 +53,25 @@ public class AmazonService {
 
 	}
 
+	public List<ProductAmazon> getPageContents(String category) throws Exception {
+
+		
+		List<ProductAmazon> products = amazonRepository.findAll().stream().map(o -> new ProductAmazon(o)).collect(Collectors.toList());
+
+		return products;
+
+	}
+
 	public Boolean savePageContent(String data) throws Exception {
 
 		AmazonProduct product = mapper.readValue(data, AmazonProduct.class);
 
 		product.setProductUrl(product.getProduct().trim().replaceAll(" ", "_").replaceAll("\\\\n", ""));
-		
+
 		product.setFullData(data);
 
 		System.out.print(product);
-		
+
 		amazonRepository.save(product);
 
 		return true;
@@ -91,11 +103,11 @@ public class AmazonService {
 
 		return imageUrl.substring(0, imageUrl.indexOf("_") + 1) + "SX569_.jpg";
 	}
-	
+
 	public ImageAndCategory getImageAndCategory(String siteUrl) throws Exception {
 
 		URL url = new URL(siteUrl);
-		ImageAndCategory imagecat=new ImageAndCategory();
+		ImageAndCategory imagecat = new ImageAndCategory();
 		URLConnection con = url.openConnection();
 		BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		StringBuffer output = new StringBuffer("");
@@ -104,7 +116,7 @@ public class AmazonService {
 		String search1 = "data-category=";
 		String imageUrl = "";
 		String categoryUrl = "";
-		Boolean image=false, cat=false;
+		Boolean image = false, cat = false;
 
 		while ((line = br.readLine()) != null) {
 			int index = line.indexOf(search);
@@ -112,31 +124,31 @@ public class AmazonService {
 				int index1 = line.indexOf("https", index);
 				int index2 = line.indexOf("\"", index1);
 				imageUrl = line.substring(index1, index2);
-				image=true;
-				if(image && cat)
-				break;
+				image = true;
+				if (image && cat)
+					break;
 			}
-			
+
 			index = line.indexOf(search1);
 			if (index != -1 && !cat) {
 				int index1 = line.indexOf("\"", index);
-				int index2 = line.indexOf("\"", index1+1);
-				categoryUrl = line.substring(index1+1, index2);
-				cat=true;
-				if(image && cat)
-				break;
+				int index2 = line.indexOf("\"", index1 + 1);
+				categoryUrl = line.substring(index1 + 1, index2);
+				cat = true;
+				if (image && cat)
+					break;
 			}
 
 		}
 
 		System.out.println(imageUrl.substring(0, imageUrl.indexOf("_") + 1) + "SX569_.jpg");
-		
+
 		imagecat.setImage(imageUrl.substring(0, imageUrl.indexOf("_") + 1) + "SX569_.jpg");
 		imagecat.setCategory(categoryUrl);
 
 		return imagecat;
 	}
-	
+
 	public String getCategory(String siteUrl) throws Exception {
 
 		URL url = new URL(siteUrl);
@@ -151,16 +163,14 @@ public class AmazonService {
 			int index = line.indexOf(search);
 			if (index != -1) {
 				int index1 = line.indexOf("\"", index);
-				
-				int index2 = line.indexOf("\"", index1+1);
-				
-				categoryUrl = line.substring(index1+1, index2);
+
+				int index2 = line.indexOf("\"", index1 + 1);
+
+				categoryUrl = line.substring(index1 + 1, index2);
 				break;
 			}
 
 		}
-
-		
 
 		return categoryUrl;
 	}

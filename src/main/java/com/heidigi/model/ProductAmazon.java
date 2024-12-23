@@ -1,11 +1,31 @@
 package com.heidigi.model;
 
+import com.heidigi.domain.AmazonProduct;
+
 import lombok.Data;
 
 @Data
 public class ProductAmazon {
 
 	String product, tagLine, description, keyFeatures, productSpecifications, benefits, whyChoose, conclusion, imageUrl, category;
+	
+	String amazonId, productUrl;
+	
+	public ProductAmazon(AmazonProduct product) {
+		
+		this.product=product.getProduct().replaceAll("\\\\n", "");
+		this.tagLine=product.getTagLine().replaceAll("\\\\n", "");
+//		this.description=product.getDescription();
+//		this.keyFeatures=product.getKeyFeatures();
+//		this.productSpecifications = product.getProductSpecifications();
+//		this.benefits=product.getBenefits();
+//		this.whyChoose=product.getWhyChoose();
+//		this.conclusion=product.getConclusion();
+		this.imageUrl=product.getImageUrl();
+		this.category=product.getCategory();
+		this.amazonId=product.getAmazonId()+"";
+		this.productUrl=product.getProductUrl().replaceAll("\\\\n", "");
+	}
 
 	public ProductAmazon(String str) {
 
