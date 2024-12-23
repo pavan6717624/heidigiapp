@@ -31,9 +31,11 @@ public class AmazonService {
 	@Autowired
 	AmazonProductRepository amazonRepository;
 
-	public ProductAmazon createPageContent(String url) throws Exception {
+	public ProductAmazon createPageContent(String url,String aurl) throws Exception {
 
 		ProductAmazon chatGPTData = getChatGPTContent(url);
+		
+		chatGPTData.setAffiliateUrl(aurl);
 
 		ImageAndCategory imagecat = getImageAndCategory(url);
 

@@ -22,7 +22,7 @@ public class AmazonProduct implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long amazonId;
 	
-	String product, tagLine, description;
+	String product, tagLine, description, affiliateUrl;
 	
 	@Column(length = 100000)
 	String keyFeatures, productSpecifications, benefits, whyChoose, fullData;

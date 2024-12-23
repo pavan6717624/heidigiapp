@@ -20,9 +20,9 @@ public class AmazonController {
 	AmazonService service;
 	
 	@RequestMapping(value = "/createPageContent")
-	public ProductAmazon createPageContent(@RequestParam String url) throws Exception {
+	public ProductAmazon createPageContent(@RequestParam String url, @RequestParam String aurl) throws Exception {
 		
-		return service.createPageContent(url);
+		return service.createPageContent(url,aurl);
 
 	}
 
