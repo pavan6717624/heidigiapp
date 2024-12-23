@@ -48,8 +48,10 @@ public class AmazonService {
 	}
 
 	public String getPageContent(String product) {
+		
+		System.out.println(product+" "+amazonRepository.findByProductUrl(product).get().getFullData());
 
-		return "";
+		return amazonRepository.findByProductUrl(product).get().getFullData();
 
 	}
 
