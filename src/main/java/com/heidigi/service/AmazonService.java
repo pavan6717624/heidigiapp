@@ -1,40 +1,68 @@
 package com.heidigi.service;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.heidigi.model.AmazonProduct;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.heidigi.domain.AmazonProduct;
+import com.heidigi.model.ImageAndCategory;
+import com.heidigi.model.ProductAmazon;
+import com.heidigi.repository.AmazonProductRepository;
 
 @Service
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class AmazonService {
-	
-	String chatgptkey=System.getenv("chatgptkey");
 
-	public AmazonProduct createPageContent(String url) throws Exception {
+	String chatgptkey = System.getenv("chatgptkey");
 
-		AmazonProduct chatGPTData = getChatGPTContent(url);
+	ObjectMapper mapper = new ObjectMapper();
 
+	@Autowired
+	AmazonProductRepository amazonRepository;
+
+	public ProductAmazon createPageContent(String url) throws Exception {
+
+		ProductAmazon chatGPTData = getChatGPTContent(url);
 		
+		ImageAndCategory imagecat=getImageAndCategory(url);
+
+		chatGPTData.setImageUrl(imagecat.getImage());
 		
-		chatGPTData.setImageUrl(getImageLink(url));
-		
+		chatGPTData.setCategory(imagecat.getCategory());
+
 		System.out.println(chatGPTData);
 
 		return chatGPTData;
+		
 
 	}
 
 	public String getPageContent(String product) {
 
 		return "";
+
+	}
+
+	public Boolean savePageContent(String data) throws Exception {
+
+		AmazonProduct product = mapper.readValue(data, AmazonProduct.class);
+
+		product.setProductUrl(product.getProduct().trim().replaceAll(" ", "_").replaceAll("\\\\n", ""));
+		
+		product.setFullData(data);
+
+		System.out.print(product);
+		
+		amazonRepository.save(product);
+
+		return true;
 
 	}
 
@@ -45,28 +73,99 @@ public class AmazonService {
 		BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		StringBuffer output = new StringBuffer("");
 		String line = "";
-		String search="data-old-hires=\"";
-		String imageUrl="";
+		String search = "data-old-hires=\"";
+		String imageUrl = "";
 
 		while ((line = br.readLine()) != null) {
-			int index=line.indexOf(search);
-			if(index!=-1)
-			{	
-				int index1=line.indexOf("https", index);
-				int index2=line.indexOf("\"", index1);
-				imageUrl=line.substring(index1,index2);
+			int index = line.indexOf(search);
+			if (index != -1) {
+				int index1 = line.indexOf("https", index);
+				int index2 = line.indexOf("\"", index1);
+				imageUrl = line.substring(index1, index2);
+				break;
 			}
 
 		}
 
-		System.out.println(imageUrl.substring(0,imageUrl.indexOf("_")+1)+"SX569_.jpg");
+		System.out.println(imageUrl.substring(0, imageUrl.indexOf("_") + 1) + "SX569_.jpg");
+
+		return imageUrl.substring(0, imageUrl.indexOf("_") + 1) + "SX569_.jpg";
+	}
+	
+	public ImageAndCategory getImageAndCategory(String siteUrl) throws Exception {
+
+		URL url = new URL(siteUrl);
+		ImageAndCategory imagecat=new ImageAndCategory();
+		URLConnection con = url.openConnection();
+		BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		StringBuffer output = new StringBuffer("");
+		String line = "";
+		String search = "data-old-hires=\"";
+		String search1 = "data-category=";
+		String imageUrl = "";
+		String categoryUrl = "";
+		Boolean image=false, cat=false;
+
+		while ((line = br.readLine()) != null) {
+			int index = line.indexOf(search);
+			if (index != -1 && !image) {
+				int index1 = line.indexOf("https", index);
+				int index2 = line.indexOf("\"", index1);
+				imageUrl = line.substring(index1, index2);
+				image=true;
+				if(image && cat)
+				break;
+			}
+			
+			index = line.indexOf(search1);
+			if (index != -1 && !cat) {
+				int index1 = line.indexOf("\"", index);
+				int index2 = line.indexOf("\"", index1+1);
+				categoryUrl = line.substring(index1+1, index2);
+				cat=true;
+				if(image && cat)
+				break;
+			}
+
+		}
+
+		System.out.println(imageUrl.substring(0, imageUrl.indexOf("_") + 1) + "SX569_.jpg");
 		
+		imagecat.setImage(imageUrl.substring(0, imageUrl.indexOf("_") + 1) + "SX569_.jpg");
+		imagecat.setCategory(categoryUrl);
+
+		return imagecat;
+	}
+	
+	public String getCategory(String siteUrl) throws Exception {
+
+		URL url = new URL(siteUrl);
+		URLConnection con = url.openConnection();
+		BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		StringBuffer output = new StringBuffer("");
+		String line = "";
+		String search = "data-category=";
+		String categoryUrl = "";
+
+		while ((line = br.readLine()) != null) {
+			int index = line.indexOf(search);
+			if (index != -1) {
+				int index1 = line.indexOf("\"", index);
+				
+				int index2 = line.indexOf("\"", index1+1);
+				
+				categoryUrl = line.substring(index1+1, index2);
+				break;
+			}
+
+		}
+
 		
 
-		return imageUrl.substring(0,imageUrl.indexOf("_")+1)+"SX569_.jpg";
+		return categoryUrl;
 	}
 
-	public AmazonProduct getChatGPTContent(String siteUrl) {
+	public ProductAmazon getChatGPTContent(String siteUrl) {
 		String chatGPTData = "";
 		try {// API endpoint
 			String url = "https://api.openai.com/v1/chat/completions";
@@ -74,7 +173,7 @@ public class AmazonService {
 
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
-			con.setRequestProperty("Authorization", "Bearer "+chatgptkey);
+			con.setRequestProperty("Authorization", "Bearer " + chatgptkey);
 
 			String model = "gpt-4-turbo";
 			String prompt = "[{\"role\": \"user\", \"content\": \"Create an article on " + siteUrl
@@ -105,14 +204,16 @@ public class AmazonService {
 
 			chatGPTData = (response.toString().substring(index1, index2));
 
-			chatGPTData = chatGPTData.replaceAll("\\\\n", "").replaceAll("\\*", "").replaceAll("\\#", "")
-					.replaceAll("- ", "").replaceAll("\"content\": \"", "").replaceAll("\"", "").trim();
+//			.replaceAll("\\\\n", "")
+
+			chatGPTData = chatGPTData.replaceAll("\\*", "").replaceAll("\\#", "").replaceAll("- ", "")
+					.replaceAll("\"content\": \"", "").replaceAll("\"", "").trim();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return new AmazonProduct(chatGPTData);
+		return new ProductAmazon(chatGPTData);
 	}
 
 }

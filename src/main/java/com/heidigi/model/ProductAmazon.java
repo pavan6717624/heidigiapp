@@ -3,11 +3,11 @@ package com.heidigi.model;
 import lombok.Data;
 
 @Data
-public class AmazonProduct {
+public class ProductAmazon {
 
-	String product, tagLine, description, keyFeatures, productSpecifications, benefits, whyChoose, conclusion, imageUrl;
+	String product, tagLine, description, keyFeatures, productSpecifications, benefits, whyChoose, conclusion, imageUrl, category;
 
-	public AmazonProduct(String str) {
+	public ProductAmazon(String str) {
 
 		System.out.println(str);
 

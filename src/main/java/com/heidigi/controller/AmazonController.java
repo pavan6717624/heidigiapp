@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.heidigi.model.AmazonProduct;
+import com.heidigi.model.ProductAmazon;
 import com.heidigi.service.AmazonService;
 
 @RestController
@@ -18,7 +18,7 @@ public class AmazonController {
 	AmazonService service;
 	
 	@RequestMapping(value = "/createPageContent")
-	public AmazonProduct createPageContent(@RequestParam String url) throws Exception {
+	public ProductAmazon createPageContent(@RequestParam String url) throws Exception {
 		
 		return service.createPageContent(url);
 
@@ -31,5 +31,13 @@ public class AmazonController {
 		return service.getPageContent(product);
 
 	}
+	
+	@RequestMapping(value = "/savePageContent")
+	public Boolean savePageContent(@RequestParam String data) throws Exception {
+		
+		return service.savePageContent(data);
+
+	}
+
 
 }
