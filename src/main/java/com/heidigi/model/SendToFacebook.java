@@ -4,8 +4,8 @@ import java.util.List;
 
 import lombok.Data;
 
-@Data	
+@Data
 public class SendToFacebook {
-String image,template;
-List<String> pages;
+	String image, template;
+	List<String> pages;
 }

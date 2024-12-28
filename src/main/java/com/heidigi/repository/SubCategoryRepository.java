@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import com.heidigi.domain.SubCategory;
 
 @Repository
-public interface SubCategoryRepository  extends JpaRepository<SubCategory,Long> {
+public interface SubCategoryRepository extends JpaRepository<SubCategory, Long> {
 
-	Optional<SubCategory> findByName(@Param("subCategory") String subCategory);	
+	Optional<SubCategory> findByName(@Param("subCategory") String subCategory);
 
 }

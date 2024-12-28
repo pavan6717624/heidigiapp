@@ -34,45 +34,36 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// configure AuthenticationManager so that it knows from where to load
 		// user for matching credentials
 		// Use BCryptPasswordEncoder
-		//System.out.println("entered in configureGlobal...");
+		// System.out.println("entered in configureGlobal...");
 		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
 	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		//System.out.println("entered in passwordEncoder...");
+		// System.out.println("entered in passwordEncoder...");
 		return NoOpPasswordEncoder.getInstance();
 	}
 
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
-		//System.out.println("entered in authenticationManagerBean...");
+		// System.out.println("entered in authenticationManagerBean...");
 		return super.authenticationManagerBean();
 	}
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		//System.out.println("entered in  configure...");
+		// System.out.println("entered in configure...");
 		// We don't need CSRF for this example
 		httpSecurity.cors();
 		httpSecurity.csrf().disable()
 				// dont authenticate this particular request
-				.authorizeRequests()
-				.antMatchers("/login").permitAll()
-				.antMatchers("/signup").permitAll()
-				.antMatchers("/AMAZON/**").permitAll()
-				.antMatchers("/image/*").permitAll()
-				.antMatchers("/images/*").permitAll()
-				.antMatchers("/video/*").permitAll()
-			.antMatchers("/checkUrl").permitAll()
-			.antMatchers("/generateOTP").permitAll()
-			.antMatchers("/facebookLogin").permitAll()
-			.antMatchers("/facebookSignup").permitAll()
-			.antMatchers("/getCategories").permitAll()
-			
-				
-				
+				.authorizeRequests().antMatchers("/login").permitAll().antMatchers("/signup").permitAll()
+				.antMatchers("/AMAZON/**").permitAll().antMatchers("/image/*").permitAll().antMatchers("/images/*")
+				.permitAll().antMatchers("/video/*").permitAll().antMatchers("/checkUrl").permitAll()
+				.antMatchers("/generateOTP").permitAll().antMatchers("/facebookLogin").permitAll()
+				.antMatchers("/facebookSignup").permitAll().antMatchers("/getCategories").permitAll()
+
 				// all other requests need to be authenticated
 				.anyRequest().authenticated().and().
 				// make sure we use stateless session; session won't be used to
@@ -82,6 +73,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// Add a filter to validate the tokens with every request
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-		//System.out.println("exited in  configure...");
+		// System.out.println("exited in configure...");
 	}
 }

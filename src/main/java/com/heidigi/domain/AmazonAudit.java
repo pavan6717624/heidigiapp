@@ -1,6 +1,7 @@
 package com.heidigi.domain;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,20 +14,20 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "amazon_product")
-public class AmazonProduct implements Serializable {
+@Table(name = "amazon_audit")
+public class AmazonAudit implements Serializable {
 
-	private static final long serialVersionUID = 2801576079755646141L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7912171910203588450L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long amazonId;
 
-	String product, tagLine, description, affiliateUrl;
-
-	@Column(length = 100000)
-	String keyFeatures, productSpecifications, benefits, whyChoose, fullData;
-
-	String conclusion, imageUrl, productUrl, category, price;
+	String url;
+	@Column(columnDefinition = "datetime")
+	Timestamp time;
 
 }

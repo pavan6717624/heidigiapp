@@ -15,38 +15,36 @@ import com.heidigi.service.AmazonService;
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "AMAZON")
 public class AmazonController {
-	
+
 	@Autowired
 	AmazonService service;
-	
+
 	@RequestMapping(value = "/createPageContent")
 	public ProductAmazon createPageContent(@RequestParam String url, @RequestParam String aurl) throws Exception {
-		
-		return service.createPageContent(url,aurl);
+
+		return service.createPageContent(url, aurl);
 
 	}
 
-	
 	@RequestMapping(value = "/getPageContent")
 	public String getPageContent(@RequestParam String product) {
-		
+
 		return service.getPageContent(product);
 
 	}
-	
+
 	@RequestMapping(value = "/getPageContents")
 	public List<ProductAmazon> getPageContents(@RequestParam String category) throws Exception {
-		
+
 		return service.getPageContents(category);
 
 	}
-	
+
 	@RequestMapping(value = "/savePageContent")
 	public Boolean savePageContent(@RequestParam String data) throws Exception {
-		
+
 		return service.savePageContent(data);
 
 	}
-
 
 }

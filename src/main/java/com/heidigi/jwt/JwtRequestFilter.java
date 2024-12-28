@@ -31,17 +31,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
-		//System.out.println("entered in doFilterInternal...");
+		// System.out.println("entered in doFilterInternal...");
 		final String requestTokenHeader = request.getHeader("Authorization");
 
 		String username = null;
 		String jwtToken = null;
 		// JWT Token is in the form "Bearer token". Remove Bearer word and get
 		// only the Token
-		//System.out.println("header1 :: "+request.getParameter("userId"));
-		
-		//System.out.println("header :: "+requestTokenHeader);
-		
+		// System.out.println("header1 :: "+request.getParameter("userId"));
+
+		// System.out.println("header :: "+requestTokenHeader);
+
 		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 			jwtToken = requestTokenHeader.substring(7);
 			try {
@@ -72,11 +72,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				// that the current user is authenticated. So it passes the
 				// Spring Security Configurations successfully.
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-				//System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+				// System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 			}
 		}
 		chain.doFilter(request, response);
-		//System.out.println("exited in doFilterInternal....");
+		// System.out.println("exited in doFilterInternal....");
 	}
 
 }

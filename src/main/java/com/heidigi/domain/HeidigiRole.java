@@ -13,13 +13,12 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "hd_roles")
-public class HeidigiRole implements Serializable
-{
+public class HeidigiRole implements Serializable {
 
 	/**
 	 * 
 	 */
-	
+
 	/**
 	 * 
 	 */
@@ -27,11 +26,11 @@ public class HeidigiRole implements Serializable
 	/**
 	 * 
 	 */
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long roleId;
-	String roleName="";
-	String displayName="";
+	String roleName = "";
+	String displayName = "";
 
 }

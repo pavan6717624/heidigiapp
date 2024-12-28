@@ -121,10 +121,10 @@ public class HeidigiService {
 	HeidigiRoleRepository roleRepository;
 	@Autowired
 	HeidigiProfileRepository profileRepository;
-	
-	public static String cloudinaryName1="hjfdpue35";
-	
-	public static String cloudinaryName2="hbhtxojtp";
+
+	public static String cloudinaryName1 = "hjfdpue35";
+
+	public static String cloudinaryName2 = "hbhtxojtp";
 
 	public static Cloudinary cloudinary1 = new Cloudinary(ObjectUtils.asMap("cloud_name", "hjfdpue35", "api_key",
 			"649851651271891", "api_secret", "Ks0OjaQ5Z6chKMfKS3d0bK16vZI"));
@@ -133,14 +133,16 @@ public class HeidigiService {
 			"288939264288635", "api_secret", "1zp6QapNo8zuDmLowaYLMK8rYpw"));
 
 	public static Cloudinary cloudinary[] = { cloudinary1, cloudinary2 };
-	
-	public static String heidigiBackgroundImage="qdzjs93qmtbcj5atdbxb";
-	
-	public static String background1="ftk2zaftg6smoli5vjjy", background2="u4dkfok8qhtxsdyi1yiw", background3="lgmfyqyfkomxx8ecsonx";
-	
-	public static String marker="kuwgzsdibnco7dxm0mwk", globe="ewcomlyqjurlfiiquv33", envolpe="cmbowkcndlk2h2akpcei";
-	
-	public static String userLogo="kj5npe2hxrgeyaombotr";
+
+	public static String heidigiBackgroundImage = "qdzjs93qmtbcj5atdbxb";
+
+	public static String background1 = "ftk2zaftg6smoli5vjjy", background2 = "u4dkfok8qhtxsdyi1yiw",
+			background3 = "lgmfyqyfkomxx8ecsonx";
+
+	public static String marker = "kuwgzsdibnco7dxm0mwk", globe = "ewcomlyqjurlfiiquv33",
+			envolpe = "cmbowkcndlk2h2akpcei";
+
+	public static String userLogo = "kj5npe2hxrgeyaombotr";
 
 	public LoginStatusDTO facebookSignup(String accessToken, String role, String category) throws Exception {
 
@@ -491,11 +493,10 @@ public class HeidigiService {
 			transformation = transformation.overlay(new Layer().publicId(heidigiBackgroundImage)).chain()
 					.flags("layer_apply", "relative").gravity("north_west").opacity(20).radius(30).width(1080)
 					.height(1080).x(0).y(0).crop("scale").chain();
-		
+
 		// 65% bottom background
 		transformation = transformation.overlay(new Layer().publicId(background1)).chain()
 				.flags("layer_apply", "relative").gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
-
 
 //				.overlay(new Layer().publicId(background1)).chain().flags("layer_apply", "relative")
 //				.gravity("south_west").width(0.65).height(0.18).opacity(100).chain()
@@ -505,16 +506,16 @@ public class HeidigiService {
 				.gravity("south_east").width(0.35).height(0.18).opacity(100).chain()
 
 				// icon1: Envelope
-				.overlay(new Layer().publicId(envolpe)).width(20).height(20).chain()
-				.flags("layer_apply", "relative").gravity("south_east").x(340).y(110).chain()
+				.overlay(new Layer().publicId(envolpe)).width(20).height(20).chain().flags("layer_apply", "relative")
+				.gravity("south_east").x(340).y(110).chain()
 
 				// icon2: Internet Globe
-				.overlay(new Layer().publicId(globe)).width(20).height(20).chain()
-				.flags("layer_apply", "relative").gravity("south_east").x(340).y(75).chain()
+				.overlay(new Layer().publicId(globe)).width(20).height(20).chain().flags("layer_apply", "relative")
+				.gravity("south_east").x(340).y(75).chain()
 
 				// icon3: Red Map Marker
-				.overlay(new Layer().publicId(marker)).width(20).height(20).chain()
-				.flags("layer_apply", "relative").gravity("south_east").x(340).y(50).chain()
+				.overlay(new Layer().publicId(marker)).width(20).height(20).chain().flags("layer_apply", "relative")
+				.gravity("south_east").x(340).y(50).chain()
 
 				// Person Photo
 				.overlay(new Layer().publicId(photoId)).aspectRatio("1.0").gravity("faces").width(0.5).zoom(0.7)
@@ -560,12 +561,12 @@ public class HeidigiService {
 	}
 
 	public String getImage(String image) {
-		return "https://res.cloudinary.com/"+cloudinaryName1+"/image/upload/" + image + ".jpg";
+		return "https://res.cloudinary.com/" + cloudinaryName1 + "/image/upload/" + image + ".jpg";
 
 	}
 
 	public String getVideo(String video) {
-		return "https://res.cloudinary.com/"+cloudinaryName1+"/video/upload/" + video + ".mp4";
+		return "https://res.cloudinary.com/" + cloudinaryName1 + "/video/upload/" + video + ".mp4";
 
 	}
 
@@ -765,16 +766,16 @@ public class HeidigiService {
 				.gravity("south_east").width(0.35).height(layerHeight).opacity(100).chain()
 
 				// icon1: Envelope
-				.overlay(new Layer().publicId(envolpe)).width(20).height(20).chain()
-				.flags("layer_apply", "relative").gravity("south_east").x(340).y(110).chain()
+				.overlay(new Layer().publicId(envolpe)).width(20).height(20).chain().flags("layer_apply", "relative")
+				.gravity("south_east").x(340).y(110).chain()
 
 				// icon2: Internet Globe
-				.overlay(new Layer().publicId(globe)).width(20).height(20).chain()
-				.flags("layer_apply", "relative").gravity("south_east").x(340).y(80).chain()
+				.overlay(new Layer().publicId(globe)).width(20).height(20).chain().flags("layer_apply", "relative")
+				.gravity("south_east").x(340).y(80).chain()
 
 				// icon3: Red Map Marker
-				.overlay(new Layer().publicId(marker)).width(20).height(20).chain()
-				.flags("layer_apply", "relative").gravity("south_east").x(340).y(50).chain()
+				.overlay(new Layer().publicId(marker)).width(20).height(20).chain().flags("layer_apply", "relative")
+				.gravity("south_east").x(340).y(50).chain()
 
 				// Person Photo
 				.overlay(new Layer().publicId(photoId)).aspectRatio("1.0").gravity("faces").width(0.5).zoom(0.7)
@@ -848,8 +849,7 @@ public class HeidigiService {
 
 						// logo
 						.overlay(new Layer().publicId(logoId)).chain().flags("layer_apply", "relative")
-						.gravity("north_east").opacity(100).height(logoHeight).x(10).y(10).crop("scale")
-						.chain()
+						.gravity("north_east").opacity(100).height(logoHeight).x(10).y(10).crop("scale").chain()
 
 						// 100% bottom background
 						.overlay(new Layer().publicId(background2)).chain().flags("layer_apply", "relative")
@@ -914,44 +914,41 @@ public class HeidigiService {
 					.collect(Collectors.toList()).get(0).getId();
 
 			FacebookVideoDTO result = new RestTemplate()
-					.postForEntity("https://graph.facebook.com/v20.0/" + pageId + "/video_reels", fdto, FacebookVideoDTO.class)
+					.postForEntity("https://graph.facebook.com/v20.0/" + pageId + "/video_reels", fdto,
+							FacebookVideoDTO.class)
 					.getBody();
-			
+
 //			FacebookDTO param=new FacebookDTO();
 //			param.setAccess_token(accessToken);
 //			param.setFile_url(videoUrl);
 			HttpHeaders headers = new HttpHeaders();
-			
+
 //	        headers.add("Authorization", "Basic " + getBase64Credentials());
-			headers. set("Accept", "application/json"); 
-	        headers.set("Authorization", "OAuth "+accessToken);
-	        headers.set("file_url", videoUrl.replaceAll(Pattern.quote("%"), "%25"));
-			
-			
-	        HttpEntity<String> entity = new HttpEntity<>( headers);
-			
-			System.out.println(result+"\n"+entity);
-			
-			String result1 = new RestTemplate()
-					.postForEntity( result.getUpload_url(), entity, String.class)
-					.getBody();
+			headers.set("Accept", "application/json");
+			headers.set("Authorization", "OAuth " + accessToken);
+			headers.set("file_url", videoUrl.replaceAll(Pattern.quote("%"), "%25"));
+
+			HttpEntity<String> entity = new HttpEntity<>(headers);
+
+			System.out.println(result + "\n" + entity);
+
+			String result1 = new RestTemplate().postForEntity(result.getUpload_url(), entity, String.class).getBody();
 
 			System.out.println(result1);
-			
-			
-			FacebookVideoPublishDTO publish=new  FacebookVideoPublishDTO();
+
+			FacebookVideoPublishDTO publish = new FacebookVideoPublishDTO();
 			publish.setAccess_token(accessToken);
 			publish.setDescription("This is Testing");
 			publish.setUpload_phase("finish");
 			publish.setVideo_id(result.getVideo_id());
 			publish.setVideo_state("PUBLISHED");
-			
+
 			String result2 = new RestTemplate()
-					.postForEntity( "https://graph.facebook.com/v20.0/" + pageId + "/video_reels", publish, String.class)
+					.postForEntity("https://graph.facebook.com/v20.0/" + pageId + "/video_reels", publish, String.class)
 					.getBody();
 
 			System.out.println(result2);
-			
+
 			AuditTrail audit = new AuditTrail();
 			audit.setUser(userRepository.findByMobile(getUserName()).get());
 			audit.setLine1("Posted to Facebook");

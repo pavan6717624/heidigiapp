@@ -20,7 +20,6 @@ import lombok.Data;
 @Table(name = "hd_user")
 public class HeidigiUser implements Serializable {
 
-	
 	private static final long serialVersionUID = 3956721357336114735L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +32,7 @@ public class HeidigiUser implements Serializable {
 
 	String type = "";
 
-	@Column(columnDefinition="datetime")
+	@Column(columnDefinition = "datetime")
 	Timestamp joinDate;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -42,7 +41,7 @@ public class HeidigiUser implements Serializable {
 
 	Boolean isDisabled;
 	Boolean isDeleted;
-	
+
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "cid")
 	Category category;

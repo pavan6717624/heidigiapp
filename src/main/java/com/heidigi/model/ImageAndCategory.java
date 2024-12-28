@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ImageAndCategory {
-	
-	String image, category,price;
+
+	String image, category, price;
 
 }

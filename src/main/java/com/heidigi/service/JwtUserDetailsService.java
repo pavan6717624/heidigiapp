@@ -19,27 +19,27 @@ import com.heidigi.repository.HeidigiUserRepository;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
-	
+
 	@Autowired
 	HeidigiUserRepository userDetailsRepository;
 
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		
-		//System.out.println("entered in  loadUserByUsername..." + username);
-		
+
+		// System.out.println("entered in loadUserByUsername..." + username);
+
 		Optional<com.heidigi.domain.HeidigiUser> user = userDetailsRepository.findByMobile(Long.valueOf(username));
-		
-		List<GrantedAuthority> roles =new ArrayList<GrantedAuthority>();
-		
+
+		List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+
 		if (user.isPresent()) {
-			System.out.println("User is " +user.get().toString()+" "+user.get().getRole().getRoleName());
+			System.out.println("User is " + user.get().toString() + " " + user.get().getRole().getRoleName());
 			roles.add(new SimpleGrantedAuthority(user.get().getRole().getRoleName()));
-			return new User(user.get().getMobile()+"", user.get().getPassword(),roles);
+			return new User(user.get().getMobile() + "", user.get().getPassword(), roles);
 		} else {
 			throw new UsernameNotFoundException("User not found with username: " + username);
 		}
-		
+
 	}
 }

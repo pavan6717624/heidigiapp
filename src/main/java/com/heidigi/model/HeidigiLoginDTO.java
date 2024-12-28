@@ -4,8 +4,7 @@ import lombok.Data;
 
 @Data
 public class HeidigiLoginDTO {
-	
-	
+
 	String mobile;
 	String password;
 

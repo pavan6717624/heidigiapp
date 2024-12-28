@@ -13,15 +13,15 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "hd_category")
-public class Category implements Serializable{/**
-	 * 
-	 */
+public class Category implements Serializable {
+	/**
+	* 
+	*/
 	private static final long serialVersionUID = 1639033671216351339L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long cid;
-	
+
 	String cname;
-	
 
 }

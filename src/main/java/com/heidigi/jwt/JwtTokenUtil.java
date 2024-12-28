@@ -24,68 +24,69 @@ public class JwtTokenUtil implements Serializable {
 	@Value("${jwt.secret}")
 	private String secret;
 
-
-	//retrieve username from jwt token
+	// retrieve username from jwt token
 	public String getUsernameFromToken(String token) {
-		//System.out.println("entered in getUsernameFromToken...");
+		// System.out.println("entered in getUsernameFromToken...");
 		return getClaimFromToken(token, Claims::getSubject);
 	}
 
-	//retrieve expiration date from jwt token
+	// retrieve expiration date from jwt token
 	public Date getExpirationDateFromToken(String token) {
-		//System.out.println("entered in getExpirationDateFromToken...");
+		// System.out.println("entered in getExpirationDateFromToken...");
 		return getClaimFromToken(token, Claims::getExpiration);
 	}
 
 	public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-		//System.out.println("entered in getClaimFromToken...");
+		// System.out.println("entered in getClaimFromToken...");
 		final Claims claims = getAllClaimsFromToken(token);
-		//System.out.println("exited in getClaimFromToken...");
+		// System.out.println("exited in getClaimFromToken...");
 		return claimsResolver.apply(claims);
 	}
-    //for retrieveing any information from token we will need the secret key
+
+	// for retrieveing any information from token we will need the secret key
 	private Claims getAllClaimsFromToken(String token) {
-		//System.out.println("entered in getAllClaimsFromToken...");
+		// System.out.println("entered in getAllClaimsFromToken...");
 		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 	}
 
-	//check if the token has expired
+	// check if the token has expired
 	private Boolean isTokenExpired(String token) {
-		//System.out.println("entered in isTokenExpired...");
+		// System.out.println("entered in isTokenExpired...");
 		final Date expiration = getExpirationDateFromToken(token);
-		//System.out.println("exited in isTokenExpired...");
+		// System.out.println("exited in isTokenExpired...");
 		return expiration.before(new Date());
 	}
 
-	//generate token for user
+	// generate token for user
 	public String generateToken(UserDetails userDetails) {
-		//System.out.println("entered in generateToken...");
+		// System.out.println("entered in generateToken...");
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("Organisation", "Heidigi");
-		claims.put("Role",userDetails.getAuthorities().toArray()[0].toString());
-		//System.out.println("exited in generateToken...");
+		claims.put("Role", userDetails.getAuthorities().toArray()[0].toString());
+		// System.out.println("exited in generateToken...");
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 
-	//while creating the token -
-	//1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
-	//2. Sign the JWT using the HS512 algorithm and secret key.
-	//3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
-	//   compaction of the JWT to a URL-safe string 
+	// while creating the token -
+	// 1. Define claims of the token, like Issuer, Expiration, Subject, and the ID
+	// 2. Sign the JWT using the HS512 algorithm and secret key.
+	// 3. According to JWS Compact
+	// Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
+	// compaction of the JWT to a URL-safe string
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
-		//System.out.println("entered in doGenerateToken...");
-		//System.out.println(claims+" checking "+subject);
-		//System.out.println("exited in doGenerateToken...");
+		// System.out.println("entered in doGenerateToken...");
+		// System.out.println(claims+" checking "+subject);
+		// System.out.println("exited in doGenerateToken...");
 		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 	}
 
-	//validate token
+	// validate token
 	public Boolean validateToken(String token, UserDetails userDetails) {
-		//System.out.println("entered in validateToken...");
+		// System.out.println("entered in validateToken...");
 		final String username = getUsernameFromToken(token);
-		//System.out.println("exited in validateToken...");
+		// System.out.println("exited in validateToken...");
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 }

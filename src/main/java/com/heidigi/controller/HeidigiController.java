@@ -3,7 +3,6 @@ package com.heidigi.controller;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,10 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,10 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-import com.heidigi.domain.HeidigiUser;
-import com.heidigi.jwt.JwtTokenUtil;
 import com.heidigi.model.DropDown;
 import com.heidigi.model.HeidigiLoginDTO;
 import com.heidigi.model.HeidigiSignupDTO;
@@ -39,7 +30,6 @@ import com.heidigi.model.ProfileDTO;
 import com.heidigi.model.SendToFacebook;
 import com.heidigi.repository.HeidigiUserRepository;
 import com.heidigi.service.HeidigiService;
-import com.heidigi.service.JwtUserDetailsService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -285,9 +275,10 @@ public class HeidigiController {
 
 		return service.facebookLogin(accessToken);
 	}
-	
+
 	@RequestMapping(value = "facebookSignup")
-	public LoginStatusDTO facebookSignup(@RequestParam("accessToken") String accessToken, @RequestParam("role") String role, @RequestParam("category") String category) throws Exception {
+	public LoginStatusDTO facebookSignup(@RequestParam("accessToken") String accessToken,
+			@RequestParam("role") String role, @RequestParam("category") String category) throws Exception {
 
 		return service.facebookSignup(accessToken, role, category);
 	}

@@ -6,11 +6,7 @@ import lombok.Data;
 public class FacebookPage {
 
 	public String id;
-	public String name,email;
+	public String name, email;
 	public Accounts accounts;
 
 }
-
-
-
-

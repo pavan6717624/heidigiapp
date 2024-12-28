@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.heidigi.domain.Category;
 
 @Repository
-public interface CategoryRepository  extends JpaRepository<Category,Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
 	Optional<Category> findByCname(@Param("category") String category);
 

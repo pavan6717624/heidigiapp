@@ -6,18 +6,20 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.heidigi.domain.AmazonAudit;
 import com.heidigi.domain.AmazonProduct;
 import com.heidigi.model.ImageAndCategory;
 import com.heidigi.model.ProductAmazon;
+import com.heidigi.repository.AmazonAuditRepository;
 import com.heidigi.repository.AmazonProductRepository;
 
 @Service
@@ -30,6 +32,9 @@ public class AmazonService {
 
 	@Autowired
 	AmazonProductRepository amazonRepository;
+
+	@Autowired
+	AmazonAuditRepository auditRepository;
 
 	public ProductAmazon createPageContent(String url, String aurl) throws Exception {
 
@@ -52,6 +57,12 @@ public class AmazonService {
 	}
 
 	public String getPageContent(String product) {
+
+		AmazonAudit audit = new AmazonAudit();
+		audit.setUrl(product);
+		audit.setTime(Timestamp.valueOf(LocalDateTime.now()));
+
+		auditRepository.save(audit);
 
 		System.out.println(product + " " + amazonRepository.findByProductUrl(product).get().getFullData());
 

@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class InstagramPage {
-	
+
 	InstagramBusinessAccount instagram_business_account;
-	String id,name;
+	String id, name;
 
 }

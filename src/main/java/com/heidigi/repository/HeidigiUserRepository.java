@@ -12,12 +12,12 @@ import com.heidigi.domain.HeidigiUser;
 public interface HeidigiUserRepository extends JpaRepository<HeidigiUser, Long> {
 
 	Optional<HeidigiUser> findByMobileAndPassword(Long mobile, String password);
-	
-	@Query( nativeQuery = true, value = "select image from image_details order by rand() limit 10")
+
+	@Query(nativeQuery = true, value = "select image from image_details order by rand() limit 10")
 	List<String> getRandomImages();
 
 	Optional<HeidigiUser> findByMobile(@Param("mobile") Long mobile);
-	
+
 	Optional<HeidigiUser> findByEmail(@Param("email") String email);
 
 }

@@ -8,13 +8,13 @@ public class JwtResponse implements Serializable {
 	private final String jwttoken;
 
 	public JwtResponse(String jwttoken) {
-		//System.out.println("entered in JwtResponse constructor...");
+		// System.out.println("entered in JwtResponse constructor...");
 		this.jwttoken = jwttoken;
-		//System.out.println("exited in JwtResponse constructor...");
+		// System.out.println("exited in JwtResponse constructor...");
 	}
 
 	public String getToken() {
-		//System.out.println("entered in JwtResponse getToken...");
+		// System.out.println("entered in JwtResponse getToken...");
 		return this.jwttoken;
 	}
 }
