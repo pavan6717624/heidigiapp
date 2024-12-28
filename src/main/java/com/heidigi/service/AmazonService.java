@@ -69,6 +69,12 @@ public class AmazonService {
 		return amazonRepository.findByProductUrl(product).get().getFullData();
 
 	}
+	
+	public List<AmazonAudit> getAuditContents() throws Exception {
+		
+		return auditRepository.findAll();
+		
+	}
 
 	public List<ProductAmazon> getPageContents(String category) throws Exception {
 

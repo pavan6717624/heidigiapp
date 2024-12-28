@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.heidigi.domain.AmazonAudit;
 import com.heidigi.model.ProductAmazon;
 import com.heidigi.service.AmazonService;
 
@@ -37,6 +38,13 @@ public class AmazonController {
 	public List<ProductAmazon> getPageContents(@RequestParam String category) throws Exception {
 
 		return service.getPageContents(category);
+
+	}
+	
+	@RequestMapping(value = "/getAuditContents")
+	public List<AmazonAudit> getAuditContents() throws Exception {
+
+		return service.getAuditContents();
 
 	}
 
