@@ -61,7 +61,7 @@ public class AmazonService {
 
 	public List<ProductAmazon> getPageContents(String category) throws Exception {
 
-		List<ProductAmazon> products = amazonRepository.findAll().stream().map(o -> new ProductAmazon(o))
+		List<ProductAmazon> products = amazonRepository.getPageContents().stream().map(o -> new ProductAmazon(o))
 				.collect(Collectors.toList());
 
 		return products;
