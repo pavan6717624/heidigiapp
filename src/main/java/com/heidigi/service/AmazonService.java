@@ -31,10 +31,10 @@ public class AmazonService {
 	@Autowired
 	AmazonProductRepository amazonRepository;
 
-	public ProductAmazon createPageContent(String url,String aurl) throws Exception {
+	public ProductAmazon createPageContent(String url, String aurl) throws Exception {
 
 		ProductAmazon chatGPTData = getChatGPTContent(url);
-		
+
 		chatGPTData.setAffiliateUrl(aurl);
 
 		ImageAndCategory imagecat = getImageAndCategory(url);
@@ -43,6 +43,8 @@ public class AmazonService {
 
 		chatGPTData.setCategory(imagecat.getCategory());
 
+		chatGPTData.setPrice(imagecat.getPrice());
+
 		System.out.println(chatGPTData);
 
 		return chatGPTData;
@@ -50,8 +52,8 @@ public class AmazonService {
 	}
 
 	public String getPageContent(String product) {
-		
-		System.out.println(product+" "+amazonRepository.findByProductUrl(product).get().getFullData());
+
+		System.out.println(product + " " + amazonRepository.findByProductUrl(product).get().getFullData());
 
 		return amazonRepository.findByProductUrl(product).get().getFullData();
 
@@ -59,8 +61,8 @@ public class AmazonService {
 
 	public List<ProductAmazon> getPageContents(String category) throws Exception {
 
-		
-		List<ProductAmazon> products = amazonRepository.findAll().stream().map(o -> new ProductAmazon(o)).collect(Collectors.toList());
+		List<ProductAmazon> products = amazonRepository.findAll().stream().map(o -> new ProductAmazon(o))
+				.collect(Collectors.toList());
 
 		return products;
 
@@ -114,13 +116,15 @@ public class AmazonService {
 		ImageAndCategory imagecat = new ImageAndCategory();
 		URLConnection con = url.openConnection();
 		BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		StringBuffer output = new StringBuffer("");
+
 		String line = "";
 		String search = "data-old-hires=\"";
 		String search1 = "data-category=";
+		String search2 = "a-price-whole\"";
 		String imageUrl = "";
 		String categoryUrl = "";
-		Boolean image = false, cat = false;
+		String priceVal = "";
+		Boolean image = false, cat = false, price = false;
 
 		while ((line = br.readLine()) != null) {
 			int index = line.indexOf(search);
@@ -129,7 +133,7 @@ public class AmazonService {
 				int index2 = line.indexOf("\"", index1);
 				imageUrl = line.substring(index1, index2);
 				image = true;
-				if (image && cat)
+				if (image && cat && price)
 					break;
 			}
 
@@ -139,7 +143,17 @@ public class AmazonService {
 				int index2 = line.indexOf("\"", index1 + 1);
 				categoryUrl = line.substring(index1 + 1, index2);
 				cat = true;
-				if (image && cat)
+				if (image && cat && price)
+					break;
+			}
+
+			index = line.indexOf(search2);
+			if (index != -1 && !price) {
+				int index1 = line.indexOf(">", index);
+				int index2 = line.indexOf("<", index1);
+				priceVal = line.substring(index1 + 1, index2);
+				price = true;
+				if (image && cat && price)
 					break;
 			}
 
@@ -149,7 +163,7 @@ public class AmazonService {
 
 		imagecat.setImage(imageUrl.substring(0, imageUrl.indexOf("_") + 1) + "SX569_.jpg");
 		imagecat.setCategory(categoryUrl);
-
+		imagecat.setPrice(priceVal);
 		return imagecat;
 	}
 

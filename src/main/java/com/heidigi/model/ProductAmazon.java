@@ -9,7 +9,7 @@ public class ProductAmazon {
 
 	String product, tagLine, description, keyFeatures, productSpecifications, benefits, whyChoose, conclusion, imageUrl, category;
 	
-	String amazonId, productUrl, affiliateUrl;
+	String amazonId, productUrl, affiliateUrl, price;
 	
 	public ProductAmazon(AmazonProduct product) {
 		
@@ -26,6 +26,7 @@ public class ProductAmazon {
 		this.amazonId=product.getAmazonId()+"";
 		this.productUrl=product.getProductUrl().replaceAll("\\\\n", "");
 		this.affiliateUrl=product.getAffiliateUrl();
+		this.price=product.getPrice();
 	}
 
 	public ProductAmazon(String str) {

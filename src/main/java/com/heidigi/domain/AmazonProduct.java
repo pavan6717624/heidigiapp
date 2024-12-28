@@ -28,7 +28,7 @@ public class AmazonProduct implements Serializable {
 	String keyFeatures, productSpecifications, benefits, whyChoose, fullData;
 	
 	
-	String conclusion, imageUrl, productUrl, category;
+	String conclusion, imageUrl, productUrl, category, price;
 	
 
 }

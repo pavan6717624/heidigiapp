@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class ImageAndCategory {
 	
-	String image, category;
+	String image, category,price;
 
 }
