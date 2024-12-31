@@ -93,6 +93,13 @@ public class AmazonService {
 	}
 
 	public List<ProductAmazon> getPageContents(String category) throws Exception {
+		
+		AmazonAudit audit = new AmazonAudit();
+		audit.setUrl("ALL");
+		audit.setTime(Timestamp.valueOf(LocalDateTime.now()));
+		audit.setPurpose("ALL");
+
+		auditRepository.save(audit);
 
 		List<ProductAmazon> products = amazonRepository.getPageContents().stream().map(o -> new ProductAmazon(o))
 				.collect(Collectors.toList());
