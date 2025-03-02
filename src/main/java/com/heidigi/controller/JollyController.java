@@ -19,43 +19,7 @@ public class JollyController {
 	
 	@Autowired
 	JollyServiceClass service;
-	
-	 public static final String ACCOUNT_SID = "AC00d36fe88cedc1d3681bce8b2ee878a2";
-	    public static final String AUTH_TOKEN = "b0b98f4e6ab715fd4f543680bc32f7c9";
-	
-//	@RequestMapping(value = "whatsapp")
-//	public String whatsapp() {
-//
-//	  Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-//	  Conversation conversation = Conversation.creator().create();
-//	  
-//	  Participant participant = Participant.creator(conversation.getSid())
-//              .setMessagingBindingAddress("whatsapp:+919449840144")
-//              .setMessagingBindingProxyAddress("whatsapp:+918121908464")
-//              .create();
-//     
-//      return "";
-//	}
-//	
-//
-//	
-//	@RequestMapping(value = "whatsapprespond")
-//	public String whatsapprespond(String MessagingServiceSid, String EventType, String Attributes, String DateCreated, String Index, String ChatServiceSid,
-//			String MessageSid, String AccountSid, String Source, String RetryCount,String Author, String ParticipantSid, String Body, String ConversationSid ) {
-//
-//		Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-//		
-//		System.out.println(ConversationSid+" "+MessageSid);
-//		
-//		 Message message =
-//		            Message.creator(ConversationSid).setAuthor("Pavan").setBody("Ahoy there!").create();
-//
-//		
-//	
-//	  System.out.println(message.getSid());
-//     
-//      return "";
-//	}
+
 
 	@RequestMapping(value = "login")
 	public JollyLoginStatusDTO login(@RequestBody JollyLoginDTO login) {
