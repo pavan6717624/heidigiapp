@@ -239,7 +239,7 @@ public class JollyServiceClass {
 			String otp = generateOTP(4);
 			user.setPassword(otp);
 			user.setMessage("User Signup");
-			user.setRole(roleRepository.findByRoleName("User").get());
+			user.setRole(roleRepository.findByRoleName("Customer").get());
 			user.setJoinDate(Timestamp.valueOf(LocalDateTime.now()));
 			user.setIsDeleted(false);
 			user.setIsDisabled(true);
