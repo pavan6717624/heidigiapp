@@ -62,6 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/AMAZON/**").permitAll().antMatchers("/image/*").permitAll().antMatchers("/images/*")
 				.permitAll().antMatchers("/video/*").permitAll().antMatchers("/checkUrl").permitAll()
 				.antMatchers("/JOLLY/**").permitAll()
+				.antMatchers("/MYTRADE/**").permitAll()
 				.antMatchers("/generateOTP").permitAll().antMatchers("/facebookLogin").permitAll()
 				.antMatchers("/facebookSignup").permitAll().antMatchers("/getCategories").permitAll()
 
