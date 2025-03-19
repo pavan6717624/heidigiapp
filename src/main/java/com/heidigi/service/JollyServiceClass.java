@@ -4,7 +4,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,11 +22,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.heidigi.domain.JollyLocation;
 import com.heidigi.domain.JollyUser;
 import com.heidigi.jwt.JwtTokenUtil;
+import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
 import com.heidigi.model.JollyLoginStatusDTO;
 import com.heidigi.model.JollySignupDTO;
+import com.heidigi.repository.JollyLocationRepository;
 import com.heidigi.repository.JollyRoleRepository;
 import com.heidigi.repository.JollyUserRepository;
 
@@ -47,7 +53,10 @@ public class JollyServiceClass {
 
 	@Autowired
 	JollyRoleRepository roleRepository;
-	
+
+	@Autowired
+	JollyLocationRepository locationRepository;
+
 	@Value("${email.password}")
 	private String password;
 
@@ -66,7 +75,35 @@ public class JollyServiceClass {
 		}
 
 	}
+
+	public List<JollyLocationDTO> addLocation(JollyLocationDTO locationDTO) throws Exception {
+
+		Optional<JollyLocation> location = locationRepository.findByLocationNameIgnoreCaseOrderByLocationIdDesc(locationDTO.getLocationName());
+		List<JollyLocationDTO> status = new ArrayList<>();
+		if (location.isPresent()) {
+			JollyLocationDTO jlocationDTO = new JollyLocationDTO();
+			jlocationDTO.setStatus(false);
+			jlocationDTO.setMessage("Location already exists..");
+			status.add(jlocationDTO);
+		} else {
+			
+			JollyLocation jlocation = new JollyLocation();
+			jlocation.setLocationName(locationDTO.getLocationName());
+			jlocation.setPrice(locationDTO.getPrice());
+			locationRepository.save(jlocation);
+			status = getLocations();
+		}
+
+		return status;
+
+	}
 	
+	public List<JollyLocationDTO> getLocations() throws Exception {
+		
+		return locationRepository.findAll().stream().map(o -> new JollyLocationDTO(o))
+				.collect(Collectors.toList());
+		
+	}
 	public JollyLoginStatusDTO getLoginDetails() throws Exception {
 
 		JollyLoginStatusDTO loginStatus = new JollyLoginStatusDTO();
@@ -82,23 +119,22 @@ public class JollyServiceClass {
 			UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal();
 
-			JollyUser user=userRepository.findByMobile(userDetails.getUsername()).get();
-			
+			JollyUser user = userRepository.findByMobile(userDetails.getUsername()).get();
+
 			loginStatus.setUserId(userDetails.getUsername());
-			
+
 			loginStatus.setName(user.getName());
-			
+
 			loginStatus.setEmail(user.getEmail());
-			
+
 			loginStatus.setMobile(user.getMobile());
-		
+
 			loginStatus.setLoginStatus(true);
 
 			System.out.println(Long.valueOf(userDetails.getUsername()));
 
 			loginStatus.setUserType(userDetails.getAuthorities().toArray()[0].toString());
 		}
-		
 
 		return loginStatus;
 	}
@@ -137,10 +173,10 @@ public class JollyServiceClass {
 		msg.setSubject(subject);
 		msg.setText(text);
 		try {
-			 JavaMailSenderImpl jMailSender = (JavaMailSenderImpl)javaMailSender;
+			JavaMailSenderImpl jMailSender = (JavaMailSenderImpl) javaMailSender;
 
-		     jMailSender.setUsername("heidigiotp@gmail.com");
-		     jMailSender.setPassword(password);
+			jMailSender.setUsername("heidigiotp@gmail.com");
+			jMailSender.setPassword(password);
 			javaMailSender.send(msg);
 		} catch (Exception ex) {
 			try {
