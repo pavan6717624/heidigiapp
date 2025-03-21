@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import com.heidigi.domain.JollyLocation;
 import com.heidigi.domain.JollyUser;
 import com.heidigi.jwt.JwtTokenUtil;
+import com.heidigi.model.JollyFno;
 import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
 import com.heidigi.model.JollyLoginStatusDTO;
@@ -103,7 +105,9 @@ public class JollyServiceClass {
 	
 	public List<JollyLocationDTO> getLocations() throws Exception {
 		
-		return locationRepository.findAll().stream().map(o -> new JollyLocationDTO(o))
+		return locationRepository.findAll().stream()
+				.sorted(Comparator.comparingDouble(JollyLocation::getLocationId).reversed())
+				.map(o -> new JollyLocationDTO(o))
 				.collect(Collectors.toList());
 		
 	}

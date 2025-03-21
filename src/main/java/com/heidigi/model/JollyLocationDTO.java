@@ -11,6 +11,7 @@ public class JollyLocationDTO {
 	Double price;
 	Boolean status;
 	String message;
+	
 	public JollyLocationDTO()
 	{
 		
@@ -18,6 +19,7 @@ public class JollyLocationDTO {
 	
 	public JollyLocationDTO(JollyLocation location)
 	{
+		
 		this.locationName=location.getLocationName();
 		this.price=location.getPrice();
 		this.status=true;
