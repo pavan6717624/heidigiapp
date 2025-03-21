@@ -27,4 +27,5 @@ public class JollyLocation implements Serializable {
 	String locationName = "";
 	Double price = 0d;
 
+
 }

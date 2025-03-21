@@ -76,22 +76,25 @@ public class JollyServiceClass {
 
 	}
 
-	public List<JollyLocationDTO> addLocation(JollyLocationDTO locationDTO) throws Exception {
+	public JollyLocationDTO addLocation(JollyLocationDTO locationDTO) throws Exception {
 
 		Optional<JollyLocation> location = locationRepository.findByLocationNameIgnoreCaseOrderByLocationIdDesc(locationDTO.getLocationName());
-		List<JollyLocationDTO> status = new ArrayList<>();
+		JollyLocationDTO status = new JollyLocationDTO();
 		if (location.isPresent()) {
-			JollyLocationDTO jlocationDTO = new JollyLocationDTO();
-			jlocationDTO.setStatus(false);
-			jlocationDTO.setMessage("Location already exists..");
-			status.add(jlocationDTO);
+			
+			status.setStatus(false);
+			status.setMessage("Location already exists..");
+			
 		} else {
 			
 			JollyLocation jlocation = new JollyLocation();
 			jlocation.setLocationName(locationDTO.getLocationName());
 			jlocation.setPrice(locationDTO.getPrice());
 			locationRepository.save(jlocation);
-			status = getLocations();
+
+			status.setStatus(false);
+			status.setMessage("Location ("+locationDTO.getLocationName()+" , "+ locationDTO.getPrice() +") Added Successfully..");
+			
 		}
 
 		return status;
@@ -104,6 +107,23 @@ public class JollyServiceClass {
 				.collect(Collectors.toList());
 		
 	}
+	
+public Boolean deleteLocation(String locationName) throws Exception {
+	
+	Boolean status=false;
+		
+	Optional<JollyLocation> location = locationRepository.findByLocationNameIgnoreCaseOrderByLocationIdDesc(locationName);
+	
+	if(location.isPresent())
+	{
+		locationRepository.delete(location.get());
+		status=true;
+	}
+	
+	return status;
+		
+	}
+
 	public JollyLoginStatusDTO getLoginDetails() throws Exception {
 
 		JollyLoginStatusDTO loginStatus = new JollyLoginStatusDTO();

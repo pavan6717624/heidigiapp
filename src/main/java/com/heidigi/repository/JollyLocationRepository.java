@@ -14,5 +14,7 @@ public interface JollyLocationRepository extends JpaRepository<JollyLocation, Lo
 
 	Optional<JollyLocation> findByLocationNameIgnoreCaseOrderByLocationIdDesc(@Param("locationName") String locationName);
 
+	Optional<JollyLocation> findByLocationName(@Param("locationName") String locationName);
+
 
 }

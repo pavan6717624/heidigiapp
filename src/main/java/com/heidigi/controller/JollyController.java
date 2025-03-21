@@ -55,7 +55,7 @@ public class JollyController {
 	}
 
 	@RequestMapping(value = "/addLocation")
-	public List<JollyLocationDTO> addLocation(@RequestBody JollyLocationDTO locationDTO) throws Exception {
+	public JollyLocationDTO addLocation(@RequestBody JollyLocationDTO locationDTO) throws Exception {
 		return service.addLocation(locationDTO);
 
 	}
@@ -63,6 +63,12 @@ public class JollyController {
 	@RequestMapping(value = "/getLocations")
 	public List<JollyLocationDTO> getLocations() throws Exception {
 		return service.getLocations();
+
+	}
+	
+	@RequestMapping(value = "/deleteLocation")
+	public Boolean deleteLocation(String locationName) throws Exception {
+		return service.deleteLocation(locationName);
 
 	}
 
