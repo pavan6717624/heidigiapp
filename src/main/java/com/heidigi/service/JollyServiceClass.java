@@ -4,7 +4,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +25,7 @@ import org.springframework.stereotype.Service;
 import com.heidigi.domain.JollyLocation;
 import com.heidigi.domain.JollyUser;
 import com.heidigi.jwt.JwtTokenUtil;
-import com.heidigi.model.JollyFno;
+import com.heidigi.model.DropDown;
 import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
 import com.heidigi.model.JollyLoginStatusDTO;
@@ -80,52 +79,86 @@ public class JollyServiceClass {
 
 	public JollyLocationDTO addLocation(JollyLocationDTO locationDTO) throws Exception {
 
-		Optional<JollyLocation> location = locationRepository.findByLocationNameIgnoreCaseOrderByLocationIdDesc(locationDTO.getLocationName());
+		Optional<JollyLocation> location = locationRepository
+				.findByLocationNameIgnoreCaseOrderByLocationIdDesc(locationDTO.getLocationName());
 		JollyLocationDTO status = new JollyLocationDTO();
 		if (location.isPresent()) {
-			
+
 			status.setStatus(false);
 			status.setMessage("Location already exists..");
-			
+
 		} else {
-			
+
 			JollyLocation jlocation = new JollyLocation();
 			jlocation.setLocationName(locationDTO.getLocationName());
 			jlocation.setPrice(locationDTO.getPrice());
 			locationRepository.save(jlocation);
 
+			status.setStatus(true);
+			status.setMessage("Location (" + locationDTO.getLocationName() + " , " + locationDTO.getPrice()
+					+ ") Added Successfully..");
+
+		}
+
+		return status;
+
+	}
+
+	public JollyLocationDTO editLocation(JollyLocationDTO locationDTO) throws Exception {
+
+		Optional<JollyLocation> location = locationRepository
+				.findByLocationNameIgnoreCaseOrderByLocationIdDesc(locationDTO.getLocationName());
+		JollyLocationDTO status = new JollyLocationDTO();
+		if (location.isPresent()) {
+
+			JollyLocation jlocation = location.get();
+			jlocation.setLocationName(locationDTO.getLocationName());
+			jlocation.setPrice(locationDTO.getPrice());
+			locationRepository.save(jlocation);
+
+			status.setStatus(true);
+			status.setMessage("Location (" + locationDTO.getLocationName() + " , " + locationDTO.getPrice()
+					+ ") Edited Successfully..");
+
+		} else {
+
 			status.setStatus(false);
-			status.setMessage("Location ("+locationDTO.getLocationName()+" , "+ locationDTO.getPrice() +") Added Successfully..");
-			
+			status.setMessage("Location does not exists..");
+
+		}
+
+		return status;
+
+	}
+
+	public List<JollyLocationDTO> getLocations() throws Exception {
+
+		return locationRepository.findAll().stream()
+				.sorted(Comparator.comparingDouble(JollyLocation::getLocationId).reversed())
+				.map(o -> new JollyLocationDTO(o)).collect(Collectors.toList());
+
+	}
+
+	public Boolean deleteLocation(String locationName) throws Exception {
+
+		Boolean status = false;
+
+		Optional<JollyLocation> location = locationRepository
+				.findByLocationNameIgnoreCaseOrderByLocationIdDesc(locationName);
+
+		if (location.isPresent()) {
+			locationRepository.delete(location.get());
+			status = true;
 		}
 
 		return status;
 
 	}
 	
-	public List<JollyLocationDTO> getLocations() throws Exception {
-		
-		return locationRepository.findAll().stream()
-				.sorted(Comparator.comparingDouble(JollyLocation::getLocationId).reversed())
-				.map(o -> new JollyLocationDTO(o))
-				.collect(Collectors.toList());
-		
-	}
-	
-public Boolean deleteLocation(String locationName) throws Exception {
-	
-	Boolean status=false;
-		
-	Optional<JollyLocation> location = locationRepository.findByLocationNameIgnoreCaseOrderByLocationIdDesc(locationName);
-	
-	if(location.isPresent())
+	public List<DropDown> getLocationDropDown() throws Exception
 	{
-		locationRepository.delete(location.get());
-		status=true;
-	}
-	
-	return status;
-		
+		return getLocations().stream().map(o -> new DropDown(o.getLocationName(), o.getLocationName()))
+				.collect(Collectors.toList());
 	}
 
 	public JollyLoginStatusDTO getLoginDetails() throws Exception {

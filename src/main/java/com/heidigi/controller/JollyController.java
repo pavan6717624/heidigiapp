@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.heidigi.model.DropDown;
 import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
 import com.heidigi.model.JollyLoginStatusDTO;
@@ -59,10 +60,22 @@ public class JollyController {
 		return service.addLocation(locationDTO);
 
 	}
+	
+	@RequestMapping(value = "/editLocation")
+	public JollyLocationDTO editLocation(@RequestBody JollyLocationDTO locationDTO) throws Exception {
+		return service.editLocation(locationDTO);
+
+	}
 
 	@RequestMapping(value = "/getLocations")
 	public List<JollyLocationDTO> getLocations() throws Exception {
 		return service.getLocations();
+
+	}
+	
+	@RequestMapping(value = "/getLocationDropDown")
+	public List<DropDown> getLocationDropDown() throws Exception {
+		return service.getLocationDropDown();
 
 	}
 	
