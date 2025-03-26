@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.heidigi.domain.JollyLocation;
+import com.heidigi.domain.JollyTrip;
 import com.heidigi.domain.JollyUser;
 import com.heidigi.jwt.JwtTokenUtil;
 import com.heidigi.model.DropDown;
@@ -30,8 +31,10 @@ import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
 import com.heidigi.model.JollyLoginStatusDTO;
 import com.heidigi.model.JollySignupDTO;
+import com.heidigi.model.JollyTripDTO;
 import com.heidigi.repository.JollyLocationRepository;
 import com.heidigi.repository.JollyRoleRepository;
+import com.heidigi.repository.JollyTripRepository;
 import com.heidigi.repository.JollyUserRepository;
 
 @Service
@@ -57,6 +60,11 @@ public class JollyServiceClass {
 
 	@Autowired
 	JollyLocationRepository locationRepository;
+	
+
+	@Autowired
+	JollyTripRepository tripRepository;
+
 
 	@Value("${email.password}")
 	private String password;
@@ -76,7 +84,33 @@ public class JollyServiceClass {
 		}
 
 	}
+	public JollyTripDTO addTrip(JollyTripDTO tripDTO) throws Exception {
+		
+		List<JollyTrip> trip = tripRepository
+				.findByTrip(tripDTO.getFromDate(), tripDTO.getToDate());
+		JollyTripDTO status=new JollyTripDTO();
+		if (trip.size()!=0) {
 
+			status.setStatus(false);
+			status.setMessage("Trip already exists..");
+
+		} 
+		else
+		{
+			JollyTrip jtrip = new JollyTrip();
+			jtrip.setLocation(locationRepository.findByLocationNameIgnoreCaseOrderByLocationIdDesc(tripDTO.getLocationName()).get());
+			jtrip.setFromDate(tripDTO.getFromDate());
+			jtrip.setToDate(tripDTO.getToDate());
+			tripRepository.save(jtrip);
+
+			status.setStatus(true);
+			status.setMessage("Trip Added Successfully..");
+		}
+		
+		
+		return status;
+	}
+	
 	public JollyLocationDTO addLocation(JollyLocationDTO locationDTO) throws Exception {
 
 		Optional<JollyLocation> location = locationRepository
@@ -138,6 +172,15 @@ public class JollyServiceClass {
 				.map(o -> new JollyLocationDTO(o)).collect(Collectors.toList());
 
 	}
+	
+	public List<JollyTripDTO> getTrips() throws Exception {
+
+		return tripRepository.findAll().stream()
+				.sorted(Comparator.comparingDouble(JollyTrip::getTripId).reversed())
+				.map(o -> new JollyTripDTO(o)).collect(Collectors.toList());
+
+	}
+
 
 	public Boolean deleteLocation(String locationName) throws Exception {
 

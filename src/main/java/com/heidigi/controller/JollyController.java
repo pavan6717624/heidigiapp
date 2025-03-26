@@ -13,6 +13,7 @@ import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
 import com.heidigi.model.JollyLoginStatusDTO;
 import com.heidigi.model.JollySignupDTO;
+import com.heidigi.model.JollyTripDTO;
 import com.heidigi.service.JollyServiceClass;
 
 @RestController
@@ -61,6 +62,12 @@ public class JollyController {
 
 	}
 	
+	@RequestMapping(value = "/addTrip")
+	public JollyTripDTO addTrip(@RequestBody JollyTripDTO tripDTO) throws Exception {
+		return service.addTrip(tripDTO);
+
+	}
+	
 	@RequestMapping(value = "/editLocation")
 	public JollyLocationDTO editLocation(@RequestBody JollyLocationDTO locationDTO) throws Exception {
 		return service.editLocation(locationDTO);
@@ -70,6 +77,12 @@ public class JollyController {
 	@RequestMapping(value = "/getLocations")
 	public List<JollyLocationDTO> getLocations() throws Exception {
 		return service.getLocations();
+
+	}
+	
+	@RequestMapping(value = "/getTrips")
+	public List<JollyTripDTO> getTrips() throws Exception {
+		return service.getTrips();
 
 	}
 	
