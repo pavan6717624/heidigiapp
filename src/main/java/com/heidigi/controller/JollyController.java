@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.heidigi.model.DropDown;
+import com.heidigi.model.JollyCustomerDTO;
 import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
 import com.heidigi.model.JollyLoginStatusDTO;
@@ -62,6 +63,24 @@ public class JollyController {
 
 	}
 	
+	@RequestMapping(value = "/addCustomer")
+	public JollyCustomerDTO addCustomer(@RequestBody JollyCustomerDTO customerDTO) throws Exception {
+		return service.addCustomer(customerDTO);
+
+	}
+	
+	@RequestMapping(value = "/editCustomer")
+	public JollyCustomerDTO editCustomer(@RequestBody JollyCustomerDTO customerDTO) throws Exception {
+		return service.editCustomer(customerDTO);
+
+	}
+	
+	@RequestMapping(value = "/deleteCustomer")
+	public JollyCustomerDTO deleteCustomer(@RequestBody JollyCustomerDTO customerDTO) throws Exception {
+		return service.deleteCustomer(customerDTO);
+
+	}
+	
 	@RequestMapping(value = "/addTrip")
 	public JollyTripDTO addTrip(@RequestBody JollyTripDTO tripDTO) throws Exception {
 		return service.addTrip(tripDTO);
@@ -83,6 +102,12 @@ public class JollyController {
 	@RequestMapping(value = "/getTrips")
 	public List<JollyTripDTO> getTrips() throws Exception {
 		return service.getTrips();
+
+	}
+	
+	@RequestMapping(value = "/getCustomers")
+	public List<JollyCustomerDTO> getCustomers() throws Exception {
+		return service.getCustomers();
 
 	}
 	
