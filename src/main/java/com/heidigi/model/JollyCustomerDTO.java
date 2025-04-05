@@ -1,6 +1,6 @@
 package com.heidigi.model;
 
-import com.heidigi.domain.JollyCustomer;
+import com.heidigi.domain.JollyUser;
 
 import lombok.Data;
 
@@ -18,13 +18,13 @@ public class JollyCustomerDTO {
 		
 	}
 	
-	public JollyCustomerDTO(JollyCustomer customer)
+	public JollyCustomerDTO(JollyUser customer)
 	{
 		
 		
 		this.name=customer.getName();
 		this.mobile=customer.getMobile();
-		this.emailId= customer.getEmailId();
+		this.emailId= customer.getEmail();
 		
 		this.status=true;
 		this.message="Success";

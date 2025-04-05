@@ -3,7 +3,9 @@ package com.heidigi.service;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +24,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.heidigi.domain.JollyCustomer;
 import com.heidigi.domain.JollyLocation;
+import com.heidigi.domain.JollySchedule;
 import com.heidigi.domain.JollyTrip;
 import com.heidigi.domain.JollyUser;
 import com.heidigi.jwt.JwtTokenUtil;
@@ -32,11 +34,13 @@ import com.heidigi.model.JollyCustomerDTO;
 import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
 import com.heidigi.model.JollyLoginStatusDTO;
+import com.heidigi.model.JollyScheduleDTO;
 import com.heidigi.model.JollySignupDTO;
 import com.heidigi.model.JollyTripDTO;
 import com.heidigi.repository.JollyCustomerRepository;
 import com.heidigi.repository.JollyLocationRepository;
 import com.heidigi.repository.JollyRoleRepository;
+import com.heidigi.repository.JollyScheduleRepository;
 import com.heidigi.repository.JollyTripRepository;
 import com.heidigi.repository.JollyUserRepository;
 
@@ -69,6 +73,9 @@ public class JollyServiceClass {
 
 	@Autowired
 	JollyCustomerRepository customerRepository;
+	
+	@Autowired
+	JollyScheduleRepository scheduleRepository;
 
 	@Value("${email.password}")
 	private String password;
@@ -115,17 +122,21 @@ public class JollyServiceClass {
 
 	public JollyCustomerDTO addCustomer(JollyCustomerDTO customerDTO) throws Exception {
 
-		List<JollyCustomer> customers = customerRepository.findByMobile(customerDTO.getMobile());
+		Optional<JollyUser> customers = userRepository.findByCustomerMobile(customerDTO.getMobile());
 		JollyCustomerDTO status = new JollyCustomerDTO();
-		if (customers.size() != 0) {
+		if (customers.isPresent()) {
 
 			status.setStatus(false);
 			status.setMessage("Customer already exists..");
 
 		} else {
-			JollyCustomer customer = new JollyCustomer(customerDTO);
+//			JollyCustomer customer = new JollyCustomer(customerDTO);
+//
+//			customerRepository.save(customer);
 
-			customerRepository.save(customer);
+			JollyUser user = new JollyUser(customerDTO);
+			user.setRole(roleRepository.findByRoleName("Customer").get());
+			userRepository.save(user);
 
 			status.setStatus(true);
 			status.setMessage("Customer Added Successfully..");
@@ -134,18 +145,59 @@ public class JollyServiceClass {
 		return status;
 	}
 
+	public JollyScheduleDTO addSchedule(JollyScheduleDTO scheduleDTO) throws Exception {
+		
+		System.out.println(scheduleDTO.getTripDates());
+
+		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		final LocalDate fromDate = LocalDate.parse(scheduleDTO.getTripDates().split("to")[0].trim(), dtf);
+		final LocalDate toDate = LocalDate.parse(scheduleDTO.getTripDates().split("to")[1].trim(), dtf);
+
+		JollyTrip trip = tripRepository.findByTrip(fromDate, toDate).stream()
+				.filter(o -> o.getLocation().getLocationName().equals(scheduleDTO.getLocationName()))
+				.collect(Collectors.toList()).get(0);
+		
+		JollyScheduleDTO status=new JollyScheduleDTO();
+		
+		JollyUser user=userRepository.findByMobile(scheduleDTO.getMobile()).get();
+		
+		
+		Optional<JollySchedule> schedule=scheduleRepository.findByTripAndUser(trip, user);
+		
+		if(schedule.isPresent())
+		{
+			status.setStatus(false);
+			status.setMessage("Customer is not available for the Trip");
+		}
+		else
+		{
+			JollySchedule newSchedule=new JollySchedule();
+			newSchedule.setUser(user);
+			newSchedule.setTrip(trip);
+			scheduleRepository.save(newSchedule);
+			status.setStatus(true);
+			status.setMessage("Scheduled Successfully");
+		}
+		
+		
+
+		return status;
+	}
+
 	public JollyCustomerDTO editCustomer(JollyCustomerDTO customerDTO) throws Exception {
 
-		List<JollyCustomer> customers = customerRepository.findByMobile(customerDTO.getOldMobile());
+		Optional<JollyUser> customers = userRepository.findByCustomerMobile(customerDTO.getOldMobile());
+
 		JollyCustomerDTO status = new JollyCustomerDTO();
-		if (customers.size() != 0) {
+		if (customers.isPresent()) {
 
-			JollyCustomer customer = customers.get(0);
+			JollyUser customer = customers.get();
 
-			customer.setEmailId(customerDTO.getEmailId());
+			customer.setEmail(customerDTO.getEmailId());
 			customer.setMobile(customerDTO.getMobile());
 			customer.setName(customerDTO.getName());
-			customerRepository.save(customer);
+			userRepository.save(customer);
+
 			status.setStatus(true);
 			status.setMessage("Customer Details Edited Successfully..");
 
@@ -157,17 +209,17 @@ public class JollyServiceClass {
 
 		return status;
 	}
-	
+
 	public JollyCustomerDTO deleteCustomer(JollyCustomerDTO customerDTO) throws Exception {
 
-		List<JollyCustomer> customers = customerRepository.findByMobile(customerDTO.getMobile());
+		Optional<JollyUser> customers = userRepository.findByCustomerMobile(customerDTO.getMobile());
 		JollyCustomerDTO status = new JollyCustomerDTO();
-		if (customers.size() != 0) {
+		if (customers.isPresent()) {
 
-			JollyCustomer customer = customers.get(0);
+			JollyUser customer = customers.get();
+			customer.setIsDeleted(true);
 
-			
-			customerRepository.delete(customer);
+			userRepository.save(customer);
 			status.setStatus(true);
 			status.setMessage("Customer Deleted Successfully..");
 
@@ -179,7 +231,6 @@ public class JollyServiceClass {
 
 		return status;
 	}
-	
 
 	public JollyLocationDTO addLocation(JollyLocationDTO locationDTO) throws Exception {
 
@@ -245,9 +296,10 @@ public class JollyServiceClass {
 
 	public List<JollyCustomerDTO> getCustomers() throws Exception {
 
-		return customerRepository.findAll().stream()
-				.sorted(Comparator.comparingDouble(JollyCustomer::getCustomerId).reversed())
-				.map(o -> new JollyCustomerDTO(o)).collect(Collectors.toList());
+		return userRepository.findAll().stream()
+				.filter(o -> o.getRole().getRoleName().equals("Customer") && !o.getIsDisabled() && !o.getIsDeleted())
+				.sorted(Comparator.comparingDouble(JollyUser::getUserId).reversed()).map(o -> new JollyCustomerDTO(o))
+				.collect(Collectors.toList());
 
 	}
 
@@ -276,6 +328,12 @@ public class JollyServiceClass {
 
 	public List<DropDown> getLocationDropDown() throws Exception {
 		return getLocations().stream().map(o -> new DropDown(o.getLocationName(), o.getLocationName()))
+				.collect(Collectors.toList());
+	}
+
+	public List<DropDown> getCustomersDropDown() throws Exception {
+		return getCustomers().stream()
+				.map(o -> new DropDown(o.getName() + " - " + o.getMobile(), o.getName() + " - " + o.getMobile()))
 				.collect(Collectors.toList());
 	}
 

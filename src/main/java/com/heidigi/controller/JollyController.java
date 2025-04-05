@@ -13,6 +13,7 @@ import com.heidigi.model.JollyCustomerDTO;
 import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
 import com.heidigi.model.JollyLoginStatusDTO;
+import com.heidigi.model.JollyScheduleDTO;
 import com.heidigi.model.JollySignupDTO;
 import com.heidigi.model.JollyTripDTO;
 import com.heidigi.service.JollyServiceClass;
@@ -69,6 +70,12 @@ public class JollyController {
 
 	}
 	
+	@RequestMapping(value = "/addSchedule")
+	public JollyScheduleDTO addSchedule(@RequestBody JollyScheduleDTO scheduleDTO) throws Exception {
+		return service.addSchedule(scheduleDTO);
+
+	}
+	
 	@RequestMapping(value = "/editCustomer")
 	public JollyCustomerDTO editCustomer(@RequestBody JollyCustomerDTO customerDTO) throws Exception {
 		return service.editCustomer(customerDTO);
@@ -108,6 +115,12 @@ public class JollyController {
 	@RequestMapping(value = "/getCustomers")
 	public List<JollyCustomerDTO> getCustomers() throws Exception {
 		return service.getCustomers();
+
+	}
+	
+	@RequestMapping(value = "/getCustomersDropDown")
+	public List<DropDown> getCustomersDropDown() throws Exception {
+		return service.getCustomersDropDown();
 
 	}
 	
