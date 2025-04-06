@@ -47,6 +47,13 @@ public class JollyController {
 		return service.verifyOTP(mail, password, mobile);
 
 	}
+	
+	@RequestMapping(value = "removeFromTrip")
+	public Boolean removeFromTrip(String locationName, String trip, String customer) throws Exception {
+
+		return service.removeFromTrip(locationName, trip, customer);
+
+	}
 
 	@RequestMapping(value = "signup")
 	public JollyLoginStatusDTO signup(@RequestBody JollySignupDTO signup) throws Exception {

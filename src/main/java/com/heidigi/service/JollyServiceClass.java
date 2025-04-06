@@ -74,7 +74,7 @@ public class JollyServiceClass {
 
 	@Autowired
 	JollyCustomerRepository customerRepository;
-	
+
 	@Autowired
 	JollyScheduleRepository scheduleRepository;
 
@@ -146,13 +146,12 @@ public class JollyServiceClass {
 		return status;
 	}
 
-	public List<JollyCalendarDTO> getSchedules()
-	{
+	public List<JollyCalendarDTO> getSchedules() {
 		return scheduleRepository.getSchedules();
 	}
-	
+
 	public JollyScheduleDTO addSchedule(JollyScheduleDTO scheduleDTO) throws Exception {
-		
+
 		System.out.println(scheduleDTO.getTripDates());
 
 		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -162,30 +161,24 @@ public class JollyServiceClass {
 		JollyTrip trip = tripRepository.findByTrip(fromDate, toDate).stream()
 				.filter(o -> o.getLocation().getLocationName().equals(scheduleDTO.getLocationName()))
 				.collect(Collectors.toList()).get(0);
-		
-		JollyScheduleDTO status=new JollyScheduleDTO();
-		
-		JollyUser user=userRepository.findByMobile(scheduleDTO.getMobile()).get();
-		
-		
-		Optional<JollySchedule> schedule=scheduleRepository.findByTripAndUser(trip, user);
-		
-		if(schedule.isPresent())
-		{
+
+		JollyScheduleDTO status = new JollyScheduleDTO();
+
+		JollyUser user = userRepository.findByMobile(scheduleDTO.getMobile()).get();
+
+		Optional<JollySchedule> schedule = scheduleRepository.findByTripAndUser(trip, user);
+
+		if (schedule.isPresent()) {
 			status.setStatus(false);
 			status.setMessage("Customer is not available for the Trip");
-		}
-		else
-		{
-			JollySchedule newSchedule=new JollySchedule();
+		} else {
+			JollySchedule newSchedule = new JollySchedule();
 			newSchedule.setUser(user);
 			newSchedule.setTrip(trip);
 			scheduleRepository.save(newSchedule);
 			status.setStatus(true);
-			status.setMessage("Scheduled Successfully");
+			status.setMessage("Customer added to Trip Successfully");
 		}
-		
-		
 
 		return status;
 	}
@@ -538,6 +531,33 @@ public class JollyServiceClass {
 
 		return loginStatus;
 
+	}
+
+	public Boolean removeFromTrip(String locationName, String trip, String customer) {
+
+		try {
+
+			final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			final LocalDate fromDate = LocalDate.parse(trip.split("to")[0].trim(), dtf);
+			final LocalDate toDate = LocalDate.parse(trip.split("to")[1].trim(), dtf);
+
+			JollyTrip jtrip = tripRepository.findByTrip(fromDate, toDate).stream()
+					.filter(o -> o.getLocation().getLocationName().equals(locationName)).collect(Collectors.toList())
+					.get(0);
+
+			JollyUser user = userRepository.findById(Long.valueOf(customer.split("-")[0].trim())).get();
+
+			JollySchedule schedule = scheduleRepository.findByTripAndUser(jtrip, user).get();
+
+			scheduleRepository.delete(schedule);
+
+			// TODO Auto-generated method stub
+			return true;
+		} catch (Exception ex) {
+			
+			ex.printStackTrace();
+			return false;
+		}
 	}
 
 }
