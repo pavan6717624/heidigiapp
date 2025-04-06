@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.heidigi.model.DropDown;
+import com.heidigi.model.JollyCalendarDTO;
 import com.heidigi.model.JollyCustomerDTO;
 import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
@@ -75,6 +76,13 @@ public class JollyController {
 		return service.addSchedule(scheduleDTO);
 
 	}
+	
+	@RequestMapping(value = "/getSchedules")
+	public List<JollyCalendarDTO> getSchedules() throws Exception {
+		return service.getSchedules();
+
+	}
+	
 	
 	@RequestMapping(value = "/editCustomer")
 	public JollyCustomerDTO editCustomer(@RequestBody JollyCustomerDTO customerDTO) throws Exception {

@@ -30,6 +30,7 @@ import com.heidigi.domain.JollyTrip;
 import com.heidigi.domain.JollyUser;
 import com.heidigi.jwt.JwtTokenUtil;
 import com.heidigi.model.DropDown;
+import com.heidigi.model.JollyCalendarDTO;
 import com.heidigi.model.JollyCustomerDTO;
 import com.heidigi.model.JollyLocationDTO;
 import com.heidigi.model.JollyLoginDTO;
@@ -145,6 +146,11 @@ public class JollyServiceClass {
 		return status;
 	}
 
+	public List<JollyCalendarDTO> getSchedules()
+	{
+		return scheduleRepository.getSchedules();
+	}
+	
 	public JollyScheduleDTO addSchedule(JollyScheduleDTO scheduleDTO) throws Exception {
 		
 		System.out.println(scheduleDTO.getTripDates());
