@@ -109,6 +109,12 @@ public class JollyController {
 
 	}
 	
+	@RequestMapping(value = "/deleteTrip")
+	public JollyTripDTO deleteTrip(@RequestBody JollyTripDTO tripDTO) throws Exception {
+		return service.deleteTrip(tripDTO);
+
+	}
+	
 	@RequestMapping(value = "/editLocation")
 	public JollyLocationDTO editLocation(@RequestBody JollyLocationDTO locationDTO) throws Exception {
 		return service.editLocation(locationDTO);

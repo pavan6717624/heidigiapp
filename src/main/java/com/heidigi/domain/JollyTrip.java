@@ -38,5 +38,7 @@ public class JollyTrip implements Serializable{
 	@Column(columnDefinition = "datetime")
 	LocalDate toDate;
 	
+	Boolean disabled=false;
+	
 	
 }

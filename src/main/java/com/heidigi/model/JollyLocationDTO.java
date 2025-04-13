@@ -8,6 +8,7 @@ import lombok.Data;
 public class JollyLocationDTO {
 
 	String locationName;
+	String oldLocationName;
 	Double price;
 	Boolean status;
 	String message;
