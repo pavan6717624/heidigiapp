@@ -11,9 +11,12 @@ import com.heidigi.domain.JollyTrip;
 
 public interface JollyTripRepository extends JpaRepository<JollyTrip, Long>{
 	
-	@Query("select t from JollyTrip t where (t.fromDate between :fromDate and :toDate) or   (t.toDate between :fromDate and :toDate)")
+	@Query("select t from JollyTrip t where ((t.fromDate between :fromDate and :toDate) or   (t.toDate between :fromDate and :toDate) and t.disabled=false and t.location.disabled=false)")
 	List<JollyTrip> findByTrip(@Param("fromDate") LocalDate fromDate,
 			@Param("toDate") LocalDate toDate);
 	
+	@Query("select t from JollyTrip t where (t.fromDate = :fromDate and :toDate = :toDate and t.location.locationName=:locationName and t.disabled=false and t.location.disabled=false)")
+	List<JollyTrip> findByTripWithLocation(@Param("fromDate") LocalDate fromDate,
+			@Param("toDate") LocalDate toDate, @Param("locationName") String locationName);
 
 }

@@ -110,12 +110,13 @@ public class JollyServiceClass {
 			}
 			else
 			{
-				
+				Long tripId = trip.get(0).getTripId();
 				JollyTrip jtrip = new JollyTrip();
 				jtrip.setLocation(locationRepository
 						.findByLocationNameIgnoreCaseOrderByLocationIdDesc(tripDTO.getLocationName()).get());
 				jtrip.setFromDate(tripDTO.getFromDate());
 				jtrip.setToDate(tripDTO.getToDate());
+				jtrip.setTripId(tripId);
 				tripRepository.save(jtrip);
 
 				status.setStatus(true);
@@ -125,18 +126,19 @@ public class JollyServiceClass {
 
 		} else {
 			
-			Long tripId = trip.get(0).getTripId();
-			
 			JollyTrip jtrip = new JollyTrip();
 			jtrip.setLocation(locationRepository
 					.findByLocationNameIgnoreCaseOrderByLocationIdDesc(tripDTO.getLocationName()).get());
 			jtrip.setFromDate(tripDTO.getFromDate());
 			jtrip.setToDate(tripDTO.getToDate());
-			jtrip.setTripId(tripId);
 			tripRepository.save(jtrip);
 
 			status.setStatus(true);
 			status.setMessage("Trip Added Successfully..");
+			
+			
+			
+			
 		}
 
 		return status;
@@ -144,7 +146,7 @@ public class JollyServiceClass {
 	
 	public JollyTripDTO deleteTrip(JollyTripDTO tripDTO) throws Exception {
 
-		List<JollyTrip> trip = tripRepository.findByTrip(tripDTO.getFromDate(), tripDTO.getToDate());
+		List<JollyTrip> trip = tripRepository.findByTripWithLocation(tripDTO.getFromDate(), tripDTO.getToDate(), tripDTO.getLocationName());
 		JollyTripDTO status = new JollyTripDTO();
 		if (trip.size() != 0) {
 			
