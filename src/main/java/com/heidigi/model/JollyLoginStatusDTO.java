@@ -12,8 +12,7 @@ public class JollyLoginStatusDTO {
 	String loginId = "0";
 
 	String message = "";
-	
-	String name,email,mobile;
-	
+
+	String name, email, mobile;
 
 }

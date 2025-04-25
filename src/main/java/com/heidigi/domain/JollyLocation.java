@@ -15,18 +15,17 @@ import lombok.Data;
 @Table(name = "jollylocation")
 public class JollyLocation implements Serializable {
 
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3760113683143736416L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long locationId;
 	String locationName = "";
 	Double price = 0d;
 
-	Boolean disabled=false;
+	Boolean disabled = false;
 
 }

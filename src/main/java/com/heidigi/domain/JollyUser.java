@@ -22,23 +22,20 @@ import lombok.Data;
 @Data
 @Table(name = "jollyuser")
 public class JollyUser implements Serializable {
-	
-	
-	public JollyUser()
-	{
-		
+
+	public JollyUser() {
+
 	}
-	
-	public JollyUser(JollyCustomerDTO customer)
-	{
-		this.email=customer.getEmailId();
-		this.mobile=customer.getMobile();
-		this.name=customer.getName();
-		this.joinDate=Timestamp.valueOf(LocalDateTime.now());
-		this.message="Customer Singup";
+
+	public JollyUser(JollyCustomerDTO customer) {
+		this.email = customer.getEmailId();
+		this.mobile = customer.getMobile();
+		this.name = customer.getName();
+		this.joinDate = Timestamp.valueOf(LocalDateTime.now());
+		this.message = "Customer Singup";
 		this.setIsDeleted(false);
 		this.setIsDisabled(false);
-		
+
 	}
 
 	private static final long serialVersionUID = 3956721357336114735L;

@@ -12,5 +12,3 @@ import com.heidigi.domain.JollyRole;
 public interface JollyRoleRepository extends JpaRepository<JollyRole, Long> {
 	Optional<JollyRole> findByRoleName(@Param("roleName") String roleName);
 }
-
-

@@ -23,8 +23,7 @@ public class JollyFno {
 				.appendPattern("dd-MMM-yyyy")
 				// create formatter (use English Locale to parse month names)
 				.toFormatter(Locale.ENGLISH);
-		
-	
+
 		String data[] = line.split(",");
 		// INSTRUMENT,SYMBOL,EXPIRY_DT,EXPIRY_DT_FINAL,STRIKE_PR,OPTION_TYP,OPEN,HIGH,LOW,CLOSE,SETTLE_PR,
 		// CONTRACTS,VAL_INLAKH,OPEN_INT,CHG_IN_OI,TIMESTAMP
@@ -33,13 +32,10 @@ public class JollyFno {
 		symbol = data[1];
 		expiry_dt = LocalDate.parse(data[2], formatter);
 		expiry_dt_final = LocalDate.parse(data[3], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		try
-		{
-		strike_pr = Double.parseDouble(data[4]);
-		}
-		catch(Exception ex)
-		{
-			strike_pr=0d;
+		try {
+			strike_pr = Double.parseDouble(data[4]);
+		} catch (Exception ex) {
+			strike_pr = 0d;
 		}
 		option_typ = data[5];
 		open = Double.parseDouble(data[6]);

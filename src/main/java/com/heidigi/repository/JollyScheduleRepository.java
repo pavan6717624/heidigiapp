@@ -24,7 +24,7 @@ public interface JollyScheduleRepository extends JpaRepository<JollySchedule, Lo
 			+ "left join jollylocation l on t.location_id=l.location_id where (u.is_disabled is null or "
 			+ "u.is_disabled=false) and t.disabled=false and l.disabled=false "
 			+ "group BY l.location_name, t.from_date, t.to_date")
-	
+
 	List<JollyCalendarDTO> getSchedules();
 
 }

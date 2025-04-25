@@ -29,7 +29,7 @@ public class AmazonAudit implements Serializable {
 	String url;
 	@Column(columnDefinition = "datetime")
 	Timestamp time;
-	
+
 	String purpose;
 
 }

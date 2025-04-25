@@ -18,12 +18,12 @@ public interface JollyUserRepository extends JpaRepository<JollyUser, Long> {
 
 	@Query("select u from JollyUser u where mobile=:mobile and isDeleted=false and isDisabled=false")
 	Optional<JollyUser> findByMobile(@Param("mobile") String mobile);
-	
+
 	@Query("select u from JollyUser u where u.role.roleName='Customer' and mobile=:mobile")
 	Optional<JollyUser> findByCustomerMobile(@Param("mobile") String mobile);
 
 	Optional<JollyUser> findByEmail(@Param("email") String email);
-	
+
 	Optional<JollyUser> findByEmailOrMobile(@Param("email") String email, @Param("mobile") String mobile);
 
 }

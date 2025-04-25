@@ -23,7 +23,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	HeidigiUserRepository userDetailsRepository;
-	
+
 	@Autowired
 	JollyUserRepository userRepository;
 
@@ -34,7 +34,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 		// System.out.println("entered in loadUserByUsername..." + username);
 
 		Optional<com.heidigi.domain.HeidigiUser> user = userDetailsRepository.findByMobile(Long.valueOf(username));
-		
+
 		Optional<com.heidigi.domain.JollyUser> juser = userRepository.findByMobile(username);
 
 		List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();

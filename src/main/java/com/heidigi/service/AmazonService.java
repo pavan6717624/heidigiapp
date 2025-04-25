@@ -55,22 +55,22 @@ public class AmazonService {
 		return chatGPTData;
 
 	}
-	
+
 	public void buyNowAudit(String product) {
-		
+
 		System.out.println("buy now audit");
 
 		AmazonAudit audit = new AmazonAudit();
 		audit.setUrl(product);
 		audit.setTime(Timestamp.valueOf(LocalDateTime.now()));
 		audit.setPurpose("buy link");
-		
+
 		auditRepository.save(audit);
 
 	}
 
 	public String getPageContent(String product) {
-		
+
 		System.out.println("open now audit");
 
 		AmazonAudit audit = new AmazonAudit();
@@ -85,15 +85,15 @@ public class AmazonService {
 		return amazonRepository.findByProductUrl(product).get().getFullData();
 
 	}
-	
+
 	public List<AmazonAudit> getAuditContents() throws Exception {
-		
+
 		return auditRepository.findAll();
-		
+
 	}
 
 	public List<ProductAmazon> getPageContents(String category) throws Exception {
-		
+
 		AmazonAudit audit = new AmazonAudit();
 		audit.setUrl("ALL");
 		audit.setTime(Timestamp.valueOf(LocalDateTime.now()));

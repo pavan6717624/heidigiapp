@@ -53,10 +53,10 @@ public class MyTradingSetupController {
 
 	List<JollyFno> futures = new ArrayList<>();
 	List<JollyStock> Delivery = new ArrayList<>();
-	
+
 	@RequestMapping(value = "getLastPrice")
 	public List<JollyData> getLastPrice() throws Exception {
-		
+
 		List<JollyFno> futures = new ArrayList<>();
 		List<JollyMapData> chartData = new ArrayList<>();
 		URL url = new URL("https://www.samco.in/");
@@ -116,7 +116,7 @@ public class MyTradingSetupController {
 				} while (loop);
 
 			}
-			 System.out.println(data);
+			System.out.println(data);
 			writer.close();
 			reader.close();
 
@@ -142,7 +142,7 @@ public class MyTradingSetupController {
 			String line = "";
 			List<JollyStock> stocks = new ArrayList<>();
 			List<JollyFno> fnos = new ArrayList<>();
-			
+
 			while ((line = br.readLine()) != null)
 				if (line.indexOf(",EQ,") != -1)
 					stocks.add(new JollyStock(line));
@@ -171,20 +171,18 @@ public class MyTradingSetupController {
 			while ((line = br.readLine()) != null) {
 				String cols[] = line.split(",");
 
-				if (cols[0].equals("OPTSTK")
-						&& ChronoUnit.DAYS.between(getExpiryDate(LocalDate.parse(cols[cols.length - 1].trim(), formatter)),
-								LocalDate.parse(cols[2].trim(), formatter)) < 6)
-				{
+				if (cols[0].equals("OPTSTK") && ChronoUnit.DAYS.between(
+						getExpiryDate(LocalDate.parse(cols[cols.length - 1].trim(), formatter)),
+						LocalDate.parse(cols[2].trim(), formatter)) < 6) {
 //					System.out.println(line+" "+LocalDate.parse(cols[cols.length - 1].trim(), formatter) +" "+
 //							LocalDate.parse(cols[2].trim(), formatter) +" "+ChronoUnit.DAYS.between(LocalDate.parse(cols[cols.length - 1].trim(), formatter),
 //									LocalDate.parse(cols[2].trim(), formatter)));
 					fnos.add(new JollyFno(line));
 				}
-				
-				if (cols[0].equals("FUTSTK")
-						&& ChronoUnit.DAYS.between(getExpiryDate(LocalDate.parse(cols[cols.length - 1].trim(), formatter)),
-								LocalDate.parse(cols[2].trim(), formatter)) < 6)
-				{
+
+				if (cols[0].equals("FUTSTK") && ChronoUnit.DAYS.between(
+						getExpiryDate(LocalDate.parse(cols[cols.length - 1].trim(), formatter)),
+						LocalDate.parse(cols[2].trim(), formatter)) < 6) {
 //					System.out.println(line+" "+LocalDate.parse(cols[cols.length - 1].trim(), formatter) +" "+
 //							LocalDate.parse(cols[2].trim(), formatter) +" "+ChronoUnit.DAYS.between(LocalDate.parse(cols[cols.length - 1].trim(), formatter),
 //									LocalDate.parse(cols[2].trim(), formatter)));
@@ -192,14 +190,12 @@ public class MyTradingSetupController {
 				}
 			}
 
-			this.futures=futures;
-			
+			this.futures = futures;
+
 			Map<String, List<JollyFno>> gdata = fnos.stream()
 					.collect(Collectors.groupingBy(o -> o.getSymbol() + "-" + o.getOption_typ()));
 
 			List<String> keys = gdata.keySet().stream().sorted().collect(Collectors.toList());
-			
-		
 
 			for (int i = 0; i < keys.size(); i++) {
 				JollyMapData value = gdata.get(keys.get(i)).stream()
@@ -207,7 +203,7 @@ public class MyTradingSetupController {
 						.map(o -> new JollyMapData(o,
 								stocks.stream().filter(o1 -> o1.getSymbol().equals(o.getSymbol()))
 										.collect(Collectors.toList()).get(0).getClose()))
-						
+
 						.collect(Collectors.toList()).get(0);
 
 				chartData.add(value);
@@ -215,62 +211,58 @@ public class MyTradingSetupController {
 			}
 			localDate = localDate.minusDays(1);
 		}
-		
-		Map<String, List<JollyMapData>> mdata=chartData.stream().collect(Collectors.groupingBy(o -> o.getSymbol()));
-		
-		List<String> mkeys=mdata.keySet().stream().collect(Collectors.toList());
-		
-		List<JollyData> sdata=new ArrayList<>();
-		
-		for(int i=0;i<mkeys.size();i++)
-		{
-			JollyData data=new JollyData(mdata.get(mkeys.get(i)));
+
+		Map<String, List<JollyMapData>> mdata = chartData.stream().collect(Collectors.groupingBy(o -> o.getSymbol()));
+
+		List<String> mkeys = mdata.keySet().stream().collect(Collectors.toList());
+
+		List<JollyData> sdata = new ArrayList<>();
+
+		for (int i = 0; i < mkeys.size(); i++) {
+			JollyData data = new JollyData(mdata.get(mkeys.get(i)));
 			sdata.add(data);
 		}
 
-		
-
 		return sdata.stream().sorted(Comparator.comparing(JollyData::sort).reversed()).collect(Collectors.toList());
 	}
-	
-	public LocalDate getExpiryDate(LocalDate date)
-	{
+
+	public LocalDate getExpiryDate(LocalDate date) {
 		LocalDate lastThrusday = date.with(TemporalAdjusters.lastInMonth(DayOfWeek.THURSDAY));
-	
-		if(lastThrusday.compareTo(date) < 0)
+
+		if (lastThrusday.compareTo(date) < 0)
 			lastThrusday = date.plusDays(20).with(TemporalAdjusters.lastInMonth(DayOfWeek.THURSDAY));
-		//System.out.println(date+" "+lastThrusday);
+		// System.out.println(date+" "+lastThrusday);
 		return lastThrusday;
 	}
-	
+
 	@RequestMapping(value = "getFutureOIs")
 	public Collection<List<JollyFutures>> getFutureOIs() throws Exception {
-		
-		
-	
-		return (futures.stream().sorted(Comparator.comparing(JollyFno::getTimestamp)).map(o->new JollyFutures(o)).collect(Collectors.groupingBy(o -> o.getSymbol()))).values();
-		
+
+		return (futures.stream().sorted(Comparator.comparing(JollyFno::getTimestamp)).map(o -> new JollyFutures(o))
+				.collect(Collectors.groupingBy(o -> o.getSymbol()))).values();
+
 	}
-	
+
 	@RequestMapping(value = "getDelivery")
 	public void getDelivery() throws Exception {
-		
-		URL url=new URL("https://nsearchives.nseindia.com/archives/equities/mto/MTO_31072023.DAT");
+
+		URL url = new URL("https://nsearchives.nseindia.com/archives/equities/mto/MTO_31072023.DAT");
 		getFinalURL(url);
-	
+
 	}
+
 	public URL getFinalURL(URL url) throws Exception {
-		
+
 		URLConnection con = url.openConnection();
-		System.out.println( "orignal url: " + con.getURL() );
+		System.out.println("orignal url: " + con.getURL());
 		con.connect();
-		System.out.println( "connected url: " + con.getURL() );
+		System.out.println("connected url: " + con.getURL());
 		InputStream is = con.getInputStream();
-		System.out.println( "redirected url: " + con.getURL() );
+		System.out.println("redirected url: " + con.getURL());
 		is.close();
-		
-	 return url;
-		
+
+		return url;
+
 	}
 
 }

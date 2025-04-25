@@ -13,19 +13,17 @@ public class JollyTripDTO {
 	LocalDate fromDate, toDate;
 	Boolean status;
 	String message;
-	
-	public JollyTripDTO()
-	{
-		
+
+	public JollyTripDTO() {
+
 	}
-	
-	public JollyTripDTO(JollyTrip trip)
-	{
-		
-		this.locationName=trip.getLocation().getLocationName();
-		this.fromDate=trip.getFromDate();
-		this.toDate=trip.getToDate();
-		this.status=true;
-		this.message="Success";
+
+	public JollyTripDTO(JollyTrip trip) {
+
+		this.locationName = trip.getLocation().getLocationName();
+		this.fromDate = trip.getFromDate();
+		this.toDate = trip.getToDate();
+		this.status = true;
+		this.message = "Success";
 	}
 }

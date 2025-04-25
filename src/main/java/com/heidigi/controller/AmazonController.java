@@ -33,10 +33,10 @@ public class AmazonController {
 		return service.getPageContent(product);
 
 	}
-	
+
 	@RequestMapping(value = "/buyNowAudit")
 	public void buyNowAudit(@RequestParam String product) {
-		
+
 //		System.out.println("controller buyNowAudit");
 
 		service.buyNowAudit(product);
@@ -49,7 +49,7 @@ public class AmazonController {
 		return service.getPageContents(category);
 
 	}
-	
+
 	@RequestMapping(value = "/getAuditContents")
 	public List<AmazonAudit> getAuditContents() throws Exception {
 

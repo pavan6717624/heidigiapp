@@ -23,9 +23,9 @@ public interface JollyCalendarDTO {
 	public String getMessage();
 
 	public Boolean getStatus();
-	
+
 	public String getCustomers();
-	
+
 	public String getCustomerDetails();
 
 }

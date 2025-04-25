@@ -9,12 +9,7 @@ import com.heidigi.domain.JollyLocation;
 
 public interface JollyLocationRepository extends JpaRepository<JollyLocation, Long> {
 
-	
-
-
-	Optional<JollyLocation> findByLocationNameIgnoreCaseOrderByLocationIdDesc(@Param("locationName") String locationName);
-
-	
-
+	Optional<JollyLocation> findByLocationNameIgnoreCaseOrderByLocationIdDesc(
+			@Param("locationName") String locationName);
 
 }

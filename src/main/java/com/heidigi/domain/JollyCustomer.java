@@ -15,31 +15,28 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "jollycustomer")
-public class JollyCustomer implements Serializable{/**
-	 * 
-	 */
-	
-	public JollyCustomer()
-	{
-		
+public class JollyCustomer implements Serializable {
+	/**
+	* 
+	*/
+
+	public JollyCustomer() {
+
 	}
-	
-	public JollyCustomer(JollyCustomerDTO customer)
-	{
-		
-		
-		this.name=customer.getName();
-		this.mobile=customer.getMobile();
-		this.emailId= customer.getEmailId();
-		
-		
+
+	public JollyCustomer(JollyCustomerDTO customer) {
+
+		this.name = customer.getName();
+		this.mobile = customer.getMobile();
+		this.emailId = customer.getEmailId();
+
 	}
-	
+
 	private static final long serialVersionUID = -672489456015103344L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long customerId;
 	String name, mobile, emailId;
-		
+
 }

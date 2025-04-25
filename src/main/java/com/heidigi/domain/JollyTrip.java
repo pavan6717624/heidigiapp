@@ -1,7 +1,6 @@
 package com.heidigi.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import javax.persistence.Column;
@@ -19,26 +18,23 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "jollytrip")
-public class JollyTrip implements Serializable{
-
+public class JollyTrip implements Serializable {
 
 	private static final long serialVersionUID = 1305527473985561032L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long tripId;
-	
+
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "locationId")
 	JollyLocation location;
 
-	
 	@Column(columnDefinition = "datetime")
 	LocalDate fromDate;
-	
+
 	@Column(columnDefinition = "datetime")
 	LocalDate toDate;
-	
-	Boolean disabled=false;
-	
-	
+
+	Boolean disabled = false;
+
 }

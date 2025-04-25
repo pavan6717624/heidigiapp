@@ -23,7 +23,7 @@ public class JollyMapData {
 		date = value.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		symbol = value.getSymbol();
 		type = value.getOption_typ();
-		strike=value.getStrike_pr();
+		strike = value.getStrike_pr();
 
 	}
 

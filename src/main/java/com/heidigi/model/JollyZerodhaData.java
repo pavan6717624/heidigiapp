@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class JollyZerodhaData {
-	
+
 	List<JollyZData> data;
 
 }
